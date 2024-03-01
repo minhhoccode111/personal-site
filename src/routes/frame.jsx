@@ -41,22 +41,9 @@ export default function Frame() {
         className={'flex gap-3 sm:gap-5 md:gap-7 lg:gap-9 items-center p-4 sm:p-5 md:p-6 lg:p-7 shadow-lg shadow-gray-300 text-slate-700 bg-white' + ' ' + (pathname !== '/' && 'bg-slate-50')}
         // color base on url path
       >
-        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl tracking-wider flex-1 whitespace-nowrap">
-          {/*  */}
+        {/* <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl tracking-wider flex-1 whitespace-nowrap">
           <Link to={'/'}>hoang minh</Link>
-        </h1>
-        <div className="">
-          <button
-            type="button"
-            className=""
-            onClick={() => {
-              // change language
-              setIsVietnamese(!isVietnamese);
-            }}
-          >
-            {isVietnamese ? 'Vie' : 'Eng'}
-          </button>
-        </div>
+        </h1> */}
 
         {/* hamburger */}
         <nav className={'sm:hidden'}>
@@ -138,6 +125,19 @@ export default function Frame() {
             </NavLink>
           </div>
         </nav>
+
+        <div className="flex-1">
+          <button
+            type="button"
+            className=""
+            onClick={() => {
+              // change language
+              setIsVietnamese(!isVietnamese);
+            }}
+          >
+            {isVietnamese ? 'Vie' : 'Eng'}
+          </button>
+        </div>
       </header>
 
       {/* dynamic part */}
