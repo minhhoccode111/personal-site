@@ -119,7 +119,8 @@ export default function Frame() {
               className={({ isActive }) => (isActive ? 'bg-sky-400 text-white' : 'hover:bg-gray-300 hover:text-black') + ' ' + 'relative max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all'}
               to={'signup'}
             >
-              <IoIosCart className="text-6xl sm:text-2xl md:text-3xl" />
+              {/* <IoIosCart className="text-6xl sm:text-2xl md:text-3xl" /> */}
+              Signup
 
               {/* small counter, bring to somewhere else, like count projects or blogs */}
               <span className="absolute text-xl sm:text-xs font-bold top-0 right-0 w-6 h-6 sm:w-4 sm:h-4 flex items-center justify-center rounded-full text-white bg-red-500">{inCart}</span>
@@ -132,7 +133,8 @@ export default function Frame() {
               className={({ isActive }) => (isActive ? 'bg-sky-400 text-white' : 'hover:bg-gray-300 hover:text-black') + ' ' + 'max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all'}
               to={'login'}
             >
-              <IoIosLogIn className="text-6xl sm:text-2xl md:text-3xl" />
+              {/* <IoIosLogIn className="text-6xl sm:text-2xl md:text-3xl" /> */}
+              Login
             </NavLink>
           </div>
         </nav>
