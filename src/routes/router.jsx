@@ -1,13 +1,13 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import NotFound from './404';
-import Frame from './frame';
+import Frame, { loader as frameLoader } from './frame';
 import Index from './index';
 import Blog, { action as blogAction, loader as blogLoader } from './blog';
 // import Post, { action as postAction, loader as postLoader } from './post';
-// import Work, { action as workAction, loader as workLoader } from './post';
+import Work, { action as workAction, loader as workLoader } from './work';
 import Login from './login';
 import Signup from './signup';
-// import About from './about';
+import About from './about';
 
 export default function Router() {
   // setting router
@@ -15,6 +15,7 @@ export default function Router() {
     {
       path: '/',
       element: <Frame />,
+      loader: frameLoader,
       errorElement: <NotFound />,
       children: [
         {
@@ -49,13 +50,13 @@ export default function Router() {
           ],
         },
 
-        // {
-        //   path: 'work',
-        //   element: <Work />,
-        //   errorElement: <NotFound />,
-        //   loader: workLoader,
-        //   action: workAction,
-        // },
+        {
+          path: 'work',
+          element: <Work />,
+          errorElement: <NotFound />,
+          loader: workLoader,
+          action: workAction,
+        },
 
         {
           path: 'login',
@@ -72,10 +73,10 @@ export default function Router() {
           element: <Signup />,
         },
 
-        // {
-        //   path: 'about',
-        //   element: <About />,
-        // },
+        {
+          path: 'about',
+          element: <About />,
+        },
       ],
     },
   ]);

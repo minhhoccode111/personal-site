@@ -5,6 +5,11 @@ import { IoIosCloseCircleOutline, IoIosCart, IoIosLogIn } from 'react-icons/io';
 import Footer from './../components/footer';
 // import { getCarts } from './../methods/carts'; // TODO change to something about login and signup and token
 
+export function loader() {
+  console.log('this loader in frame is being called no matter which route the user start');
+  return null;
+}
+
 export default function Frame() {
   // location.pathname - the path of the current URL
   const { pathname } = useLocation();

@@ -21,7 +21,7 @@ export const action = async () => {
   return null;
 };
 
-export default function Shop() {
+export default function Blog() {
   const { books } = useLoaderData();
   const fetcher = useFetcher();
   const submit = useSubmit();
