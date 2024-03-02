@@ -5,7 +5,11 @@ export default function Signup() {
   // return a function let us navigate manually
   const navigate = useNavigate();
 
+  const [fullnameValidationState, setFullnameValidationState] = useState(true);
+
   const [confirmPasswordValidationState, setConfirmPasswordValidationState] = useState(true);
+
+  const [fullnameState, setFullnameState] = useState('');
 
   const [passwordState, setPasswordState] = useState('');
 
@@ -14,6 +18,11 @@ export default function Signup() {
   function handleConfirmPasswordMatch() {
     if (passwordState === confirmPasswordState) setConfirmPasswordValidationState(true);
     else setConfirmPasswordValidationState(false);
+  }
+
+  function handleFullnameValidation() {
+    if (fullnameState.charAt(0) === ' ' || fullnameState.trim().length === 0) setFullnameValidationState(false);
+    else setFullnameValidationState(true);
   }
 
   /*
@@ -65,9 +74,16 @@ export default function Signup() {
               minLength={'1'}
               maxLength={'50'}
               required
+              value={fullnameState}
+              onChange={(e) => {
+                setFullnameState(() => e.target.value);
+                handleFullnameValidation();
+              }}
             />
 
-            <span className="hidden text-danger peer-invalid:block absolute bottom-full m-1 z-10 text-xs">*Fullname must not be empty.</span>
+            <span className={(fullnameValidationState ? 'hidden ' : 'block ') + 'text-danger absolute bottom-full m-1 z-10 text-xs peer-invalid:block'}>
+              *Fullname must not be empty or start with space.
+            </span>
           </div>
         </div>
 
@@ -79,7 +95,7 @@ export default function Signup() {
           <div className="relative">
             <input name="username" id="username" type="email" className="w-full rounded-lg border-gray-200 p-4 pr-12 text-sm shadow-sm peer" placeholder="Enter username" minLength={'8'} required />
 
-            <span className="hidden text-danger peer-invalid:block absolute bottom-full m-1 z-10 text-xs">*Username must be a valid email.</span>
+            <span className="hidden text-danger peer-invalid:block absolute bottom-full m-1 z-10 text-xs">*Username must be a valid email, at least 8 characters.</span>
 
             <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -113,7 +129,9 @@ export default function Signup() {
               }}
             />
 
-            <span className="hidden text-danger peer-invalid:block absolute bottom-full m-1 z-10 text-xs">*Password must contain uppercase, lowercase, number, special character.</span>
+            <span className="hidden text-danger peer-invalid:block absolute bottom-full m-1 z-10 text-xs">
+              *Password must contain at least 1 uppercase, 1 lowercase, 1 number, 1 special character, at least 8 characters.
+            </span>
 
             <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -170,7 +188,7 @@ export default function Signup() {
         <div className="flex items-center justify-between">
           <p className="text-sm text-gray-500">
             Already have an account?{' '}
-            <Link className="underline text-link" to="/signup">
+            <Link className="underline text-link" to="/login">
               Log in
             </Link>{' '}
             now
