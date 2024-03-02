@@ -1,7 +1,6 @@
 import { useNavigate, Link } from 'react-router-dom';
 
 export default function Login() {
-  // return a function let us navigate manually
   const navigate = useNavigate();
 
   /*
@@ -33,19 +32,17 @@ export default function Login() {
 
           console.log(e);
 
-          navigate(-1);
+          navigate('/blog');
         }}
-        className="mx-auto mb-0 mt-8 max-w-md space-y-8"
+        className="mx-auto mb-0 mt-8 max-w-md space-y-4"
       >
-        <div className="mt-10">
+        <div className="">
           <label htmlFor="username" className="sr-only">
             Username
           </label>
 
           <div className="relative">
-            <input name="username" id="username" type="email" className="w-full rounded-lg border-gray-200 p-4 pr-12 text-sm shadow-sm peer" placeholder="Enter username" minLength={'8'} required />
-
-            <span className="hidden text-danger peer-invalid:block absolute bottom-full m-1 z-10">*Please provide a valid email address, at least 8 characters.</span>
+            <input name="username" id="username" type="text" className="w-full rounded-lg border-gray-200 p-4 pr-12 text-sm shadow-sm" placeholder="Enter username" required />
 
             <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -61,16 +58,7 @@ export default function Login() {
           </label>
 
           <div className="relative">
-            <input
-              name="password"
-              id="password"
-              type="password"
-              className="w-full rounded-lg border-gray-200 p-4 pr-12 text-sm shadow-sm"
-              placeholder="Enter password"
-              minLength={'8'}
-              maxLength={'32'}
-              required
-            />
+            <input name="password" id="password" type="password" className="w-full rounded-lg border-gray-200 p-4 pr-12 text-sm shadow-sm" placeholder="Enter password" required />
 
             <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -87,13 +75,16 @@ export default function Login() {
         </div>
 
         <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-500">
-            No account?{' '}
-            <Link className="underline text-link" to="/signup">
-              Sign up
-            </Link>{' '}
-            now
-          </p>
+          <div className="text-sm text-gray-500">
+            <p>
+              No account?{' '}
+              <Link className="underline text-link" to="/signup">
+                Sign up
+              </Link>{' '}
+              now
+            </p>
+            <p>If you just want a quick start, try asd - asd account.</p>
+          </div>
 
           <button type="submit" className="inline-block rounded-lg bg-blue-500 px-5 py-3 text-sm font-medium text-white transition-all hover:scale-110 hover:shadow hover:shadow-gray-400">
             Log in
