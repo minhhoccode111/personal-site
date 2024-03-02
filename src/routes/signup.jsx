@@ -1,5 +1,5 @@
 import { useNavigate, Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Signup() {
   // return a function let us navigate manually
@@ -15,15 +15,15 @@ export default function Signup() {
 
   const [confirmPasswordState, setConfirmPasswordState] = useState('');
 
-  function handleConfirmPasswordMatch() {
-    if (passwordState === confirmPasswordState) setConfirmPasswordValidationState(true);
-    else setConfirmPasswordValidationState(false);
-  }
+  useEffect(() => {
+    if (passwordState === confirmPasswordState) setConfirmPasswordValidationState(() => true);
+    else setConfirmPasswordValidationState(() => false);
+  }, [passwordState, confirmPasswordState]);
 
-  function handleFullnameValidation() {
-    if (fullnameState.charAt(0) === ' ' || fullnameState.trim().length === 0) setFullnameValidationState(false);
+  useEffect(() => {
+    if (fullnameState.trim() === '' || fullnameState.charAt(0) === ' ') setFullnameValidationState(false);
     else setFullnameValidationState(true);
-  }
+  }, [fullnameState]);
 
   /*
     Heads up! 👋
@@ -55,7 +55,7 @@ export default function Signup() {
 
           console.log(e);
 
-          navigate(-1);
+          navigate('/login');
         }}
         className="mx-auto mb-0 mt-8 max-w-md space-y-12"
       >
@@ -75,10 +75,7 @@ export default function Signup() {
               maxLength={'50'}
               required
               value={fullnameState}
-              onChange={(e) => {
-                setFullnameState(() => e.target.value);
-                handleFullnameValidation();
-              }}
+              onChange={(e) => setFullnameState(() => e.target.value)}
             />
 
             <span className={(fullnameValidationState ? 'hidden ' : 'block ') + 'text-danger absolute bottom-full m-1 z-10 text-xs peer-invalid:block'}>
@@ -123,10 +120,7 @@ export default function Signup() {
               pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).*$"
               required
               value={passwordState}
-              onChange={(e) => {
-                setPasswordState(e.target.value);
-                handleConfirmPasswordMatch();
-              }}
+              onChange={(e) => setPasswordState(() => e.target.value)}
             />
 
             <span className="hidden text-danger peer-invalid:block absolute bottom-full m-1 z-10 text-xs">
@@ -157,19 +151,16 @@ export default function Signup() {
               name="confirm-password"
               id="confirm-password"
               type="password"
-              className="w-full rounded-lg border-gray-200 p-4 pr-12 text-sm shadow-sm"
+              className="w-full rounded-lg border-gray-200 p-4 pr-12 text-sm shadow-sm peer"
               placeholder="Confirm password"
               minLength={'8'}
               maxLength={'32'}
               required
               value={confirmPasswordState}
-              onChange={(e) => {
-                setConfirmPasswordState(e.target.value);
-                handleConfirmPasswordMatch();
-              }}
+              onChange={(e) => setConfirmPasswordState(() => e.target.value)}
             />
 
-            <span className={(confirmPasswordValidationState ? 'hidden ' : 'block ') + 'text-danger absolute bottom-full m-1 z-10 text-xs'}>*Confirm password does not match.</span>
+            <span className={(confirmPasswordValidationState ? 'hidden ' : 'block ') + 'text-danger absolute bottom-full m-1 z-10 text-xs peer-invalid:block'}>*Confirm password does not match.</span>
 
             <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
