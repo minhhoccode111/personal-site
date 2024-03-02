@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import NotFound from './404';
-import Frame, { loader as frameLoader } from './frame';
+import Layout, { loader as layoutLoader } from './layout';
 import Index from './index';
 import Blog, { action as blogAction, loader as blogLoader } from './blog';
 // import Post, { action as postAction, loader as postLoader } from './post';
@@ -15,8 +15,8 @@ export default function Router() {
   const router = createBrowserRouter([
     {
       path: '/',
-      element: <Frame />,
-      loader: frameLoader,
+      element: <Layout />,
+      loader: layoutLoader,
       errorElement: <NotFound />,
       children: [
         {

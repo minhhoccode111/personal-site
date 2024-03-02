@@ -6,11 +6,11 @@ import Footer from './../components/footer';
 // import { getCarts } from './../methods/carts'; // TODO change to something about login and signup and token
 
 export function loader() {
-  console.log('this loader in frame is being called no matter which route the user start');
+  console.log('this loader in layout is being called no matter which route the user start');
   return null;
 }
 
-export default function Frame() {
+export default function Layout() {
   // location.pathname - the path of the current URL
   const { pathname } = useLocation();
 
