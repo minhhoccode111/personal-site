@@ -5,6 +5,7 @@ import Index from './index';
 import Blog, { action as blogAction, loader as blogLoader } from './blog';
 // import Post, { action as postAction, loader as postLoader } from './post';
 import Work, { action as workAction, loader as workLoader } from './work';
+import Contact, { action as contactAction, loader as contactLoader } from './contact';
 import Login from './login';
 import Signup from './signup';
 import About from './about';
@@ -56,6 +57,13 @@ export default function Router() {
           errorElement: <NotFound />,
           loader: workLoader,
           action: workAction,
+        },
+
+        {
+          path: 'contact',
+          element: <Contact />,
+          loader: contactLoader,
+          action: contactAction,
         },
 
         {

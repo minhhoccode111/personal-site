@@ -103,6 +103,14 @@ export default function Frame() {
             Blog
           </NavLink>
 
+          {/* link to contact section */}
+          <NavLink
+            className={({ isActive }) => (isActive ? 'bg-sky-400 text-white' : 'hover:bg-gray-300 hover:text-black') + ' ' + 'max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all'}
+            to={'contact'}
+          >
+            Contact
+          </NavLink>
+
           {/* TODO change to login | signup when not log in */}
           {/* TODO change to 12345s | logout when logged in */}
           <div className="flex gap-2 md:gap-4 max-sm:justify-end">
