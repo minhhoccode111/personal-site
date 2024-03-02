@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { Outlet, NavLink, Link, useLocation } from 'react-router-dom';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { IoIosCloseCircleOutline, IoIosCart, IoIosLogIn } from 'react-icons/io';
-import { getCarts } from './../methods/carts';
 import Footer from './../components/footer';
+// import { getCarts } from './../methods/carts'; // TODO change to something about login and signup and token
 
 export default function Frame() {
   // location.pathname - the path of the current URL
@@ -21,13 +21,13 @@ export default function Frame() {
 
   // TODO init token
   // init count items in cart with 2 default items
-  useEffect(() => {
-    const tmp = async () => {
-      const carts = await getCarts();
-      setInCart(() => carts.length);
-    };
-    tmp();
-  }, []);
+  // useEffect(() => {
+  //   const tmp = async () => {
+  //     const carts = await getCarts();
+  //     setInCart(() => carts.length);
+  //   };
+  //   tmp();
+  // }, []);
 
   // TODO change to something useful
   const increase = () => setInCart((c) => c + 1);
@@ -108,7 +108,6 @@ export default function Frame() {
             >
               {/* <IoIosCart className="text-6xl sm:text-2xl md:text-3xl" /> */}
               Signup
-
               {/* small counter, bring to somewhere else, like count projects or blogs */}
               <span className="absolute text-xl sm:text-xs font-bold top-0 right-0 w-6 h-6 sm:w-4 sm:h-4 flex items-center justify-center rounded-full text-white bg-red-500">{inCart}</span>
             </NavLink>
