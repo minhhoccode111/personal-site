@@ -21,6 +21,7 @@ export default function Router() {
           index: true, // use a default component
           element: <Index />, // component to display at '/'
         },
+
         {
           path: 'blog',
           children: [
@@ -31,6 +32,7 @@ export default function Router() {
               loader: blogLoader,
               action: blogAction,
             },
+
             // {
             //   path: 'blog/:postid',
             //   element: <Post />,
@@ -38,6 +40,7 @@ export default function Router() {
             //   loader: postLoader,
             //   action: postAction,
             // },
+
             // {
             //   path: 'blog/:postid/view',
             //   element: <PostView/>,
@@ -61,6 +64,11 @@ export default function Router() {
 
         {
           path: 'signup',
+          element: <Signup />,
+        },
+
+        {
+          path: 'logout',
           element: <Signup />,
         },
 

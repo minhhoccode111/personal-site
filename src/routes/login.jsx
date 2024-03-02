@@ -3,6 +3,9 @@ import { useNavigate, Link } from 'react-router-dom';
 export default function Login() {
   const navigate = useNavigate();
 
+  // for development
+  // console.log(import.meta.env.VITE_API_ORIGIN); // http://localhost:3000
+
   /*
     Heads up! 👋
     Plugins:
