@@ -9,6 +9,7 @@ import Contact, { action as contactAction, loader as contactLoader } from './con
 import Login from './login';
 import Signup from './signup';
 import About from './about';
+import { loader as logoutLoader } from './logout';
 
 export default function Router() {
   // setting router
@@ -78,7 +79,7 @@ export default function Router() {
 
         {
           path: 'logout',
-          element: <Signup />,
+          loader: logoutLoader,
         },
 
         {

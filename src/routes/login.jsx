@@ -12,6 +12,34 @@ export default function Login() {
     - @tailwindcss/forms
   */
 
+  async function handleLoginFormSubmit(e) {
+    // handle submit manually
+    e.preventDefault();
+    const form = e.target;
+    const username = form.querySelector(`input[name="username"]`);
+    const password = form.querySelector(`input[name="password"]`);
+
+    const res = await fetch(import.meta.env.VITE_API_ORIGIN + '/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json', // Assuming JSON format
+      },
+      body: JSON.stringify({ username: username.value, password: password.value }), // Pass data as JSON
+      // mode: 'cors',
+    });
+
+    // clear inputs
+    password.value = '';
+    username.value = '';
+
+    const data = await res.json();
+
+    console.log(res);
+    console.log(data);
+
+    navigate('/login');
+  }
+
   return (
     <section className="mx-auto max-w-screen-xl px-4 py-16 my-10 sm:px-6 lg:px-8 shadow-lg shadow-gray-400 rounded-xl bg-[#ffffffcc] text-slate-900">
       {/* background image */}
@@ -28,17 +56,7 @@ export default function Login() {
         </p>
       </div>
 
-      <form
-        onSubmit={(e) => {
-          // handle submit manually
-          e.preventDefault();
-
-          console.log(e);
-
-          navigate('/blog');
-        }}
-        className="mx-auto mb-0 mt-8 max-w-md space-y-4"
-      >
+      <form onSubmit={handleLoginFormSubmit} className="mx-auto mb-0 mt-8 max-w-md space-y-4">
         <div className="">
           <label htmlFor="username" className="sr-only">
             Username

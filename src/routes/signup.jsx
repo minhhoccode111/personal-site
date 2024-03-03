@@ -25,6 +25,38 @@ export default function Signup() {
     else setFullnameValidationState(true);
   }, [fullnameState]);
 
+  async function handleSignupFormSubmit(e) {
+    // handle submit manually
+    e.preventDefault();
+    const form = e.target;
+    const fullname = form.querySelector(`input[name="fullname"]`);
+    const username = form.querySelector(`input[name="username"]`);
+    const password = form.querySelector(`input[name="password"]`);
+    const confirmPassword = form.querySelector(`input[name="confirm-password"]`);
+
+    const res = await fetch(import.meta.env.VITE_API_ORIGIN + '/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json', // Assuming JSON format
+      },
+      body: JSON.stringify({ username: username.value, password: password.value, fullname: fullname.value, 'confirm-password': confirmPassword.value }), // Pass data as JSON
+      // mode: 'cors',
+    });
+
+    // clear inputs
+    password.value = '';
+    username.value = '';
+    fullname.value = '';
+    confirmPassword.value = '';
+
+    const data = await res.json();
+
+    console.log(res);
+    console.log(data);
+
+    navigate('/signup');
+  }
+
   /*
     Heads up! 👋
     Plugins:
@@ -48,17 +80,7 @@ export default function Signup() {
         </p>
       </div>
 
-      <form
-        onSubmit={(e) => {
-          // handle submit manually
-          e.preventDefault();
-
-          console.log(e);
-
-          navigate('/login');
-        }}
-        className="mx-auto mb-0 mt-8 max-w-md space-y-12"
-      >
+      <form onSubmit={handleSignupFormSubmit} className="mx-auto mb-0 mt-8 max-w-md space-y-12">
         <div className="mt-10">
           <label htmlFor="fullname" className="sr-only">
             Fullname
