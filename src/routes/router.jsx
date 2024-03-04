@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import NotFound from './404';
-import Layout, { loader as layoutLoader } from './layout';
+import Layout from './layout';
 import Index from './index';
 import Blog, { action as blogAction, loader as blogLoader } from './blog';
 import Post, { action as postAction, loader as postLoader } from './post';
@@ -9,7 +9,7 @@ import Contact, { action as contactAction, loader as contactLoader } from './con
 import Login from './login';
 import Signup from './signup';
 import About from './about';
-import { loader as logoutLoader } from './logout';
+import Logout from './logout';
 
 export default function Router() {
   // setting router
@@ -17,7 +17,6 @@ export default function Router() {
     {
       path: '/',
       element: <Layout />,
-      loader: layoutLoader,
       errorElement: <NotFound />,
       children: [
         {
@@ -79,7 +78,7 @@ export default function Router() {
 
         {
           path: 'logout',
-          loader: logoutLoader,
+					element: <Logout />,
         },
 
         {

@@ -1,4 +1,4 @@
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useOutletContext, Link } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios';
 import Loading from '../components/loading';
@@ -9,11 +9,7 @@ import { set } from './../methods/index';
 export default function Login() {
   const navigate = useNavigate();
 
-  /*
-    Heads up! 👋
-    Plugins:
-    - @tailwindcss/forms
-  */
+  const { setLoginState } = useOutletContext();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -41,10 +37,13 @@ export default function Login() {
         },
       });
 
-      console.log(res.data);
+      // console.log(res.data);
 
       // set to local storage
       set(res.data);
+
+      // set to display different Layout
+      setLoginState(res.data);
 
       // go back to home
       navigate('/');

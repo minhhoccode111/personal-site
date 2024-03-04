@@ -1,15 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Outlet, NavLink, Link, useLocation } from 'react-router-dom';
+import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { GiHamburgerMenu } from 'react-icons/gi';
-import { IoIosCloseCircleOutline, IoIosCart, IoIosLogIn } from 'react-icons/io';
+import { IoIosCloseCircleOutline, IoIosLogIn, IoIosLogOut } from 'react-icons/io';
 import Footer from './../components/footer';
-import { get, set } from './../methods/index';
-
-export function loader() {
-  console.log('this loader in layout is being called no matter which route the user start');
-
-  return null;
-}
+import { get } from './../methods/index';
 
 export default function Layout() {
   // location.pathname - the path of the current URL
@@ -27,31 +21,14 @@ export default function Layout() {
   // count number of projects
   const [countProjects, setCountProjects] = useState(0);
 
-  //
-  const [currentUser, setCurrentUser] = useState({});
-
-  // TODO init token
-  // init count items in cart with 2 default items
-  // useEffect(() => {
-  //   const tmp = async () => {
-  //     const carts = await getCarts();
-  //     setInCart(() => carts.length);
-  //   };
-  //   tmp();
-  // }, []);
+  // if a login state was being saved on local storage
+  const [loginState, setLoginState] = useState({});
 
   // init user data on local storage if has
-  useEffect(
-    () => {},
-    [
-      //
-    ]
-  );
-
-  // TODO change to something useful
-  const increase = () => setInCart((c) => c + 1);
-  const decrease = () => setInCart((c) => c - 1);
-  const reset = () => setInCart(() => 0);
+  useEffect(() => {
+    const state = get();
+    setLoginState(state);
+  }, []);
 
   return (
     <>
@@ -127,31 +104,46 @@ export default function Layout() {
             Contact
           </NavLink>
 
-          {/* TODO change to login | signup when not log in */}
-          {/* TODO change to 12345s | logout when logged in */}
-          <div className="flex gap-2 md:gap-4 max-sm:justify-end">
-            {/* link to signup section */}
-            <NavLink
-              className={({ isActive }) => (isActive ? 'bg-sky-400 text-white' : 'hover:bg-gray-300 hover:text-black') + ' ' + 'relative max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all'}
-              to={'signup'}
-            >
-              {/* <IoIosCart className="text-6xl sm:text-2xl md:text-3xl" /> */}
-              Signup
-              {/* small counter, bring to somewhere else, like count projects or blogs */}
-              {/* <span className="absolute text-xl sm:text-xs font-bold top-0 right-0 w-6 h-6 sm:w-4 sm:h-4 flex items-center justify-center rounded-full text-white bg-red-500">{countBlogs}</span> */}
-            </NavLink>
+          {loginState?.message === 'Success' ? (
+            <div className="flex gap-2 md:gap-4 max-sm:justify-end">
+              {/* link to signup section */}
 
-            <div className="border border-slate-900 w-0"></div>
+              <p className="max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all text-success">{loginState.user.isCreator ? 'Creator' : 'Viewer'}</p>
 
-            {/* link to login section */}
-            <NavLink
-              className={({ isActive }) => (isActive ? 'bg-sky-400 text-white' : 'hover:bg-gray-300 hover:text-black') + ' ' + 'max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all'}
-              to={'login'}
-            >
-              {/* <IoIosLogIn className="text-6xl sm:text-2xl md:text-3xl" /> */}
-              Login
-            </NavLink>
-          </div>
+              <div className="border border-slate-900 w-0"></div>
+
+              {/* link to login section */}
+              <NavLink
+                className={({ isActive }) => (isActive ? 'bg-sky-400 text-white' : 'hover:bg-gray-300 hover:text-black') + ' ' + 'max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all'}
+                to={'logout'}
+                title="Logout"
+              >
+                <IoIosLogOut className="text-6xl sm:text-2xl md:text-3xl" />
+              </NavLink>
+            </div>
+          ) : (
+            <div className="flex gap-2 md:gap-4 max-sm:justify-end">
+              {/* link to signup section */}
+              <NavLink
+                className={({ isActive }) => (isActive ? 'bg-sky-400 text-white' : 'hover:bg-gray-300 hover:text-black') + ' ' + 'max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all'}
+                to={'signup'}
+                title="Signup"
+              >
+                Signup
+              </NavLink>
+
+              <div className="border border-slate-900 w-0"></div>
+
+              {/* link to login section */}
+              <NavLink
+                className={({ isActive }) => (isActive ? 'bg-sky-400 text-white' : 'hover:bg-gray-300 hover:text-black') + ' ' + 'max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all'}
+                to={'login'}
+                title="Login"
+              >
+                <IoIosLogIn className="text-6xl sm:text-2xl md:text-3xl" />
+              </NavLink>
+            </div>
+          )}
         </nav>
 
         <div className="flex-1">
@@ -171,7 +163,7 @@ export default function Layout() {
       {/* dynamic part */}
       <main className="flex-1 flex flex-col">
         {/* pass functions down without drilling */}
-        <Outlet context={{ increase, decrease, reset }} />
+        <Outlet context={{ loginState, setLoginState }} />
       </main>
 
       {/* only display footer when we are not in home */}

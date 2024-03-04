@@ -1,9 +1,19 @@
-import { redirect } from 'react-router-dom';
+import { useEffect } from 'react';
+import { redirect, useNavigate, useOutletContext } from 'react-router-dom';
 import { set } from './../methods/index';
 
-export function loader() {
-	// clear local storage
-	set({});
+// logout using component
+export default function Logout() {
+  const navigate = useNavigate();
+	const { setLoginState } = useOutletContext();
 
-  return redirect('/');
+  useEffect(() => {
+    set({});
+
+		setLoginState(() => ({}));
+
+    navigate('/');
+  });
+
+  return <></>;
 }
