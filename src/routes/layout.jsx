@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { IoIosCloseCircleOutline, IoIosLogIn, IoIosLogOut } from 'react-icons/io';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { GiHamburgerMenu } from 'react-icons/gi';
-import { IoIosCloseCircleOutline, IoIosLogIn, IoIosLogOut } from 'react-icons/io';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import Footer from './../components/footer';
 import { get } from './../methods/index';
 
@@ -15,19 +16,28 @@ export default function Layout() {
   // hamburger menu state
   const [isShowMenu, setIsShowMenu] = useState(false);
 
-  // count number of blogs
-  const [countBlogs, setCountBlogs] = useState(0);
+  // blog posts to use through out this session
+  const [blogPosts, setBlogPosts] = useState([]);
 
-  // count number of projects
+  // state of blog posts fetching
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  // error messages to display while fetching blog posts
+  const [displayMessages, setDisplayMessages] = useState([]);
+
+  // counter
+  const [countBlogs, setCountBlogs] = useState(0);
   const [countProjects, setCountProjects] = useState(0);
 
-  // if a login state was being saved on local storage
+  // login state on local storage
   const [loginState, setLoginState] = useState({});
 
   // init user data on local storage if has
   useEffect(() => {
     const state = get();
-    setLoginState(state);
+
+    setLoginState(() => state);
   }, []);
 
   // TODO start fetching blogs here when the page first load
@@ -36,24 +46,14 @@ export default function Layout() {
       try {
         const res = await axios({
           mode: 'cors',
-          method: 'post',
-          url: import.meta.env.VITE_API_ORIGIN + '/login',
-          data: {
-            username: username.value,
-            password: password.value,
+          method: 'get',
+          url: import.meta.env.VITE_API_ORIGIN + '/posts',
+          headers: {
+            Authorization: `Bearer ${loginState?.token}`,
           },
         });
 
-        // console.log(res.data);
-
-        // set to local storage
-        set(res.data);
-
-        // set to display different Layout
-        setLoginState(res.data);
-
-        // go back to home
-        navigate('/');
+        console.log(res.data);
       } catch (err) {
         console.log(err.response);
         if (err.response.status === 400) {
@@ -203,7 +203,13 @@ export default function Layout() {
       {/* dynamic part */}
       <main className="flex-1 flex flex-col">
         {/* pass functions down without drilling */}
-        <Outlet context={{ loginState, setLoginState }} />
+        <Outlet
+          context={{
+            loginState,
+            setLoginState,
+            //
+          }}
+        />
       </main>
 
       {/* only display footer when we are not in home */}

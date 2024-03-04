@@ -4,17 +4,8 @@ import { IoBagCheckOutline } from 'react-icons/io5';
 import { useFetcher, Link, useLoaderData, useSubmit } from 'react-router-dom';
 // import { getCategory, sortBooks, searchBooks } from '../methods/books';
 
-export const loader = async ({ request }) => {
-  const url = new URL(request.url);
-  const category = url.searchParams.get('category');
-  const sort = url.searchParams.get('sort');
-  const q = url.searchParams.get('q');
-  // TODO change to something useful
-  // const booksInCategory = await getCategory(category);
-  // const booksSorted = await sortBooks(booksInCategory, sort);
-  // const books = await searchBooks(booksSorted, q);
-  const books = [];
-  return { books };
+export const loader = async () => {
+  return null;
 };
 
 export const action = async () => {

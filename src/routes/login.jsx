@@ -5,20 +5,24 @@ import Loading from '../components/loading';
 import Error from '../components/error';
 import { SubmitButton } from '../components/button';
 import { set } from './../methods/index';
+import BackgroundImage0 from '../assets/bg-0.jpg';
 
 export default function Login() {
+  // back to home after logging
   const navigate = useNavigate();
 
+  // store token to local storage after logging
   const { setLoginState } = useOutletContext();
 
+  // handle fetch states
   const [isLoading, setIsLoading] = useState(false);
-
   const [isError, setIsError] = useState(false);
 
+  // error messages to display
   const [displayMessages, setDisplayMessages] = useState([]);
 
+  // handle login submit manually
   async function handleLoginFormSubmit(e) {
-    // handle submit manually
     e.preventDefault();
     const form = e.target;
     const username = form.querySelector(`input[name="username"]`);
@@ -65,7 +69,8 @@ export default function Login() {
     <section className="mx-auto max-w-screen-xl px-4 py-16 my-10 sm:px-6 lg:px-8 shadow-lg shadow-gray-400 rounded-xl bg-[#ffffffcc] text-slate-900">
       {/* background image */}
       <div className="fixed -z-10 top-0 left-0 w-screen h-screen bg-white overflow-hidden">
-        <img src="/bg-0.jpg" alt="Background image" className="object-cover border object-center h-full w-full brightness-90" />
+        {/* <img src="/bg-0.jpg" alt="Background image" className="object-cover border object-center h-full w-full brightness-90" /> */}
+        <img src={BackgroundImage0} alt="Background image" className="object-cover border object-center h-full w-full brightness-90" />
       </div>
 
       {/* header and dummy text */}
@@ -128,20 +133,24 @@ export default function Login() {
             <p>If you just want a quick start, try asd - asd account.</p>
           </div>
 
+          {/* if a server error or no internet connection */}
           {isError ? (
             <SubmitButton isDisable={true}>
               <Error />
             </SubmitButton>
-          ) : isLoading ? (
+          ) : // if waiting for response
+          isLoading ? (
             <SubmitButton isDisable={true}>
               <Loading />
             </SubmitButton>
           ) : (
+            // display login button
             <SubmitButton isDisable={false}>Login</SubmitButton>
           )}
         </div>
       </form>
 
+      {/* a list of error messages from server (wrong password and stuffs) */}
       {displayMessages.length !== 0 && (
         <div className="px-8 py-2 font-bold text-lg">
           {displayMessages.map((error, index) => {

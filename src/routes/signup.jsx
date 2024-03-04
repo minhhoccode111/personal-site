@@ -3,37 +3,40 @@ import { useState, useEffect } from 'react';
 import Loading from '../components/loading';
 import Error from '../components/error';
 import { SubmitButton } from '../components/button';
+import BackgroundImage2 from '../assets/bg-2.jpg';
 
 import axios from 'axios';
 
 export default function Signup() {
+  // validation form on typing
   const [fullnameValidationState, setFullnameValidationState] = useState(true);
-
   const [confirmPasswordValidationState, setConfirmPasswordValidationState] = useState(true);
 
+  // handle input states manually
   const [fullnameState, setFullnameState] = useState('');
-
   const [passwordState, setPasswordState] = useState('');
-
   const [confirmPasswordState, setConfirmPasswordState] = useState('');
 
+  // handle fetch states
   const [isLoading, setIsLoading] = useState(false);
-
   const [isError, setIsError] = useState(false);
 
+  // error messages to display
   const [displayMessages, setDisplayMessages] = useState([]);
 
+  // validate on change of password and confirm-password field
   useEffect(() => {
     if (passwordState === confirmPasswordState) setConfirmPasswordValidationState(() => true);
     else setConfirmPasswordValidationState(() => false);
   }, [passwordState, confirmPasswordState]);
 
+  // validate on change of fullname field
   useEffect(() => {
     if (fullnameState.trim() === '' || fullnameState.charAt(0) === ' ') setFullnameValidationState(false);
     else setFullnameValidationState(true);
   }, [fullnameState]);
 
-  // handle submit manually
+  // handle signup submit manually
   async function handleSignupFormSubmit(e) {
     e.preventDefault();
     const form = e.target;
@@ -78,17 +81,12 @@ export default function Signup() {
     }
   }
 
-  /*
-    Heads up! 👋
-    Plugins:
-    - @tailwindcss/forms
-  */
-
   return (
     <section className="mx-auto max-w-screen-xl px-4 py-16 my-10 sm:px-6 lg:px-8 shadow-lg shadow-gray-400 rounded-xl bg-[#ffffffcc] text-slate-900">
       {/* background image */}
       <div className="fixed -z-10 top-0 left-0 w-screen h-screen bg-white overflow-hidden">
-        <img src="/bg-0.jpg" alt="Background image" className="object-cover border object-center h-full w-full brightness-90" />
+        {/* <img src="/bg-0.jpg" alt="Background image" className="object-cover border object-center h-full w-full brightness-90" /> */}
+        <img src={BackgroundImage2} alt="Background image" className="object-cover border object-center h-full w-full brightness-90" />
       </div>
 
       {/* header and dummy text */}
@@ -228,6 +226,7 @@ export default function Signup() {
             now
           </p>
 
+          {/* if a server error or no internet connection */}
           {isError ? (
             <SubmitButton isDisable={true}>
               <Error />
@@ -242,6 +241,7 @@ export default function Signup() {
         </div>
       </form>
 
+      {/* a list of error messages from server (wrong password and stuffs) */}
       {displayMessages.length !== 0 && (
         <div className="px-8 py-2 font-bold text-lg">
           {displayMessages.map((error, index) => {
