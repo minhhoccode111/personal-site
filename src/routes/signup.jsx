@@ -1,5 +1,10 @@
 import { useNavigate, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import Loading from '../components/loading';
+import Error from '../components/error';
+import { SubmitButton } from '../components/button';
+
+import axios from 'axios';
 
 export default function Signup() {
   // return a function let us navigate manually
@@ -15,6 +20,12 @@ export default function Signup() {
 
   const [confirmPasswordState, setConfirmPasswordState] = useState('');
 
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [isError, setIsError] = useState(false);
+
+  const [displayMessages, setDisplayMessages] = useState([]);
+
   useEffect(() => {
     if (passwordState === confirmPasswordState) setConfirmPasswordValidationState(() => true);
     else setConfirmPasswordValidationState(() => false);
@@ -25,8 +36,8 @@ export default function Signup() {
     else setFullnameValidationState(true);
   }, [fullnameState]);
 
+  // handle submit manually
   async function handleSignupFormSubmit(e) {
-    // handle submit manually
     e.preventDefault();
     const form = e.target;
     const fullname = form.querySelector(`input[name="fullname"]`);
@@ -34,27 +45,42 @@ export default function Signup() {
     const password = form.querySelector(`input[name="password"]`);
     const confirmPassword = form.querySelector(`input[name="confirm-password"]`);
 
-    const res = await fetch(import.meta.env.VITE_API_ORIGIN + '/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json', // Assuming JSON format
-      },
-      body: JSON.stringify({ username: username.value, password: password.value, fullname: fullname.value, 'confirm-password': confirmPassword.value }), // Pass data as JSON
-      // mode: 'cors',
-    });
+    setIsLoading(() => true);
 
-    // clear inputs
-    password.value = '';
-    username.value = '';
-    fullname.value = '';
-    confirmPassword.value = '';
+    try {
+      const res = await axios({
+        mode: 'cors',
+        method: 'post',
+        url: import.meta.env.VITE_API_ORIGIN + '/signup',
+        data: {
+          username: username.value,
+          password: password.value,
+          fullname: fullname.value,
+          'confirm-password': confirmPassword.value,
+        },
+      });
 
-    const data = await res.json();
+      // clear inputs
+      username.value = '';
+      // these 3 inputs we manually handle its state
+      setFullnameState(() => '');
+      setPasswordState(() => '');
+      setConfirmPasswordState(() => '');
 
-    console.log(res);
-    console.log(data);
+      // alert successfully created user
+      setDisplayMessages(() => [{ success: true, msg: `Successfully created user!` }]);
+    } catch (err) {
+      if (err.response.status === 400) {
+        setDisplayMessages(() => [...err.response.data.errors]);
+      } else {
+        setIsError(() => true);
+        setDisplayMessages(() => [{ msg: `There is a server error or  internet connection!` }]);
+      }
+    } finally {
+      setIsLoading(() => false);
+    }
 
-    navigate('/signup');
+    // navigate('/signup');
   }
 
   /*
@@ -207,11 +233,39 @@ export default function Signup() {
             now
           </p>
 
-          <button type="submit" className="inline-block rounded-lg bg-blue-500 px-5 py-3 text-sm font-medium text-white transition-all hover:scale-110 hover:shadow hover:shadow-gray-400">
-            Sign up
-          </button>
+          {isError ? (
+            <SubmitButton isDisable={true}>
+              <Error />
+            </SubmitButton>
+          ) : isLoading ? (
+            <SubmitButton isDisable={true}>
+              <Loading />
+            </SubmitButton>
+          ) : (
+            <SubmitButton isDisable={false}>Signup</SubmitButton>
+          )}
         </div>
       </form>
+
+      {displayMessages.length !== 0 && (
+        <div className="px-8 py-2 font-bold text-lg">
+          {displayMessages.map((error, index) => {
+            return error.success ? (
+              <p key={index} className="text-success">
+                {error.msg}
+              </p>
+            ) : error.value ? (
+              <p key={index} className="text-danger">
+                {error.msg} - {error.value}
+              </p>
+            ) : (
+              <p key={index} className="text-danger">
+                {error.msg}
+              </p>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }
