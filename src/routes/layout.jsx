@@ -30,6 +30,46 @@ export default function Layout() {
     setLoginState(state);
   }, []);
 
+  // TODO start fetching blogs here when the page first load
+  useEffect(() => {
+    async function tmp() {
+      try {
+        const res = await axios({
+          mode: 'cors',
+          method: 'post',
+          url: import.meta.env.VITE_API_ORIGIN + '/login',
+          data: {
+            username: username.value,
+            password: password.value,
+          },
+        });
+
+        // console.log(res.data);
+
+        // set to local storage
+        set(res.data);
+
+        // set to display different Layout
+        setLoginState(res.data);
+
+        // go back to home
+        navigate('/');
+      } catch (err) {
+        console.log(err.response);
+        if (err.response.status === 400) {
+          setDisplayMessages(() => [{ msg: `*Username or password do not match` }]);
+        } else {
+          setIsError(() => true);
+
+          setDisplayMessages(() => [{ msg: `*There is a server error or  internet connection!` }]);
+        }
+      } finally {
+        setIsLoading(() => false);
+      }
+    }
+    tmp();
+  }, []);
+
   return (
     <>
       <header

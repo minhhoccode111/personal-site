@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 export function SubmitButton({ children, isDisable }) {
   return (
     <button
@@ -9,3 +11,8 @@ export function SubmitButton({ children, isDisable }) {
     </button>
   );
 }
+
+SubmitButton.propTypes = {
+  isDisable: PropTypes.bool.isRequired,
+  children: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
+};
