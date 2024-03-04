@@ -1,5 +1,9 @@
-export function loader() {
-  // do something with local forage and login token
+import { redirect } from 'react-router-dom';
+import { set } from './../methods/index';
 
-  return null;
+export function loader() {
+	// clear local storage
+	set({});
+
+  return redirect('/');
 }

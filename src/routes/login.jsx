@@ -1,16 +1,25 @@
 import { useNavigate, Link } from 'react-router-dom';
+import { useState } from 'react';
+import axios from 'axios';
+import Loading from '../components/loading';
+import Error from '../components/error';
+import { SubmitButton } from '../components/button';
+import { set } from './../methods/index';
 
 export default function Login() {
   const navigate = useNavigate();
-
-  // for development
-  // console.log(import.meta.env.VITE_API_ORIGIN); // http://localhost:3000
 
   /*
     Heads up! 👋
     Plugins:
     - @tailwindcss/forms
   */
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [isError, setIsError] = useState(false);
+
+  const [displayMessages, setDisplayMessages] = useState([]);
 
   async function handleLoginFormSubmit(e) {
     // handle submit manually
@@ -19,25 +28,38 @@ export default function Login() {
     const username = form.querySelector(`input[name="username"]`);
     const password = form.querySelector(`input[name="password"]`);
 
-    const res = await fetch(import.meta.env.VITE_API_ORIGIN + '/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json', // Assuming JSON format
-      },
-      body: JSON.stringify({ username: username.value, password: password.value }), // Pass data as JSON
-      // mode: 'cors',
-    });
+    setIsLoading(() => true);
 
-    // clear inputs
-    password.value = '';
-    username.value = '';
+    try {
+      const res = await axios({
+        mode: 'cors',
+        method: 'post',
+        url: import.meta.env.VITE_API_ORIGIN + '/login',
+        data: {
+          username: username.value,
+          password: password.value,
+        },
+      });
 
-    const data = await res.json();
+      console.log(res.data);
 
-    console.log(res);
-    console.log(data);
+      // set to local storage
+      set(res.data);
 
-    navigate('/login');
+      // go back to home
+      navigate('/');
+    } catch (err) {
+      console.log(err.response);
+      if (err.response.status === 400) {
+        setDisplayMessages(() => [{ msg: `*Username or password do not match` }]);
+      } else {
+        setIsError(() => true);
+
+        setDisplayMessages(() => [{ msg: `*There is a server error or  internet connection!` }]);
+      }
+    } finally {
+      setIsLoading(() => false);
+    }
   }
 
   return (
@@ -107,11 +129,31 @@ export default function Login() {
             <p>If you just want a quick start, try asd - asd account.</p>
           </div>
 
-          <button type="submit" className="inline-block rounded-lg bg-blue-500 px-5 py-3 text-sm font-medium text-white transition-all hover:scale-110 hover:shadow hover:shadow-gray-400">
-            Log in
-          </button>
+          {isError ? (
+            <SubmitButton isDisable={true}>
+              <Error />
+            </SubmitButton>
+          ) : isLoading ? (
+            <SubmitButton isDisable={true}>
+              <Loading />
+            </SubmitButton>
+          ) : (
+            <SubmitButton isDisable={false}>Login</SubmitButton>
+          )}
         </div>
       </form>
+
+      {displayMessages.length !== 0 && (
+        <div className="px-8 py-2 font-bold text-lg">
+          {displayMessages.map((error, index) => {
+            return (
+              <p key={index} className="text-danger">
+                {error.msg}
+              </p>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

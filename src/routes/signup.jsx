@@ -1,4 +1,4 @@
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Loading from '../components/loading';
 import Error from '../components/error';
@@ -7,9 +7,6 @@ import { SubmitButton } from '../components/button';
 import axios from 'axios';
 
 export default function Signup() {
-  // return a function let us navigate manually
-  const navigate = useNavigate();
-
   const [fullnameValidationState, setFullnameValidationState] = useState(true);
 
   const [confirmPasswordValidationState, setConfirmPasswordValidationState] = useState(true);
@@ -48,7 +45,7 @@ export default function Signup() {
     setIsLoading(() => true);
 
     try {
-      const res = await axios({
+      await axios({
         mode: 'cors',
         method: 'post',
         url: import.meta.env.VITE_API_ORIGIN + '/signup',
@@ -68,19 +65,17 @@ export default function Signup() {
       setConfirmPasswordState(() => '');
 
       // alert successfully created user
-      setDisplayMessages(() => [{ success: true, msg: `Successfully created user!` }]);
+      setDisplayMessages(() => [{ success: true, msg: `*Successfully created user!` }]);
     } catch (err) {
       if (err.response.status === 400) {
         setDisplayMessages(() => [...err.response.data.errors]);
       } else {
         setIsError(() => true);
-        setDisplayMessages(() => [{ msg: `There is a server error or  internet connection!` }]);
+        setDisplayMessages(() => [{ msg: `*There is a server error or  internet connection!` }]);
       }
     } finally {
       setIsLoading(() => false);
     }
-
-    // navigate('/signup');
   }
 
   /*

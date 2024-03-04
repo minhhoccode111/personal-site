@@ -31,11 +31,11 @@
 //   }
 // }
 
-export function get(key = 'token') {
+export function get(key = 'user') {
   const data = localStorage.getItem(key);
   return data === null ? {} : JSON.parse(data);
 }
 
-export function set(value, key = 'token') {
-  localStorage.set(key, JSON.stringify(value));
+export function set(value, key = 'user') {
+  localStorage.setItem(key, JSON.stringify(value));
 }
