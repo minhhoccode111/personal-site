@@ -45,11 +45,6 @@ export default function Blog() {
         <div className="hidden md:block border-b-8 border-sky-500 flex-1 scale-x-150 origin-right"></div>
         <div className="max-sm:w-1/3">
           <fetcher.Form method="get" role="search" className="">
-            {/*
-              Heads up! 👋  
-              Plugins:
-                - @tailwindcss/forms
-          */}
             <label
               htmlFor="search-input"
               className="relative block rounded-md sm:rounded-lg border border-gray-200 shadow-sm focus-within:border-sky-500 focus-within:ring-1 focus-within:ring-sky-500"

@@ -96,7 +96,7 @@ export default function Index() {
         </div>
       </div>
 
-      <div className="flex justify-end p-4 sm:p-6 lg:p-8">
+      <div className="flex max-sm:justify-center justify-end p-4 sm:p-6 lg:p-8 max-sm:mb-16">
         {/* link to about section */}
         <Link className="ripper pl-8 pr-4 py-8 underline hover:decoration-2 underline-offset-4 flex items-center" to={'about'}>
           {/* about me */}

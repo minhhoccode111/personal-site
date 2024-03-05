@@ -4,7 +4,7 @@ import { GiHamburgerMenu } from 'react-icons/gi';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Footer from './../components/footer';
-import { get } from './../methods/index';
+import { get, set } from './../methods/index';
 
 export default function Layout() {
   // location.pathname - the path of the current URL
@@ -37,7 +37,10 @@ export default function Layout() {
   useEffect(() => {
     const state = get();
 
-    setLoginState(() => state);
+    // only use when token not expired
+    if (new Date(state.expiresInDate) > new Date()) setLoginState(() => state);
+    // else use clear local store, keep the default loginState above {}
+    else set({});
   }, []);
 
   // TODO start fetching blogs here when the page first load
@@ -68,7 +71,7 @@ export default function Layout() {
       }
     }
     tmp();
-  }, []);
+  }, [loginState]);
 
   return (
     <>
@@ -84,7 +87,7 @@ export default function Layout() {
         {/* hamburger */}
         <nav className={'sm:hidden'}>
           {/* click to toggle menu */}
-          <button className="mt-1 text-xl" onClick={() => setIsShowMenu(!isShowMenu)}>
+          <button className="hover:bg-gray-300 hover:text-black max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all" onClick={() => setIsShowMenu(!isShowMenu)}>
             <GiHamburgerMenu />
           </button>
         </nav>
@@ -144,11 +147,12 @@ export default function Layout() {
             Contact
           </NavLink>
 
-          {loginState?.message === 'Success' ? (
+          {/* token not expired */}
+          {new Date(loginState?.expiresInDate) > new Date() ? (
             <div className="flex gap-2 md:gap-4 max-sm:justify-end">
               {/* link to signup section */}
 
-              <p className="max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all text-success">{loginState.user.isCreator ? 'Creator' : 'Viewer'}</p>
+              <p className="max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all text-success self-center">{loginState.user.isCreator ? 'Creator' : 'Viewer'}</p>
 
               <div className="border border-slate-900 w-0"></div>
 
@@ -189,7 +193,7 @@ export default function Layout() {
         <div className="flex-1">
           <button
             type="button"
-            className=""
+            className="hover:bg-gray-300 hover:text-black max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all"
             onClick={() => {
               // change language
               setIsVietnamese(!isVietnamese);
@@ -207,7 +211,7 @@ export default function Layout() {
           context={{
             loginState,
             setLoginState,
-            //
+            // add some more here
           }}
         />
       </main>
