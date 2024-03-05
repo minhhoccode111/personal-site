@@ -66,7 +66,7 @@ export default function Login() {
   }
 
   return (
-    <section className="mx-auto max-w-screen-xl px-4 py-16 my-10 sm:px-6 lg:px-8 shadow-lg shadow-gray-400 rounded-xl bg-[#ffffffcc] text-slate-900">
+    <section className="mx-auto max-w-[60ch] px-4 py-16 my-10 sm:px-6 lg:px-8 shadow-lg shadow-gray-400 rounded-xl bg-[#ffffffcc] text-slate-900">
       {/* background image */}
       <div className="fixed -z-10 top-0 left-0 w-screen h-screen bg-white overflow-hidden">
         {/* <img src="/bg-0.jpg" alt="Background image" className="object-cover border object-center h-full w-full brightness-90" /> */}
@@ -74,7 +74,7 @@ export default function Login() {
       </div>
 
       {/* header and dummy text */}
-      <div className="mx-auto max-w-lg text-center">
+      <div className="mx-auto text-center">
         <h1 className="text-2xl font-bold sm:text-3xl">Login</h1>
 
         <p className="mt-4 text-gray-500">
@@ -82,7 +82,7 @@ export default function Login() {
         </p>
       </div>
 
-      <form onSubmit={handleLoginFormSubmit} className="mx-auto mb-0 mt-8 max-w-md space-y-4">
+      <form onSubmit={handleLoginFormSubmit} className="mx-auto mb-0 mt-8 space-y-4">
         <div className="">
           <label htmlFor="username" className="sr-only">
             Username

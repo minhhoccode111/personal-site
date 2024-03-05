@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { RiArrowUpDoubleLine } from 'react-icons/ri';
 import { IoBagCheckOutline } from 'react-icons/io5';
 import { useFetcher, Link, useLoaderData, useSubmit, useOutletContext } from 'react-router-dom';
+import BackgroundImage2 from './../assets/bg-2.jpg';
 
 export async function loader() {
   return null;
@@ -37,12 +38,17 @@ export default function Blog() {
   }, []);
   return (
     <section className="">
+      {/* background image */}
+      <div className="fixed -z-10 top-0 left-0 w-screen h-screen bg-white overflow-hidden">
+        <img src={BackgroundImage2} alt="Background image" className="object-cover border object-center h-full w-full brightness-90" />
+      </div>
+
       {/* padding element so that the header don't seem like teleport when it sticky to top */}
       <div className={'text-transparent px-8 py-4 border' + ' ' + (isSticky ? '' : 'hidden')}>Made with love by minhhoccode111</div>
       <div
         id="stick-search"
         className={
-          'flex gap-2 sm:gap-3 md:gap-4 items-end justify-center md:justify-end transition-all px-4 py-2 sm:px-8 sm:py-4 bg-white' + ' ' + (isSticky ? 'fixed top-0 left-0 right-0 z-10 shadow-xl' : '')
+          'flex gap-2 sm:gap-3 md:gap-4 items-end justify-center md:justify-end transition-all px-4 py-2 sm:px-8 sm:py-4 bg-white' + ' ' + (isSticky ? 'fixed top-0 left-0 right-0 z-20 shadow-xl' : '')
         }
       >
         {/* divider */}
@@ -126,41 +132,28 @@ export default function Blog() {
         </div>
       </div>
 
-      <div className="p-2 sm:p-4 grid grid-cols-auto-sm sm:grid-cols-auto-md md:grid-cols-auto gap-2 sm:gap-3 md:gap-4 bg-white border border-danger">
+      <ul className="p-2 sm:p-4 w-full max-w-[70ch] mx-auto my-8 rounded-lg">
         {blogPosts.map((post) => {
           return (
-            <div className="text-slate-700 flex flex-col hover:brightness-90 hover:scale-105 transition-all" key={post.id}>
-              <div className="border border-gray-400 border-b-0 w-6 h-6 rounded-t-md self-end grid place-items-center bg-white">
-                {post.inCart ? <IoBagCheckOutline className="text-green-700" /> : ''}
-              </div>
-
-              <Link className="block h-full bg-white" to={`post/${post.id}`}>
-                <div className="flex border border-gray-400 h-full p-1 sm:p-2 gap-2 pr-2">
-                  {/* <div className="w-16 sm:w-20 md:w-24 aspect-2/3">
-                    <img src={post.image} alt={`${post.title} image`} className="block w-full h-full" />
-                  </div> */}
-                  <div className="flex-1 flex flex-col justify-between">
-                    {/* <div className="">
-                      <h2 className="text-sm sm:text-base md:text-lg font-bold">{title}</h2>
-                      <p className="text-gray-500 max-sm:hidden text-xs sm:text-sm md:text-base text-right">{post.author}</p>
-                      <p className="text-gray-500 max-sm:block hidden text-xs sm:text-sm md:text-base text-right">{shortAuthor}</p>
-                      <p className="text-green-700">{book.inCart ? 'Added' : ''}</p>
-                    </div> */}
-                    {/* <div className="self-stretch text-right">
-                      <p className="text-sm max-sm:hidden">
-                        <span className="text-gray-500 decoration-2 line-through">{before} 000</span> <span className="border border-red-500 text-red-500 p-0.5 sm:p-1 rounded ml-1">-{percent}%</span>
-                      </p>
-                      <p className="text-sm font-bold sm:text-base md:text-lg">
-                        {after} 000<span className="underline">đ</span>
-                      </p>
-                    </div> */}
-                  </div>
-                </div>
+            <li className="p-4 my-8 shadow-lg text-gray-900 rounded-md bg-white" key={post.id}>
+              <Link className="block pb-4" to={post.id}>
+                <h3 className="text-link font-bold text-2xl">{post.title.charAt(0).toUpperCase() + post.title.slice(1)}</h3>
               </Link>
-            </div>
+              <div className="flex gap-2 justify-between items-center italic">
+                <p className="">{post.creator.fullname}</p>
+                <div className="flex gap-1 text-xs items-center justify-end">
+                  <p className="">{post.createdAtFormatted}</p>
+
+                  <p>|</p>
+
+                  {/* calculate speed base on content's characters */}
+                  <p className="">{Math.ceil(post.content.length / 5 / 238)} min read</p>
+                </div>
+              </div>
+            </li>
           );
         })}
-      </div>
+      </ul>
 
       {/* a scroll to top button */}
       <div className={'fixed right-2 bottom-2 z-10' + ' ' + (isSticky ? 'block' : 'hidden')}>

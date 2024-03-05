@@ -36,7 +36,7 @@ export default function Router() {
             },
 
             {
-              path: 'blog/:postid',
+              path: ':postid',
               element: <Post />,
               errorElement: <NotFound />,
               loader: postLoader,
@@ -44,7 +44,7 @@ export default function Router() {
             },
 
             // {
-            //   path: 'blog/:postid/view',
+            //   path: ':postid/view',
             //   element: <PostView/>,
             //   loader: postViewLoader
             // }
@@ -78,7 +78,7 @@ export default function Router() {
 
         {
           path: 'logout',
-					element: <Logout />,
+          element: <Logout />,
         },
 
         {

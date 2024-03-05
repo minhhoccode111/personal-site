@@ -82,7 +82,7 @@ export default function Signup() {
   }
 
   return (
-    <section className="mx-auto max-w-screen-xl px-4 py-16 my-10 sm:px-6 lg:px-8 shadow-lg shadow-gray-400 rounded-xl bg-[#ffffffcc] text-slate-900">
+    <section className="mx-auto max-w-[60ch] px-4 py-16 my-10 sm:px-6 lg:px-8 shadow-lg shadow-gray-400 rounded-xl bg-[#ffffffcc] text-slate-900">
       {/* background image */}
       <div className="fixed -z-10 top-0 left-0 w-screen h-screen bg-white overflow-hidden">
         {/* <img src="/bg-0.jpg" alt="Background image" className="object-cover border object-center h-full w-full brightness-90" /> */}
@@ -90,7 +90,7 @@ export default function Signup() {
       </div>
 
       {/* header and dummy text */}
-      <div className="mx-auto max-w-lg text-center">
+      <div className="mx-auto text-center">
         <h1 className="text-2xl font-bold sm:text-3xl">Signup</h1>
 
         <p className="mt-4 text-gray-500">
@@ -99,7 +99,7 @@ export default function Signup() {
         </p>
       </div>
 
-      <form onSubmit={handleSignupFormSubmit} className="mx-auto mb-0 mt-8 max-w-md space-y-12">
+      <form onSubmit={handleSignupFormSubmit} className="mx-auto mb-0 mt-8 space-y-12">
         <div className="mt-10">
           <label htmlFor="fullname" className="sr-only">
             Fullname
