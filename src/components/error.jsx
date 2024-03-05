@@ -1,10 +1,9 @@
 import { RiSignalWifiErrorFill } from 'react-icons/ri';
 
-export default function  Error  () {
+export default function Error({ className = 'text-2xl' }) {
   return (
-    <span className="">
-      <RiSignalWifiErrorFill className="text-2xl" />
+    <span className={className}>
+      <RiSignalWifiErrorFill className="" />
     </span>
   );
-};
-
+}

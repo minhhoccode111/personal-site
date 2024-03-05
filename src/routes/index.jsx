@@ -54,10 +54,10 @@ export default function Index() {
         <div className="flex flex-col gap-4 text-slate-700 p-4 sm:p-6 lg:p-8 backdrop-blur-xs rounded-xl m-4 bg-[#ffffff44]">
           {loadingQuoteError ? (
             // error
-            <Error />
+            <Error className="text-8xl text-danger" />
           ) : isLoadingQuote ? (
             // fetching
-            <Loading />
+            <Loading className="text-8xl text-link" />
           ) : (
             // display fetched data
             <>
