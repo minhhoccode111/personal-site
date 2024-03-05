@@ -19,16 +19,16 @@ export default function Layout() {
   // blog posts to use through out this session
   const [blogPosts, setBlogPosts] = useState([]);
 
+  // counter
+  const [countBlogs, setCountBlogs] = useState(0);
+  const [countProjects, setCountProjects] = useState(0);
+
   // state of blog posts fetching
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
   // error messages to display while fetching blog posts
   const [displayMessages, setDisplayMessages] = useState([]);
-
-  // counter
-  const [countBlogs, setCountBlogs] = useState(0);
-  const [countProjects, setCountProjects] = useState(0);
 
   // login state on local storage
   const [loginState, setLoginState] = useState({});
@@ -56,7 +56,13 @@ export default function Layout() {
           },
         });
 
-        console.log(res.data);
+        // set available blogs
+        setBlogPosts(() => res?.data?.posts);
+
+        // set count blogs
+        setCountBlogs(() => res?.data?.posts?.length);
+
+        // console.log(res.data);
       } catch (err) {
         console.log(err.response);
         if (err.response.status === 400) {
@@ -71,6 +77,7 @@ export default function Layout() {
       }
     }
     tmp();
+    // only fetch again if user log in or out
   }, [loginState]);
 
   return (
@@ -211,7 +218,7 @@ export default function Layout() {
           context={{
             loginState,
             setLoginState,
-            // add some more here
+            blogPosts,
           }}
         />
       </main>

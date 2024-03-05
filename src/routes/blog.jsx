@@ -1,22 +1,26 @@
 import { useEffect, useState } from 'react';
 import { RiArrowUpDoubleLine } from 'react-icons/ri';
 import { IoBagCheckOutline } from 'react-icons/io5';
-import { useFetcher, Link, useLoaderData, useSubmit } from 'react-router-dom';
-// import { getCategory, sortBooks, searchBooks } from '../methods/books';
+import { useFetcher, Link, useLoaderData, useSubmit, useOutletContext } from 'react-router-dom';
 
-export const loader = async () => {
+export async function loader() {
   return null;
-};
+}
 
-export const action = async () => {
+export async function action() {
   return null;
-};
+}
 
 export default function Blog() {
-  const { books } = useLoaderData();
-  const fetcher = useFetcher();
-  const submit = useSubmit();
+  // navigate with form
+  const [fetcher, submit] = [useFetcher(), useSubmit()];
+
+  // sticky search header
   const [isSticky, setIsSticky] = useState(false);
+
+  // blog posts from Layout
+  const { blogPosts } = useOutletContext();
+
   useEffect(() => {
     // make search bar stick to the top when start scrolling
     const stickSearch = document.getElementById('stick-search');
@@ -43,6 +47,8 @@ export default function Blog() {
       >
         {/* divider */}
         <div className="hidden md:block border-b-8 border-sky-500 flex-1 scale-x-150 origin-right"></div>
+
+        {/* search field */}
         <div className="max-sm:w-1/3">
           <fetcher.Form method="get" role="search" className="">
             <label
@@ -56,6 +62,7 @@ export default function Blog() {
                 type="search"
                 name="q"
                 onChange={(e) => {
+                  // submit search query on type
                   submit(e.target.form);
                 }}
               />
@@ -66,6 +73,8 @@ export default function Blog() {
             </label>
           </fetcher.Form>
         </div>
+
+        {/* filter category */}
         <div className="">
           <fetcher.Form method="get" className="flex gap-2 sm:gap-3 md:gap-4">
             <div className="">
@@ -77,27 +86,19 @@ export default function Blog() {
                 name="category"
                 id="filter-by"
                 className="mt-1.5 w-full rounded-lg border-gray-300 bg-white border shadow-sm focus-within:border-sky-500 focus-within:ring-1 focus-within:ring-sky-500 text-gray-700 sm:text-sm md:text-base px-2 py-1 sm:px-3 sm:py-1.5"
+                // submit query on change
                 onChange={(e) => {
                   submit(e.target.form);
                 }}
               >
                 <option value="all">All</option>
-                <option value="tam-ly">Tâm lý</option>
-                <option value="phat-trien-ban-than">Phát triển bản thân</option>
-                <option value="tieu-thuyet">Tiểu thuyết</option>
-                <option value="kien-thuc-tong-hop">Kiến thức tổng hợp</option>
-                <option value="van-hoc">Văn học</option>
-                <option value="triet-hoc">Triết học</option>
-                <option value="suc-khoe">Sức khỏe</option>
-                <option value="ky-nang-song">Kỹ năng sống</option>
-                <option value="marketing-ban-hang">Marketing - Bán hàng</option>
-                <option value="truyen">Truyện</option>
-                <option value="thuong-thuc">Thường thức</option>
-                <option value="thieu-nhi">Thiếu nhi</option>
-                <option value="nuoi-day-con">Nuôi dạy con</option>
-                <option value="trinh-tham">Trinh thám</option>
-                <option value="ky-nang-lam-viec">Kỹ năng làm việc</option>
-                <option value="lich-su">Lịch sử</option>
+                <option value="backend">Back-end</option>
+                <option value="frontend">Front-end</option>
+                <option value="security">Security</option>
+                <option value="database">Database</option>
+                <option value="network">Network</option>
+                <option value="dsa">Data Structures & Algorithms</option>
+                <option value="os">Operating System</option>
               </select>
             </div>
 
@@ -107,6 +108,7 @@ export default function Blog() {
                 Sort{' '}
               </label>
               <select
+                // submit query on change
                 onChange={(e) => {
                   submit(e.target.form);
                 }}
@@ -114,49 +116,44 @@ export default function Blog() {
                 id="sort-by"
                 className="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm md:text-base px-2 py-1 sm:px-3 sm:py-1.5 bg-white border shadow-sm focus-within:border-sky-500 focus-within:ring-1 focus-within:ring-sky-500 "
               >
-                <option value="a-z"> a-z </option>
-                <option value="z-a"> z-a </option>
-                <option value="0-9"> 1-9 </option>
-                <option value="9-0"> 9-1 </option>
+                <option value="newest">Newest</option>
+                <option value="oldest">Oldest</option>
+                <option value="most-like">Most like</option>
+                <option value="most-comment">Most comment</option>
               </select>
             </div>
           </fetcher.Form>
         </div>
       </div>
 
-      <div className="p-2 sm:p-4 grid grid-cols-auto-sm sm:grid-cols-auto-md md:grid-cols-auto gap-2 sm:gap-3 md:gap-4 bg-white">
-        {books.map((book) => {
-          const percent = book.sale;
-          const before = Math.round((book.price * (100 + percent)) / 100);
-          const after = book.price;
-          const title = book.title.length > 30 ? book.title.slice(0, 28) + '...' : book.title;
-          const shortAuthor = book.author.length > 20 ? book.author.slice(0, 18) + '...' : book.author;
+      <div className="p-2 sm:p-4 grid grid-cols-auto-sm sm:grid-cols-auto-md md:grid-cols-auto gap-2 sm:gap-3 md:gap-4 bg-white border border-danger">
+        {blogPosts.map((post) => {
           return (
-            <div className="text-slate-700 flex flex-col hover:brightness-90 hover:scale-105 transition-all" key={book.id}>
+            <div className="text-slate-700 flex flex-col hover:brightness-90 hover:scale-105 transition-all" key={post.id}>
               <div className="border border-gray-400 border-b-0 w-6 h-6 rounded-t-md self-end grid place-items-center bg-white">
-                {book.inCart ? <IoBagCheckOutline className="text-green-700" /> : ''}
+                {post.inCart ? <IoBagCheckOutline className="text-green-700" /> : ''}
               </div>
 
-              <Link className="block h-full bg-white" to={`book/${book.id}`}>
+              <Link className="block h-full bg-white" to={`post/${post.id}`}>
                 <div className="flex border border-gray-400 h-full p-1 sm:p-2 gap-2 pr-2">
-                  <div className="w-16 sm:w-20 md:w-24 aspect-2/3">
-                    <img src={book.image} alt={`${book.title} image`} className="block w-full h-full" />
-                  </div>
+                  {/* <div className="w-16 sm:w-20 md:w-24 aspect-2/3">
+                    <img src={post.image} alt={`${post.title} image`} className="block w-full h-full" />
+                  </div> */}
                   <div className="flex-1 flex flex-col justify-between">
-                    <div className="">
+                    {/* <div className="">
                       <h2 className="text-sm sm:text-base md:text-lg font-bold">{title}</h2>
-                      <p className="text-gray-500 max-sm:hidden text-xs sm:text-sm md:text-base text-right">{book.author}</p>
+                      <p className="text-gray-500 max-sm:hidden text-xs sm:text-sm md:text-base text-right">{post.author}</p>
                       <p className="text-gray-500 max-sm:block hidden text-xs sm:text-sm md:text-base text-right">{shortAuthor}</p>
-                      {/* <p className="text-green-700">{book.inCart ? 'Added' : ''}</p> */}
-                    </div>
-                    <div className="self-stretch text-right">
+                      <p className="text-green-700">{book.inCart ? 'Added' : ''}</p>
+                    </div> */}
+                    {/* <div className="self-stretch text-right">
                       <p className="text-sm max-sm:hidden">
                         <span className="text-gray-500 decoration-2 line-through">{before} 000</span> <span className="border border-red-500 text-red-500 p-0.5 sm:p-1 rounded ml-1">-{percent}%</span>
                       </p>
                       <p className="text-sm font-bold sm:text-base md:text-lg">
                         {after} 000<span className="underline">đ</span>
                       </p>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </Link>
@@ -164,6 +161,8 @@ export default function Blog() {
           );
         })}
       </div>
+
+      {/* a scroll to top button */}
       <div className={'fixed right-2 bottom-2 z-10' + ' ' + (isSticky ? 'block' : 'hidden')}>
         <button
           onClick={() => {
