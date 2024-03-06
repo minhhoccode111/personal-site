@@ -3,6 +3,7 @@ import { MdKeyboardBackspace } from 'react-icons/md';
 import BackgroundImage2 from './../assets/bg-2.jpg';
 import { useState, useEffect } from 'react';
 import Loading from '../components/loading';
+import Error from '../components/error';
 import axios from 'axios';
 
 export async function loader({ params }) {
@@ -47,7 +48,7 @@ export default function Post() {
         });
 
         // store data
-        setPostComments(() => res?.date?.comments);
+        setPostComments(() => res?.data?.comments);
 
         console.log(res.data.comments);
       } catch (err) {
@@ -80,58 +81,59 @@ export default function Post() {
       {post !== undefined ? (
         <>
           {/* display post */}
-          <article className="p-2 sm:p-4 w-full max-w-[70ch] mx-auto rounded-lg">
-            <div className="p-4 my-4 shadow-lg text-gray-900 rounded-md bg-white">
-              {/* post header */}
-              <header className="">
-                <h3 className="text-warn font-bold text-2xl pb-4">{post.title.charAt(0).toUpperCase() + post.title.slice(1)}</h3>
-              </header>
+          <article className="sm:p-8 w-full max-w-[70ch] mx-auto rounded-lg p-4 my-4 shadow-lg text-gray-900 bg-white">
+            {/* post header */}
+            <header className="">
+              <h3 className="text-warn font-bold text-3xl pb-4">{post.title.charAt(0).toUpperCase() + post.title.slice(1)}</h3>
+            </header>
 
-              {/* info */}
-              <div className="flex gap-2 justify-between items-center italic">
-                <h4 className="">{post.creator.fullname}</h4>
-                <div className="flex gap-1 text-xs items-center justify-end">
-                  <p className="">{post.createdAtFormatted}</p>
+            {/* info */}
+            <div className="flex gap-2 justify-between items-center italic">
+              <h4 className="">{post.creator.fullname}</h4>
+              <div className="flex gap-1 text-xs items-center justify-end">
+                <p className="">{post.createdAtFormatted}</p>
 
-                  <p>|</p>
+                <p>|</p>
 
-                  {/* calculate speed base on content's characters */}
-                  <p className="">{Math.ceil(post.content.length / 5 / 238)} min read</p>
-                </div>
+                {/* calculate speed base on content's characters */}
+                <p className="">{Math.ceil(post.content.length / 5 / 238)} min read</p>
               </div>
+            </div>
 
-              <hr className="my-4" />
+            <hr className="my-4" />
 
-              {/* post content */}
-              <div className="">
-                <p className="">{post.content}</p>
-              </div>
+            {/* post content */}
+            <div className="">
+              <p className="">{post.content}</p>
             </div>
           </article>
 
           {/* display comments */}
-          <article className="p-2 sm:p-4 w-full max-w-[70ch] mx-auto rounded-lg">
-            <div className="p-4 shadow-lg text-gray-900 rounded-md bg-white">
-              {/* post header */}
-              <header className="">
-                <h3 className="text-warn font-bold text-2xl pb-4">Comments</h3>
-              </header>
+          <article className="sm:p-8 w-full max-w-[70ch] mx-auto rounded-lg p-4 my-4 shadow-lg text-gray-900 bg-white">
+            {/* post header */}
 
-              {postComments && postComments.length > 0 ? (
-                <ul className="">
-                  {postComments?.map((comment) => (
-                    <li key={comment.id}>
-                      <hr className="my-2" />
-                      <div className="">
-                        <p className="">There are comments here</p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+            <header className="flex gap-2 items-center justify-between">
+              <h3 className="text-warn font-bold text-xl pb-4">Comments</h3>
+              <p className="italic">{postComments.length} comments</p>
+            </header>
+
+            <ul className="">
+              {postComments !== undefined && postComments.length > 0 ? (
+                postComments.map((comment) => (
+                  <li className="rounded-xl bg-fuchsia-50 p-4 my-4" key={comment.id}>
+                    <h4 className="text-lg">{comment?.creator?.fullname}</h4>
+                    <p className="">{comment?.content}</p>
+                    <p className="text-xs italic">{comment?.createdAtFormatted}</p>
+
+                    {/* <div className="">No comments yet</div> */}
+                  </li>
+                ))
               ) : (
-                'No Comments Found'
+                <li className="rounded-xl bg-fuchsia-50 p-4 my-4">
+                  <h4 className="text-lg">No comments yet</h4>
+                </li>
               )}
-            </div>
+            </ul>
           </article>
         </>
       ) : (
