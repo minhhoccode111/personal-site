@@ -12,7 +12,7 @@ export default function Logout() {
 
     setLoginState(() => ({}));
 
-    navigate('/');
+    navigate('/blog');
   });
 
   return <></>;

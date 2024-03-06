@@ -1,8 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { RiArrowUpDoubleLine } from 'react-icons/ri';
-import { IoBagCheckOutline } from 'react-icons/io5';
-import { useFetcher, Link, useLoaderData, useSubmit, useOutletContext } from 'react-router-dom';
+import { useFetcher, Link, useSubmit, useOutletContext, useNavigate } from 'react-router-dom';
 import BackgroundImage2 from './../assets/bg-2.jpg';
+import { SubmitButton } from '../components/button';
+import PostComponent from '../components/post-component';
+import axios from 'axios';
+import Loading from '../components/loading';
+import Error from '../components/error';
 
 export async function loader() {
   return null;
@@ -16,11 +20,57 @@ export default function Blog() {
   // navigate with form
   const [fetcher, submit] = [useFetcher(), useSubmit()];
 
+  const navigate = useNavigate();
+
+  // keep track of 3 textarea
+  const titleRef = useRef(null);
+  const contentRef = useRef(null);
+  const publishedRef = useRef(null);
+
   // sticky search header
   const [isSticky, setIsSticky] = useState(false);
 
   // blog posts from Layout
-  const { blogPosts } = useOutletContext();
+  const { blogPosts, setBlogPosts, loginState } = useOutletContext();
+
+  // fetch states
+  const [isLoadingPosts, setIsLoadingPosts] = useState(false);
+  const [isErrorPosts, setIsErrorPosts] = useState(false);
+
+  // handle create new post submit
+  async function handleCreatePostSubmit(e) {
+    e.preventDefault();
+
+    setIsLoadingPosts(() => true);
+    try {
+      const res = await axios({
+        url: import.meta.env.VITE_API_ORIGIN + '/posts',
+        method: 'post',
+        headers: {
+          Authorization: `Bearer ${loginState?.token}`,
+        },
+        data: {
+          title: titleRef.current.value,
+          content: contentRef.current.value,
+          published: publishedRef.current.value === 'true',
+        },
+      });
+
+      titleRef.current.value = '';
+      contentRef.current.value = '';
+      publishedRef.current.value = '';
+
+      // console.log(res.data);
+
+      setBlogPosts((postComments) => [res?.data?.post, ...postComments]);
+    } catch (err) {
+      // console.log(err.response);
+      // if not a 400 (data invalid) error, stop user from send request again
+      if (err.response.status !== 400) setIsErrorPosts(() => true);
+    } finally {
+      setIsLoadingPosts(() => false);
+    }
+  }
 
   useEffect(() => {
     // make search bar stick to the top when start scrolling
@@ -132,38 +182,60 @@ export default function Blog() {
         </div>
       </div>
 
-      <ul className="p-2 sm:p-4 w-full max-w-[70ch] mx-auto my-8 rounded-lg">
-        {blogPosts.map((post) => {
-          return (
-            <li className="p-4 my-8 shadow-lg text-gray-900 rounded-md bg-white" key={post.id}>
-              <Link className="block pb-4" to={post.id}>
-                <h3
-                  className="text-link font-bold text-2xl"
-                  dangerouslySetInnerHTML={{
-                    __html: post.title.length < 100 ? post.title.charAt(0).toUpperCase() + post.title.slice(1) : post.title.charAt(0).toUpperCase() + post.title.slice(1, 98) + '...',
-                  }}
-                ></h3>
-              </Link>
-              <div className="flex gap-2 justify-between items-center italic">
-                <p
-                  dangerouslySetInnerHTML={{
-                    __html: post?.creator?.fullname,
-                  }}
-                  className=""
-                ></p>
-                <div className="flex gap-1 text-xs items-center justify-end">
-                  <p className="">{post.createdAtFormatted}</p>
+      <div className="p-2 sm:p-4 w-full max-w-[70ch] mx-auto my-8 rounded-lg">
+        <ul className="">
+          {blogPosts.map((post) => {
+            return <PostComponent key={post.id} post={post} />;
+          })}
+        </ul>
 
-                  <p>|</p>
+        <div className="p-4 rounded-xl bg-gray-100 my-4">
+          <h4 className="text-lg font-bold text-link my-2">Create a new post</h4>
 
-                  {/* calculate speed base on content's characters */}
-                  <p className="">{Math.ceil(post.content.length / 5 / 238)} min read</p>
-                </div>
+          {loginState?.user?.isCreator ? (
+            <form onSubmit={handleCreatePostSubmit}>
+              <label htmlFor="title" className="block text-sm font-medium text-gray-900">
+                {' '}
+                Title{' '}
+              </label>
+              <textarea ref={titleRef} name="title" id="title" className="w-full box-border rounded-lg p-2 my-2" placeholder="Title..." required></textarea>
+
+              <label htmlFor="content" className="block text-sm font-medium text-gray-900">
+                {' '}
+                Content{' '}
+              </label>
+              <textarea ref={contentRef} name="content" id="content" className="w-full box-border rounded-lg p-2 my-2" placeholder="Content..." required></textarea>
+
+              <label htmlFor="published" className="block text-sm font-medium text-gray-900">
+                {' '}
+                Published{' '}
+              </label>
+              <select ref={publishedRef} name="published" id="published" className="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm p-2 bg-white">
+                {/* if not choose then default will be false because !== 'true' */}
+                <option value="">Please choose</option>
+                <option value="true">True</option>
+                <option value="false">False</option>
+              </select>
+
+              <div className="my-2 flex gap-2 justify-end items-center">
+                {isErrorPosts ? (
+                  <SubmitButton isDisable={true}>
+                    <Error />
+                  </SubmitButton>
+                ) : isLoadingPosts ? (
+                  <SubmitButton isDisable={true}>
+                    <Loading />
+                  </SubmitButton>
+                ) : (
+                  <SubmitButton isDisable={false}>Post</SubmitButton>
+                )}
               </div>
-            </li>
-          );
-        })}
-      </ul>
+            </form>
+          ) : (
+            <p className="">Please consider log in as creator to create a post</p>
+          )}
+        </div>
+      </div>
 
       {/* a scroll to top button */}
       <div className={'fixed right-2 bottom-2 z-10' + ' ' + (isSticky ? 'block' : 'hidden')}>

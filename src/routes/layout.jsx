@@ -219,6 +219,7 @@ export default function Layout() {
             loginState,
             setLoginState,
             blogPosts,
+            setBlogPosts,
           }}
         />
       </main>

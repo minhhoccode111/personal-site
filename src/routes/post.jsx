@@ -21,7 +21,7 @@ export default function Post() {
   const navigate = useNavigate();
 
   // keep track of textarea so we don't have to search dom tree each time submit
-  const textareaRef = useRef(null);
+  const contentRef = useRef(null);
 
   // outlet context states
   const { blogPosts, loginState } = useOutletContext();
@@ -79,10 +79,10 @@ export default function Post() {
         headers: {
           Authorization: `Bearer ${loginState?.token}`,
         },
-        data: { content: textareaRef.current.value },
+        data: { content: contentRef.current.value },
       });
 
-      textareaRef.current.value = '';
+      contentRef.current.value = '';
 
       // console.log(res.data);
 
@@ -182,13 +182,22 @@ export default function Post() {
             <div className="p-4 rounded-xl bg-fuchsia-50 my-4">
               <h4 className="text-lg font-bold text-warn my-2">Post a comment</h4>
 
-              <form onSubmit={handleCreateCommentSubmit}>
-                <textarea ref={textareaRef} name="content" id="" className="w-full box-border rounded-lg p-2 my-2" placeholder="Share your thoughts"></textarea>
+              {loginState.user !== undefined ? (
+                <form onSubmit={handleCreateCommentSubmit}>
+                  <textarea ref={contentRef} name="content" id="" className="w-full box-border rounded-lg p-2 my-2" placeholder="Share your thoughts"></textarea>
 
-                <div className="my-2 flex justify-end">
-                  <SubmitButton isDisable={false}>Post</SubmitButton>
+                  <div className="my-2 flex gap-2 justify-end items-center">
+                    <SubmitButton isDisable={false}>Post</SubmitButton>
+                  </div>
+                </form>
+              ) : (
+                <div className="my-2 flex gap-2 items-center justify-between">
+                  <p className="">Please consider login to post a comment</p>
+                  <Link className="inline-block rounded-lg bg-blue-500 px-5 py-3 text-sm font-medium text-white transition-all hover:scale-110 hover:shadow hover:shadow-gray-400" to="/login">
+                    Login
+                  </Link>
                 </div>
-              </form>
+              )}
             </div>
           </article>
         </>
