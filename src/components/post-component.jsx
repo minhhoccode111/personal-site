@@ -1,7 +1,9 @@
-import { Link } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 export default function PostComponent({ post }) {
+  const { loginState } = useOutletContext();
+
   return (
     <li className="p-4 my-8 shadow-lg text-gray-900 rounded-md bg-white" key={post.id}>
       <Link className="block pb-4" to={post.id}>
@@ -26,6 +28,13 @@ export default function PostComponent({ post }) {
 
           {/* calculate speed base on content's characters */}
           <p className="">{Math.ceil(post.content.length / 5 / 238)} min read</p>
+
+          {loginState?.user?.isCreator && (
+            <>
+              <p>|</p>
+              <p className="">{post.published ? 'Published' : 'Unpublished'}</p>
+            </>
+          )}
         </div>
       </div>
     </li>

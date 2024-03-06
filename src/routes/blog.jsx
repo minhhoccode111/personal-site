@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { RiArrowUpDoubleLine } from 'react-icons/ri';
-import { useFetcher, Link, useSubmit, useOutletContext, useNavigate } from 'react-router-dom';
+import { useFetcher, useSubmit, useOutletContext } from 'react-router-dom';
 import BackgroundImage2 from './../assets/bg-2.jpg';
 import { SubmitButton } from '../components/button';
 import PostComponent from '../components/post-component';
@@ -19,8 +19,6 @@ export async function action() {
 export default function Blog() {
   // navigate with form
   const [fetcher, submit] = [useFetcher(), useSubmit()];
-
-  const navigate = useNavigate();
 
   // keep track of 3 textarea
   const titleRef = useRef(null);

@@ -6,7 +6,7 @@ import Loading from '../components/loading';
 import Error from '../components/error';
 import { SubmitButton } from '../components/button';
 import axios from 'axios';
-import Comment from '../components/comment';
+import CommentComponent from '../components/comment-component';
 
 export async function loader({ params }) {
   const id = params.postid;
@@ -137,6 +137,13 @@ export default function Post() {
 
                 {/* calculate speed base on content's characters */}
                 <p className="">{Math.ceil(post.content.length / 5 / 238)} min read</p>
+
+                {loginState?.user?.isCreator && (
+                  <>
+                    <p>|</p>
+                    <p className="">{post.published ? 'Published' : 'Unpublished'}</p>
+                  </>
+                )}
               </div>
             </div>
 
@@ -160,7 +167,7 @@ export default function Post() {
             <ul className="">
               {postComments !== undefined && postComments.length > 0 ? (
                 postComments.map((comment) => (
-                  <Comment key={comment.id} comment={comment} />
+                  <CommentComponent key={comment.id} comment={comment} />
 
                   // <li className="rounded-xl bg-fuchsia-50 p-4 my-4" key={comment.id}>
                   //   <h4 className="text-lg">{comment?.creator?.fullname}</h4>

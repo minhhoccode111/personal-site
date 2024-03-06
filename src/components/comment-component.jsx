@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 
-export default function Comment({ comment }) {
-  const [isEditing, setIsEditing] = useState();
+export default function CommentComponent({ comment }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   return (
     <li className="rounded-xl bg-fuchsia-50 p-4 my-4">
@@ -18,6 +19,6 @@ export default function Comment({ comment }) {
   );
 }
 
-Comment.propTypes = {
+CommentComponent.propTypes = {
   comment: PropTypes.object.isRequired,
 };
