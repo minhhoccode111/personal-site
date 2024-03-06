@@ -137,10 +137,20 @@ export default function Blog() {
           return (
             <li className="p-4 my-8 shadow-lg text-gray-900 rounded-md bg-white" key={post.id}>
               <Link className="block pb-4" to={post.id}>
-                <h3 className="text-link font-bold text-2xl">{post.title.charAt(0).toUpperCase() + post.title.slice(1)}</h3>
+                <h3
+                  className="text-link font-bold text-2xl"
+                  dangerouslySetInnerHTML={{
+                    __html: post.title.length < 100 ? post.title.charAt(0).toUpperCase() + post.title.slice(1) : post.title.charAt(0).toUpperCase() + post.title.slice(1, 98) + '...',
+                  }}
+                ></h3>
               </Link>
               <div className="flex gap-2 justify-between items-center italic">
-                <p className="">{post.creator.fullname}</p>
+                <p
+                  dangerouslySetInnerHTML={{
+                    __html: post?.creator?.fullname,
+                  }}
+                  className=""
+                ></p>
                 <div className="flex gap-1 text-xs items-center justify-end">
                   <p className="">{post.createdAtFormatted}</p>
 

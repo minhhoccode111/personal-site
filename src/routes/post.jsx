@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import Loading from '../components/loading';
 import Error from '../components/error';
 import axios from 'axios';
+import Comment from '../components/comment';
 
 export async function loader({ params }) {
   const id = params.postid;
@@ -64,7 +65,7 @@ export default function Post() {
   }, [post, loginState]);
 
   return (
-    <section className="p-2 sm:p-4">
+    <section className="p-2 sm:p-4 text-gray-900 ">
       {/* background image */}
       <div className="fixed -z-10 top-0 left-0 w-screen h-screen bg-white overflow-hidden">
         <img src={BackgroundImage2} alt="Background image" className="object-cover border object-center h-full w-full brightness-90" />
@@ -81,15 +82,23 @@ export default function Post() {
       {post !== undefined ? (
         <>
           {/* display post */}
-          <article className="sm:p-8 w-full max-w-[70ch] mx-auto rounded-lg p-4 my-4 shadow-lg text-gray-900 bg-white">
+          <article className="sm:p-8 w-full max-w-[70ch] mx-auto rounded-lg p-4 my-4 shadow-lg bg-white">
             {/* post header */}
             <header className="">
-              <h3 className="text-warn font-bold text-3xl pb-4">{post.title.charAt(0).toUpperCase() + post.title.slice(1)}</h3>
+              <h3
+                className="text-warn font-bold text-3xl pb-4"
+                // unescaped post title
+                dangerouslySetInnerHTML={{
+                  __html: post.title.charAt(0).toUpperCase() + post.title.slice(1),
+                }}
+              ></h3>
             </header>
 
             {/* info */}
             <div className="flex gap-2 justify-between items-center italic">
-              <h4 className="">{post.creator.fullname}</h4>
+              {/* unescaped post creator fullname */}
+              <h4 className="" dangerouslySetInnerHTML={{ __html: post.creator.fullname }}></h4>
+
               <div className="flex gap-1 text-xs items-center justify-end">
                 <p className="">{post.createdAtFormatted}</p>
 
@@ -104,7 +113,7 @@ export default function Post() {
 
             {/* post content */}
             <div className="">
-              <p className="">{post.content}</p>
+              <p className="" dangerouslySetInnerHTML={{ __html: post.content }}></p>
             </div>
           </article>
 
