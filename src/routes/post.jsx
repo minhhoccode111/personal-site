@@ -1,9 +1,10 @@
 import { useLoaderData, Link, Form, useNavigate, useOutletContext } from 'react-router-dom';
 import { MdKeyboardBackspace } from 'react-icons/md';
 import BackgroundImage2 from './../assets/bg-2.jpg';
-import { useState, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Loading from '../components/loading';
 import Error from '../components/error';
+import { SubmitButton } from '../components/button';
 import axios from 'axios';
 import Comment from '../components/comment';
 
@@ -18,6 +19,9 @@ export async function action() {
 
 export default function Post() {
   const navigate = useNavigate();
+
+  // keep track of textarea so we don't have to search dom tree each time submit
+  const textareaRef = useRef(null);
 
   // outlet context states
   const { blogPosts, loginState } = useOutletContext();
@@ -63,6 +67,33 @@ export default function Post() {
     // only call when post valid
     if (post) tmp();
   }, [post, loginState]);
+
+  async function handleCreateCommentSubmit(e) {
+    e.preventDefault();
+
+    setIsLoadingComments(() => true);
+    try {
+      const res = await axios({
+        url: import.meta.env.VITE_API_ORIGIN + post?.url + '/comments',
+        method: 'post',
+        headers: {
+          Authorization: `Bearer ${loginState?.token}`,
+        },
+        data: { content: textareaRef.current.value },
+      });
+
+      textareaRef.current.value = '';
+
+      // console.log(res.data);
+
+      setPostComments((postComments) => [...postComments, res?.data?.comment]);
+    } catch (err) {
+      // a 404
+      setIsErrorComments(() => true);
+    } finally {
+      setIsLoadingComments(() => false);
+    }
+  }
 
   return (
     <section className="p-2 sm:p-4 text-gray-900 ">
@@ -129,13 +160,15 @@ export default function Post() {
             <ul className="">
               {postComments !== undefined && postComments.length > 0 ? (
                 postComments.map((comment) => (
-                  <li className="rounded-xl bg-fuchsia-50 p-4 my-4" key={comment.id}>
-                    <h4 className="text-lg">{comment?.creator?.fullname}</h4>
-                    <p className="">{comment?.content}</p>
-                    <p className="text-xs italic">{comment?.createdAtFormatted}</p>
+                  <Comment key={comment.id} comment={comment} />
 
-                    {/* <div className="">No comments yet</div> */}
-                  </li>
+                  // <li className="rounded-xl bg-fuchsia-50 p-4 my-4" key={comment.id}>
+                  //   <h4 className="text-lg">{comment?.creator?.fullname}</h4>
+                  //   <p className="">{comment?.content}</p>
+                  //   <p className="text-xs italic">{comment?.createdAtFormatted}</p>
+
+                  //   {/* <div className="">No comments yet</div> */}
+                  // </li>
                 ))
               ) : (
                 <li className="rounded-xl bg-fuchsia-50 p-4 my-4">
@@ -143,6 +176,20 @@ export default function Post() {
                 </li>
               )}
             </ul>
+
+            {/* TODO not allow unauthenticated users to comment */}
+            {/* post new comment form */}
+            <div className="p-4 rounded-xl bg-fuchsia-50 my-4">
+              <h4 className="text-lg font-bold text-warn my-2">Post a comment</h4>
+
+              <form onSubmit={handleCreateCommentSubmit}>
+                <textarea ref={textareaRef} name="content" id="" className="w-full box-border rounded-lg p-2 my-2" placeholder="Share your thoughts"></textarea>
+
+                <div className="my-2 flex justify-end">
+                  <SubmitButton isDisable={false}>Post</SubmitButton>
+                </div>
+              </form>
+            </div>
           </article>
         </>
       ) : (
