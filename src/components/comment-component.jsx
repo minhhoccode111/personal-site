@@ -1,11 +1,10 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { IoIosTrash, IoIosCheckmark, IoIosClose, IoIosCreate } from 'react-icons/io';
 import axios from 'axios';
 // import Loading from './loading';
 // import Error from './error';
 import { useOutletContext } from 'react-router-dom';
-import { v4 as uuid } from 'uuid';
 
 export default function CommentComponent({ comment, setWillFetchComments }) {
   const { loginState } = useOutletContext();
@@ -16,15 +15,48 @@ export default function CommentComponent({ comment, setWillFetchComments }) {
   // const [isCommentLoading, setIsCommentLoading] = useState(false);
   // const [isCommentError, setIsCommentError] = useState(false);
 
+  const contentRef = useRef(null);
+
+  async function handleEditCommentSubmit(e) {
+    e.preventDefault();
+
+    try {
+      await axios({
+        method: 'put',
+        url: import.meta.env.VITE_API_ORIGIN + comment.url,
+        headers: {
+          Authorization: `Bearer ${loginState.token}`,
+        },
+        data: {
+          content: contentRef.current.value,
+        },
+      });
+
+      contentRef.current.value = '';
+
+      // console.log(res.data);
+
+      // flip the switch to refetch
+      setWillFetchComments((current) => !current);
+    } catch (err) {
+      console.log(err.response);
+
+      // setIsCommentError(true);
+    } finally {
+      setIsEditing(false);
+      // setIsCommentLoading(false);
+    }
+  }
+
   async function handleDeleteCommentSubmit(e) {
     e.preventDefault();
 
     // setIsCommentLoading(true);
 
-    console.log(import.meta.env.VITE_API_ORIGIN + comment.url);
+    // console.log(import.meta.env.VITE_API_ORIGIN + comment.url);
 
     try {
-      const res = await axios({
+      await axios({
         method: 'delete',
         url: import.meta.env.VITE_API_ORIGIN + comment.url,
         headers: {
@@ -32,7 +64,7 @@ export default function CommentComponent({ comment, setWillFetchComments }) {
         },
       });
 
-      console.log(res.data);
+      // console.log(res.data);
 
       // flip the switch to refetch
       setWillFetchComments((current) => !current);
@@ -48,16 +80,32 @@ export default function CommentComponent({ comment, setWillFetchComments }) {
   let jsx;
 
   if (isEditing) {
-    //
+    jsx = (
+      <>
+        <p className="">Edit this comment?</p>
+
+        {/* close confirm form */}
+        <button className="text-danger" onClick={() => setIsEditing(false)}>
+          <IoIosClose className="text-6xl sm:text-2xl md:text-3xl" />
+        </button>
+
+        {/* submit edit form */}
+        <button type="submit" className="text-success">
+          <IoIosCheckmark className="text-6xl sm:text-2xl md:text-3xl" />
+        </button>
+      </>
+    );
   } else if (isDeleting) {
     jsx = (
       <>
-        <p className="">Are you sure you want to delete this comment?</p>
+        <p className="">Delete this comment?</p>
 
+        {/* close confirm form */}
         <button className="text-danger" onClick={() => setIsDeleting(false)}>
           <IoIosClose className="text-6xl sm:text-2xl md:text-3xl" />
         </button>
 
+        {/* submit delete form */}
         <form className="grid place-items-center" onSubmit={handleDeleteCommentSubmit}>
           <button type="submit" className="text-success">
             <IoIosCheckmark className="text-6xl sm:text-2xl md:text-3xl" />
@@ -72,12 +120,12 @@ export default function CommentComponent({ comment, setWillFetchComments }) {
     if (comment?.canEdit && comment?.canDelete) {
       jsx = (
         <>
-          {/* display a edit button */}
+          {/* display edit button if can edit */}
           <button className="text-warn" onClick={() => setIsEditing(true)}>
             <IoIosCreate className="text-6xl sm:text-2xl md:text-3xl" />
           </button>
 
-          {/*  display a delete button */}
+          {/*  display delete button if can delete */}
           <button className="text-danger" onClick={() => setIsDeleting(true)}>
             <IoIosTrash className="text-6xl sm:text-2xl md:text-3xl" />
           </button>
@@ -85,12 +133,14 @@ export default function CommentComponent({ comment, setWillFetchComments }) {
       );
     } else if (comment?.canEdit) {
       jsx = (
+        // only can edit
         <button className="text-warn" onClick={() => setIsEditing(true)}>
           <IoIosCreate className="text-6xl sm:text-2xl md:text-3xl" />
         </button>
       );
-    } else {
+    } else if (comment?.canDelete) {
       jsx = (
+        // only can delete
         <button className="text-danger" onClick={() => setIsDeleting(true)}>
           <IoIosTrash className="text-6xl sm:text-2xl md:text-3xl" />
         </button>
@@ -98,18 +148,38 @@ export default function CommentComponent({ comment, setWillFetchComments }) {
     }
   }
 
-  return (
+  return !isEditing ? (
+    // display normal when to editing
     <>
       {/* unescaped comment creator fullname */}
       <h4 className="text-lg text-link cursor-pointer hover:underline" dangerouslySetInnerHTML={{ __html: comment?.creator?.fullname }}></h4>
 
       {/* unescaped comment content */}
       <p className="" dangerouslySetInnerHTML={{ __html: comment?.content }}></p>
-      <p className="text-xs italic">{comment?.createdAtFormatted}</p>
 
-      {/* delete and edit buttons */}
+      {/* display comment's time created and time last modified */}
+      <p className="text-xs italic inline-block pr-1">Created: {comment?.createdAtFormatted} </p>
+      {comment.lastModified && <p className="text-xs italic inline-block"> | Edited: {comment?.lastModifiedFormatted}</p>}
+
+      {/* delete and edit buttons or confirm and cancel button */}
       <div className="flex gap-2 items-center justify-end">{jsx}</div>
     </>
+  ) : (
+    // display form when editing
+    <form onSubmit={handleEditCommentSubmit}>
+      {/* unescaped comment creator fullname */}
+      <h4 className="text-lg text-link cursor-pointer hover:underline" dangerouslySetInnerHTML={{ __html: comment?.creator?.fullname }}></h4>
+
+      {/* replace a p tag with textarea */}
+      <textarea ref={contentRef} name="content" id="" className="w-full box-border rounded-lg p-2 my-2" placeholder="Share your thoughts" required defaultValue={comment.content}></textarea>
+
+      {/* display comment's time created and time last modified */}
+      <p className="text-xs italic inline-block pr-1">Created: {comment?.createdAtFormatted} </p>
+      {comment.lastModified && <p className="text-xs italic inline-block"> | Edited: {comment?.lastModifiedFormatted}</p>}
+
+      {/* confirm and cancel buttons */}
+      <div className="flex gap-2 items-center justify-end">{jsx}</div>
+    </form>
   );
 }
 
