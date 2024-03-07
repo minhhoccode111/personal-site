@@ -170,11 +170,14 @@ export default function Post() {
 
             <ul className="">
               {postComments !== undefined && postComments.length > 0 ? (
-                postComments.map((comment) => (
-                  <li key={comment.id} className="rounded-xl bg-fuchsia-50 p-4 my-4 relative">
-                    <CommentComponent setWillFetchComments={setWillFetchComments} comment={comment} />
-                  </li>
-                ))
+                postComments.map((comment) => {
+                  // console.log(comment.id);
+                  return (
+                    <li key={comment.id} className="rounded-xl bg-fuchsia-50 p-4 my-4 relative">
+                      <CommentComponent setWillFetchComments={setWillFetchComments} comment={comment} />
+                    </li>
+                  );
+                })
               ) : (
                 <li className="rounded-xl bg-fuchsia-50 p-4 my-4">
                   <h4 className="text-lg">No comments yet</h4>
@@ -182,7 +185,6 @@ export default function Post() {
               )}
             </ul>
 
-            {/* TODO not allow unauthenticated users to comment */}
             {/* post new comment form */}
             <div className="p-4 rounded-xl bg-fuchsia-50 my-4">
               <h4 className="text-lg font-bold text-warn my-2">Post a comment</h4>

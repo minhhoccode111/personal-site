@@ -5,6 +5,7 @@ import axios from 'axios';
 // import Loading from './loading';
 // import Error from './error';
 import { useOutletContext } from 'react-router-dom';
+import { v4 as uuid } from 'uuid';
 
 export default function CommentComponent({ comment, setWillFetchComments }) {
   const { loginState } = useOutletContext();
@@ -44,22 +45,20 @@ export default function CommentComponent({ comment, setWillFetchComments }) {
     }
   }
 
-  const jsx = [];
+  let jsx;
 
   if (isEditing) {
-    jsx.push(<></>);
+    //
   } else if (isDeleting) {
-    jsx.push(
+    jsx = (
       <>
-        <p key={0} className="">
-          Are you sure you want to delete this comment?
-        </p>
+        <p className="">Are you sure you want to delete this comment?</p>
 
-        <button key={1} className="text-danger" onClick={() => setIsDeleting(false)}>
+        <button className="text-danger" onClick={() => setIsDeleting(false)}>
           <IoIosClose className="text-6xl sm:text-2xl md:text-3xl" />
         </button>
 
-        <form key={2} className="grid place-items-center" onSubmit={handleDeleteCommentSubmit}>
+        <form className="grid place-items-center" onSubmit={handleDeleteCommentSubmit}>
           <button type="submit" className="text-success">
             <IoIosCheckmark className="text-6xl sm:text-2xl md:text-3xl" />
           </button>
@@ -70,18 +69,29 @@ export default function CommentComponent({ comment, setWillFetchComments }) {
 
   // currently not editing or deleting, usually when first load then base on user's authorization to display whether they can delete or edit a comment
   else {
-    if (comment?.canEdit)
-      // display a edit button
-      jsx.push(
-        <button key={0} className="text-warn" onClick={() => setIsEditing(true)}>
+    if (comment?.canEdit && comment?.canDelete) {
+      jsx = (
+        <>
+          {/* display a edit button */}
+          <button className="text-warn" onClick={() => setIsEditing(true)}>
+            <IoIosCreate className="text-6xl sm:text-2xl md:text-3xl" />
+          </button>
+
+          {/*  display a delete button */}
+          <button className="text-danger" onClick={() => setIsDeleting(true)}>
+            <IoIosTrash className="text-6xl sm:text-2xl md:text-3xl" />
+          </button>
+        </>
+      );
+    } else if (comment?.canEdit) {
+      jsx = (
+        <button className="text-warn" onClick={() => setIsEditing(true)}>
           <IoIosCreate className="text-6xl sm:text-2xl md:text-3xl" />
         </button>
       );
-
-    if (comment?.canDelete) {
-      // display a delete button
-      jsx.push(
-        <button key={1} className="text-danger" onClick={() => setIsDeleting(true)}>
+    } else {
+      jsx = (
+        <button className="text-danger" onClick={() => setIsDeleting(true)}>
           <IoIosTrash className="text-6xl sm:text-2xl md:text-3xl" />
         </button>
       );
