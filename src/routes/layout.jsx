@@ -43,7 +43,7 @@ export default function Layout() {
     else set({});
   }, []);
 
-  // TODO start fetching blogs here when the page first load
+  // start fetching blogs here when the page first load
   useEffect(() => {
     async function tmp() {
       try {

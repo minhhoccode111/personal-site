@@ -1,3 +1,5 @@
+import About from './about';
+
 export async function action() {
   return null;
 }
@@ -6,5 +8,5 @@ export async function loader() {
 }
 
 export default function Contact() {
-  return <></>;
+  return <About />;
 }
