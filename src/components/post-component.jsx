@@ -1,10 +1,13 @@
-import { useOutletContext } from 'react-router-dom';
+import { IoIosTrash, IoIosCheckmark, IoIosClose, IoIosCreate } from 'react-icons/io';
+import { useOutletContext, useNavigate } from 'react-router-dom';
 import { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 
 export default function PostComponent({ post }) {
-  const { loginState } = useOutletContext();
+  // navigate after deleting a post
+  const navigate = useNavigate();
+  const { loginState, setWillFetchPosts } = useOutletContext();
 
   // keep track of 3 textarea
   const titleRef = useRef(null);
@@ -43,7 +46,7 @@ export default function PostComponent({ post }) {
       // setBlogPosts((postComments) => [res?.data?.post, ...postComments]);
 
       // flip the switch to refetch
-      setWillFetchBlogs((current) => !current);
+      setWillFetchPosts((current) => !current);
     } catch (err) {
       // console.log(err.response);
       // if not a 400 (data invalid) error, stop user from send request again
@@ -57,10 +60,92 @@ export default function PostComponent({ post }) {
   async function handleDeletePostSubmit(e) {
     e.preventDefault();
 
-    //
+    // setIsPostLoading(true);
+
+    // console.log('delete ', import.meta.env.VITE_API_ORIGIN + post.url);
+    // return;
+
+    try {
+      await axios({
+        method: 'delete',
+        url: import.meta.env.VITE_API_ORIGIN + post.url,
+        headers: {
+          Authorization: `Bearer ${loginState.token}`,
+        },
+      });
+
+      // console.log(res.data);
+      navigate('/blog');
+
+      // flip the switch to refetch
+      setWillFetchPosts((current) => !current);
+    } catch (err) {
+      console.log(err.response);
+
+      // setIsPostError(true);
+    } finally {
+      // setIsPostLoading(false);
+    }
   }
 
-  return (
+  let jsx;
+
+  if (isEditing) {
+    jsx = (
+      <>
+        <p className="">Edit this comment?</p>
+
+        {/* close confirm form */}
+        <button className="text-danger" onClick={() => setIsEditing(false)}>
+          <IoIosClose className="text-6xl sm:text-2xl md:text-3xl" />
+        </button>
+
+        {/* submit edit form */}
+        <button type="submit" className="text-success">
+          <IoIosCheckmark className="text-6xl sm:text-2xl md:text-3xl" />
+        </button>
+      </>
+    );
+  } else if (isDeleting) {
+    jsx = (
+      <>
+        <p className="">Delete this post and comments related?</p>
+
+        {/* close confirm form */}
+        <button className="text-danger" onClick={() => setIsDeleting(false)}>
+          <IoIosClose className="text-6xl sm:text-2xl md:text-3xl" />
+        </button>
+
+        {/* submit delete form */}
+        <form className="grid place-items-center" onSubmit={handleDeletePostSubmit}>
+          <button type="submit" className="text-success">
+            <IoIosCheckmark className="text-6xl sm:text-2xl md:text-3xl" />
+          </button>
+        </form>
+      </>
+    );
+  }
+
+  // currently not editing or deleting, usually when first load then base on user's authorization to display whether they can modify a post
+  else {
+    if (post?.canModify) {
+      jsx = (
+        <>
+          {/* display edit button if can edit */}
+          <button className="text-warn" onClick={() => setIsEditing(true)}>
+            <IoIosCreate className="text-6xl sm:text-2xl md:text-3xl" />
+          </button>
+
+          {/*  display delete button if can delete */}
+          <button className="text-danger" onClick={() => setIsDeleting(true)}>
+            <IoIosTrash className="text-6xl sm:text-2xl md:text-3xl" />
+          </button>
+        </>
+      );
+    }
+  }
+
+  return !isEditing ? (
     // display post
     <article className="sm:p-8 w-full max-w-[70ch] mx-auto rounded-lg p-4 my-4 shadow-lg bg-white">
       {/* post header */}
@@ -100,36 +185,42 @@ export default function PostComponent({ post }) {
       <div className="">
         <p className="" dangerouslySetInnerHTML={{ __html: post.content }}></p>
       </div>
-      <div className="p-4 rounded-xl bg-gray-100 my-4">
-        <h4 className="text-lg font-bold text-link my-2">Create a new post</h4>
 
-        {loginState?.user?.isCreator ? (
-          <form onSubmit={handleEditPostSubmit}>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-900">
-              {' '}
-              Title{' '}
-            </label>
-            <textarea ref={titleRef} name="title" id="title" className="w-full box-border rounded-lg p-2 my-2" placeholder="Title..." required></textarea>
+      {/* delete and edit buttons or confirm and cancel button */}
+      <div className="flex gap-2 items-center justify-end">{jsx}</div>
+    </article>
+  ) : (
+    // edit
+    <div className="p-4 rounded-xl bg-gray-100 my-4">
+      <h4 className="text-lg font-bold text-link my-2">Create a new post</h4>
 
-            <label htmlFor="content" className="block text-sm font-medium text-gray-900">
-              {' '}
-              Content{' '}
-            </label>
-            <textarea ref={contentRef} name="content" id="content" className="w-full box-border rounded-lg p-2 my-2" placeholder="Content..." required></textarea>
+      {loginState?.user?.isCreator ? (
+        <form onSubmit={handleEditPostSubmit}>
+          <label htmlFor="title" className="block text-sm font-medium text-gray-900">
+            {' '}
+            Title{' '}
+          </label>
+          <textarea ref={titleRef} name="title" id="title" className="w-full box-border rounded-lg p-2 my-2" placeholder="Title..." required></textarea>
 
-            <label htmlFor="published" className="block text-sm font-medium text-gray-900">
-              {' '}
-              Published{' '}
-            </label>
-            <select ref={publishedRef} name="published" id="published" className="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm p-2 bg-white">
-              {/* if not choose then default will be false because !== 'true' */}
-              <option value="">Please choose</option>
-              <option value="true">True</option>
-              <option value="false">False</option>
-            </select>
+          <label htmlFor="content" className="block text-sm font-medium text-gray-900">
+            {' '}
+            Content{' '}
+          </label>
+          <textarea ref={contentRef} name="content" id="content" className="w-full box-border rounded-lg p-2 my-2" placeholder="Content..." required></textarea>
 
-            <div className="my-2 flex gap-2 justify-end items-center">
-              {/* {isErrorPosts ? (
+          <label htmlFor="published" className="block text-sm font-medium text-gray-900">
+            {' '}
+            Published{' '}
+          </label>
+          <select ref={publishedRef} name="published" id="published" className="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm p-2 bg-white">
+            {/* if not choose then default will be false because !== 'true' */}
+            <option value="">Please choose</option>
+            <option value="true">True</option>
+            <option value="false">False</option>
+          </select>
+
+          <div className="my-2 flex gap-2 justify-end items-center">
+            {/* {isErrorPosts ? (
                   <SubmitButton isDisable={true}>
                     <Error />
                   </SubmitButton>
@@ -141,15 +232,14 @@ export default function PostComponent({ post }) {
                   <SubmitButton isDisable={false}>Post</SubmitButton>
                 )} */}
 
-              {/* <SubmitButton isDisable={false}>Post</SubmitButton> */}
-            </div>
-          </form>
-        ) : (
-          ''
-          // <p className="">Please consider log in as creator to create a post</p>
-        )}
-      </div>
-    </article>
+            {/* <SubmitButton isDisable={false}>Post</SubmitButton> */}
+          </div>
+        </form>
+      ) : (
+        ''
+        // <p className="">Please consider log in as creator to create a post</p>
+      )}
+    </div>
   );
 }
 

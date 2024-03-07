@@ -1,9 +1,9 @@
+import { useFetcher, Link, useSubmit, useOutletContext } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
 import { RiArrowUpDoubleLine } from 'react-icons/ri';
-import { useFetcher, Link, useSubmit, useOutletContext } from 'react-router-dom';
+import axios from 'axios';
 import BackgroundImage2 from './../assets/bg-2.jpg';
 import { SubmitButton } from '../components/button';
-import axios from 'axios';
 // import Loading from '../components/loading';
 // import Error from '../components/error';
 
@@ -28,7 +28,7 @@ export default function Blog() {
   const [isSticky, setIsSticky] = useState(false);
 
   // blog posts from Layout
-  const { blogPosts, setWillFetchBlogs, loginState } = useOutletContext();
+  const { blogPosts, setWillFetchPosts, loginState } = useOutletContext();
 
   // fetch states
   // const [isLoadingPosts, setIsLoadingPosts] = useState(false);
@@ -62,7 +62,7 @@ export default function Blog() {
       // setBlogPosts((postComments) => [res?.data?.post, ...postComments]);
 
       // flip the switch to refetch
-      setWillFetchBlogs((current) => !current);
+      setWillFetchPosts((current) => !current);
     } catch (err) {
       // console.log(err.response);
       // if not a 400 (data invalid) error, stop user from send request again
@@ -72,8 +72,8 @@ export default function Blog() {
     }
   }
 
+  // make search bar stick to the top when start scrolling
   useEffect(() => {
-    // make search bar stick to the top when start scrolling
     const stickSearch = document.getElementById('stick-search');
     const sticky = stickSearch?.offsetTop;
     const handleScroll = () => {
@@ -182,6 +182,7 @@ export default function Blog() {
         </div>
       </div>
 
+      {/* display each post in blogPosts to navigate */}
       <div className="p-2 sm:p-4 w-full max-w-[70ch] mx-auto my-8 rounded-lg">
         <ul className="">
           {blogPosts.map((post) => (
@@ -224,6 +225,7 @@ export default function Blog() {
         <div className="p-4 rounded-xl bg-gray-100 my-4">
           <h4 className="text-lg font-bold text-link my-2">Create a new post</h4>
 
+          {/* only creator can create posts */}
           {loginState?.user?.isCreator ? (
             <form onSubmit={handleCreatePostSubmit}>
               <label htmlFor="title" className="block text-sm font-medium text-gray-900">
@@ -266,6 +268,7 @@ export default function Blog() {
               </div>
             </form>
           ) : (
+            // not creator users get a placeholder text
             <p className="">Please consider log in as creator to create a post</p>
           )}
         </div>

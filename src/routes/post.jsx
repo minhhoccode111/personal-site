@@ -123,43 +123,48 @@ export default function Post() {
 
           {/* display comments */}
           <article className="sm:p-8 w-full max-w-[70ch] mx-auto rounded-lg p-4 my-4 shadow-lg text-gray-900 bg-white">
-            {/* post header */}
-
+            {/* comments header */}
             <header className="flex gap-2 items-center justify-between">
               <h3 className="text-warn font-bold text-xl pb-4">Comments</h3>
+
+              {/* count comments */}
               <p className="italic">{postComments.length} comments</p>
             </header>
 
+            {/* display all post's comments */}
             <ul className="">
               {postComments !== undefined && postComments.length > 0 ? (
-                postComments.map((comment) => {
-                  // console.log(comment.id);
-                  return (
-                    <li key={comment.id} className="rounded-xl bg-fuchsia-50 p-4 my-4 relative">
-                      <CommentComponent setWillFetchComments={setWillFetchComments} comment={comment} />
-                    </li>
-                  );
-                })
+                // if post has comments
+                postComments.map((comment) => (
+                  <li key={comment.id} className="rounded-xl bg-fuchsia-50 p-4 my-4 relative">
+                    <CommentComponent setWillFetchComments={setWillFetchComments} comment={comment} />
+                  </li>
+                ))
               ) : (
+                // if post doesn't has comments
                 <li className="rounded-xl bg-fuchsia-50 p-4 my-4">
                   <h4 className="text-lg">No comments yet</h4>
                 </li>
               )}
             </ul>
 
-            {/* post new comment form */}
+            {/* create new comment section */}
             <div className="p-4 rounded-xl bg-fuchsia-50 my-4">
               <h4 className="text-lg font-bold text-warn my-2">Post a comment</h4>
 
+              {/* only logged in user can create comments */}
               {loginState.user !== undefined ? (
                 <form onSubmit={handleCreateCommentSubmit}>
+                  {/* comment's content field */}
                   <textarea ref={contentRef} name="content" id="" className="w-full box-border rounded-lg p-2 my-2" placeholder="Share your thoughts" required></textarea>
 
+                  {/* submit button */}
                   <div className="my-2 flex gap-2 justify-end items-center">
                     <SubmitButton isDisable={false}>Post</SubmitButton>
                   </div>
                 </form>
               ) : (
+                // not logged in users get a placeholder text
                 <div className="my-2 flex gap-2 items-center justify-between">
                   <p className="">Please consider login to post a comment</p>
                   <Link className="inline-block rounded-lg bg-blue-500 px-5 py-3 text-sm font-medium text-white transition-all hover:scale-110 hover:shadow hover:shadow-gray-400" to="/login">
@@ -171,6 +176,7 @@ export default function Post() {
           </article>
         </>
       ) : (
+        // display a loader if post is undefined
         <div className="text-link grid place-items-center border">{/* <Loading className="text-8xl" /> */}</div>
       )}
     </section>

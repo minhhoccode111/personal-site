@@ -1,10 +1,10 @@
-import PropTypes from 'prop-types';
-import { useState, useRef } from 'react';
 import { IoIosTrash, IoIosCheckmark, IoIosClose, IoIosCreate } from 'react-icons/io';
+import { useOutletContext } from 'react-router-dom';
+import { useState, useRef } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 // import Loading from './loading';
 // import Error from './error';
-import { useOutletContext } from 'react-router-dom';
 
 export default function CommentComponent({ comment, setWillFetchComments }) {
   const { loginState } = useOutletContext();

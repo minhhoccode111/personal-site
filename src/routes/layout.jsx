@@ -22,14 +22,12 @@ export default function Layout() {
 
   // counter
   const [countBlogs, setCountBlogs] = useState(0);
-  const [countProjects, setCountProjects] = useState(0);
+  // TODO implement an API to CRUD projects
+  // const [countProjects, setCountProjects] = useState(0);
 
   // state of blog posts fetching
   // const [isLoading, setIsLoading] = useState(false);
   // const [isError, setIsError] = useState(false);
-
-  // error messages to display while fetching blog posts
-  const [displayMessages, setDisplayMessages] = useState([]);
 
   // login state on local storage
   const [loginState, setLoginState] = useState({});
@@ -70,15 +68,10 @@ export default function Layout() {
         // console.log(res.data);
       } catch (err) {
         console.log(err.response);
-        if (err.response.status === 400) {
-          setDisplayMessages(() => [{ msg: `*Username or password do not match` }]);
-        } else {
-          // setIsError(() => true);
-
-          setDisplayMessages(() => [{ msg: `*There is a server error or  internet connection!` }]);
-        }
+        // setIsError(() => true);
       } finally {
         // setIsLoading(() => false);
+        // console.log(`blog fetched!`);
       }
     }
     tmp();
@@ -139,7 +132,9 @@ export default function Layout() {
             to={'work'}
           >
             Work
-            <span className="absolute text-xl sm:text-xs font-bold top-0 right-0 w-6 h-6 sm:w-4 sm:h-4 flex items-center justify-center rounded-full text-white bg-red-500">{countProjects}</span>
+            <span className="absolute text-xl sm:text-xs font-bold top-0 right-0 w-6 h-6 sm:w-4 sm:h-4 flex items-center justify-center rounded-full text-white bg-red-500">
+              {/* {countProjects} TODO*/}0
+            </span>
           </NavLink>
 
           {/* link to blog section */}
@@ -172,7 +167,7 @@ export default function Layout() {
 
               <div className="border border-slate-900 w-0"></div>
 
-              {/* link to login section */}
+              {/* link to logout section */}
               <NavLink
                 className={({ isActive }) => (isActive ? 'bg-sky-400 text-white' : 'hover:bg-gray-300 hover:text-black') + ' ' + 'max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all'}
                 to={'logout'}
