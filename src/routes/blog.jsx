@@ -5,8 +5,8 @@ import BackgroundImage2 from './../assets/bg-2.jpg';
 import { SubmitButton } from '../components/button';
 import PostComponent from '../components/post-component';
 import axios from 'axios';
-import Loading from '../components/loading';
-import Error from '../components/error';
+// import Loading from '../components/loading';
+// import Error from '../components/error';
 
 export async function loader() {
   return null;
@@ -29,19 +29,19 @@ export default function Blog() {
   const [isSticky, setIsSticky] = useState(false);
 
   // blog posts from Layout
-  const { blogPosts, setBlogPosts, loginState } = useOutletContext();
+  const { blogPosts, setWillFetchBlogs, loginState } = useOutletContext();
 
   // fetch states
-  const [isLoadingPosts, setIsLoadingPosts] = useState(false);
-  const [isErrorPosts, setIsErrorPosts] = useState(false);
+  // const [isLoadingPosts, setIsLoadingPosts] = useState(false);
+  // const [isErrorPosts, setIsErrorPosts] = useState(false);
 
   // handle create new post submit
   async function handleCreatePostSubmit(e) {
     e.preventDefault();
 
-    setIsLoadingPosts(() => true);
+    // setIsLoadingPosts(() => true);
     try {
-      const res = await axios({
+      await axios({
         url: import.meta.env.VITE_API_ORIGIN + '/posts',
         method: 'post',
         headers: {
@@ -60,13 +60,16 @@ export default function Blog() {
 
       // console.log(res.data);
 
-      setBlogPosts((postComments) => [res?.data?.post, ...postComments]);
+      // setBlogPosts((postComments) => [res?.data?.post, ...postComments]);
+
+      // flip the switch to refetch
+      setWillFetchBlogs((current) => !current);
     } catch (err) {
       // console.log(err.response);
       // if not a 400 (data invalid) error, stop user from send request again
-      if (err.response.status !== 400) setIsErrorPosts(() => true);
+      // if (err.response.status !== 400) setIsErrorPosts(() => true);
     } finally {
-      setIsLoadingPosts(() => false);
+      // setIsLoadingPosts(() => false);
     }
   }
 
@@ -216,7 +219,7 @@ export default function Blog() {
               </select>
 
               <div className="my-2 flex gap-2 justify-end items-center">
-                {isErrorPosts ? (
+                {/* {isErrorPosts ? (
                   <SubmitButton isDisable={true}>
                     <Error />
                   </SubmitButton>
@@ -226,7 +229,9 @@ export default function Blog() {
                   </SubmitButton>
                 ) : (
                   <SubmitButton isDisable={false}>Post</SubmitButton>
-                )}
+                )} */}
+
+                <SubmitButton isDisable={false}>Post</SubmitButton>
               </div>
             </form>
           ) : (

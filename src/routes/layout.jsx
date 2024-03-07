@@ -1,4 +1,4 @@
-import { IoIosCloseCircleOutline, IoIosLogIn, IoIosLogOut } from 'react-icons/io';
+import { IoIosCloseCircleOutline, IoIosCreate, IoIosLogIn, IoIosLogOut } from 'react-icons/io';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { useState, useEffect } from 'react';
@@ -24,8 +24,8 @@ export default function Layout() {
   const [countProjects, setCountProjects] = useState(0);
 
   // state of blog posts fetching
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [isError, setIsError] = useState(false);
 
   // error messages to display while fetching blog posts
   const [displayMessages, setDisplayMessages] = useState([]);
@@ -39,13 +39,17 @@ export default function Layout() {
 
     // only use when token not expired
     if (new Date(state.expiresInDate) > new Date()) setLoginState(() => state);
-    // else use clear local store, keep the default loginState above {}
+    // else clear local store, keep the default loginState above {}
     else set({});
   }, []);
+
+  // a flag to fetch blog again to keep things sync
+  const [willFetchPosts, setWillFetchPosts] = useState(false);
 
   // start fetching blogs here when the page first load
   useEffect(() => {
     async function tmp() {
+      // setIsLoading(()=>true)
       try {
         const res = await axios({
           mode: 'cors',
@@ -68,17 +72,17 @@ export default function Layout() {
         if (err.response.status === 400) {
           setDisplayMessages(() => [{ msg: `*Username or password do not match` }]);
         } else {
-          setIsError(() => true);
+          // setIsError(() => true);
 
           setDisplayMessages(() => [{ msg: `*There is a server error or  internet connection!` }]);
         }
       } finally {
-        setIsLoading(() => false);
+        // setIsLoading(() => false);
       }
     }
     tmp();
     // only fetch again if user log in or out
-  }, [loginState]);
+  }, [loginState, willFetchPosts]);
 
   return (
     <>
@@ -180,7 +184,7 @@ export default function Layout() {
                 to={'signup'}
                 title="Signup"
               >
-                Signup
+                <IoIosCreate className="text-6xl sm:text-2xl md:text-3xl" />
               </NavLink>
 
               <div className="border border-slate-900 w-0"></div>
@@ -220,6 +224,7 @@ export default function Layout() {
             setLoginState,
             blogPosts,
             setBlogPosts,
+            setWillFetchPosts,
           }}
         />
       </main>

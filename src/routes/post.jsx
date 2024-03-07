@@ -2,8 +2,8 @@ import { useLoaderData, Link, Form, useNavigate, useOutletContext } from 'react-
 import { MdKeyboardBackspace } from 'react-icons/md';
 import BackgroundImage2 from './../assets/bg-2.jpg';
 import { useState, useRef, useEffect } from 'react';
-import Loading from '../components/loading';
-import Error from '../components/error';
+// import Loading from '../components/loading';
+// import Error from '../components/error';
 import { SubmitButton } from '../components/button';
 import axios from 'axios';
 import CommentComponent from '../components/comment-component';
@@ -34,13 +34,16 @@ export default function Post() {
   const [postComments, setPostComments] = useState([]);
 
   // handle fetch states
-  const [isLoadingComments, setIsLoadingComments] = useState(false);
-  const [isErrorComments, setIsErrorComments] = useState(false);
+  // const [isLoadingComments, setIsLoadingComments] = useState(false);
+  // const [isErrorComments, setIsErrorComments] = useState(false);
+
+  // flag to fetch comments again to keep things sync
+  const [willFetchComments, setWillFetchComments] = useState(false);
 
   // fetch comments of this post
   useEffect(() => {
     async function tmp() {
-      setIsLoadingComments(() => true);
+      // setIsLoadingComments(() => true);
 
       try {
         // try to fetch
@@ -58,22 +61,22 @@ export default function Post() {
         console.log(res.data.comments);
       } catch (err) {
         // a 404
-        setIsErrorComments(() => true);
+        // setIsErrorComments(() => true);
       } finally {
-        setIsLoadingComments(() => false);
+        // setIsLoadingComments(() => false);
       }
     }
 
     // only call when post valid
     if (post) tmp();
-  }, [post, loginState]);
+  }, [post, loginState, willFetchComments]);
 
   async function handleCreateCommentSubmit(e) {
     e.preventDefault();
 
-    setIsLoadingComments(() => true);
+    // setIsLoadingComments(() => true);
     try {
-      const res = await axios({
+      await axios({
         url: import.meta.env.VITE_API_ORIGIN + post?.url + '/comments',
         method: 'post',
         headers: {
@@ -86,12 +89,13 @@ export default function Post() {
 
       // console.log(res.data);
 
-      setPostComments((postComments) => [...postComments, res?.data?.comment]);
+      // flip the switch to refetch
+      setWillFetchComments((current) => !current);
     } catch (err) {
       // a 404
-      setIsErrorComments(() => true);
+      // setIsErrorComments(() => true);
     } finally {
-      setIsLoadingComments(() => false);
+      // setIsLoadingComments(() => false);
     }
   }
 
@@ -167,15 +171,9 @@ export default function Post() {
             <ul className="">
               {postComments !== undefined && postComments.length > 0 ? (
                 postComments.map((comment) => (
-                  <CommentComponent key={comment.id} comment={comment} />
-
-                  // <li className="rounded-xl bg-fuchsia-50 p-4 my-4" key={comment.id}>
-                  //   <h4 className="text-lg">{comment?.creator?.fullname}</h4>
-                  //   <p className="">{comment?.content}</p>
-                  //   <p className="text-xs italic">{comment?.createdAtFormatted}</p>
-
-                  //   {/* <div className="">No comments yet</div> */}
-                  // </li>
+                  <li key={comment.id} className="rounded-xl bg-fuchsia-50 p-4 my-4 relative">
+                    <CommentComponent setWillFetchComments={setWillFetchComments} comment={comment} />
+                  </li>
                 ))
               ) : (
                 <li className="rounded-xl bg-fuchsia-50 p-4 my-4">
@@ -191,7 +189,7 @@ export default function Post() {
 
               {loginState.user !== undefined ? (
                 <form onSubmit={handleCreateCommentSubmit}>
-                  <textarea ref={contentRef} name="content" id="" className="w-full box-border rounded-lg p-2 my-2" placeholder="Share your thoughts"></textarea>
+                  <textarea ref={contentRef} name="content" id="" className="w-full box-border rounded-lg p-2 my-2" placeholder="Share your thoughts" required></textarea>
 
                   <div className="my-2 flex gap-2 justify-end items-center">
                     <SubmitButton isDisable={false}>Post</SubmitButton>
@@ -209,9 +207,7 @@ export default function Post() {
           </article>
         </>
       ) : (
-        <div className="text-link grid place-items-center border">
-          <Loading className="text-8xl" />
-        </div>
+        <div className="text-link grid place-items-center border">{/* <Loading className="text-8xl" /> */}</div>
       )}
     </section>
   );
