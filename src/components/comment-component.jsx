@@ -9,6 +9,7 @@ import { useOutletContext } from 'react-router-dom';
 export default function CommentComponent({ comment, setWillFetchComments }) {
   const { loginState } = useOutletContext();
 
+  // modified states of comment
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 

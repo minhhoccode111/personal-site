@@ -1,4 +1,4 @@
-import { useLoaderData, Link, Form, useNavigate, useOutletContext } from 'react-router-dom';
+import { useLoaderData, Link, useNavigate, useOutletContext } from 'react-router-dom';
 import { MdKeyboardBackspace } from 'react-icons/md';
 import BackgroundImage2 from './../assets/bg-2.jpg';
 import { useState, useRef, useEffect } from 'react';
@@ -7,6 +7,7 @@ import { useState, useRef, useEffect } from 'react';
 import { SubmitButton } from '../components/button';
 import axios from 'axios';
 import CommentComponent from '../components/comment-component';
+import PostComponent from '../components/post-component';
 
 export async function loader({ params }) {
   const id = params.postid;
@@ -29,6 +30,7 @@ export default function Post() {
   // extract id to find right post
   const { id } = useLoaderData();
   const post = blogPosts[blogPosts.findIndex((p) => p.id === id)];
+  // console.log(post);
 
   // store fetched comments
   const [postComments, setPostComments] = useState([]);
@@ -58,7 +60,7 @@ export default function Post() {
         // store data
         setPostComments(() => res?.data?.comments);
 
-        console.log(res.data.comments);
+        // console.log(res.data.comments);
       } catch (err) {
         // a 404
         // setIsErrorComments(() => true);
@@ -117,47 +119,7 @@ export default function Post() {
       {post !== undefined ? (
         <>
           {/* display post */}
-          <article className="sm:p-8 w-full max-w-[70ch] mx-auto rounded-lg p-4 my-4 shadow-lg bg-white">
-            {/* post header */}
-            <header className="">
-              <h3
-                className="text-warn font-bold text-3xl pb-4"
-                // unescaped post title
-                dangerouslySetInnerHTML={{
-                  __html: post.title.charAt(0).toUpperCase() + post.title.slice(1),
-                }}
-              ></h3>
-            </header>
-
-            {/* info */}
-            <div className="flex gap-2 justify-between items-center italic">
-              {/* unescaped post creator fullname */}
-              <h4 className="" dangerouslySetInnerHTML={{ __html: post.creator.fullname }}></h4>
-
-              <div className="flex gap-1 text-xs items-center justify-end">
-                <p className="">{post.createdAtFormatted}</p>
-
-                <p>|</p>
-
-                {/* calculate speed base on content's characters */}
-                <p className="">{Math.ceil(post.content.length / 5 / 238)} min read</p>
-
-                {loginState?.user?.isCreator && (
-                  <>
-                    <p>|</p>
-                    <p className="">{post.published ? 'Published' : 'Unpublished'}</p>
-                  </>
-                )}
-              </div>
-            </div>
-
-            <hr className="my-4" />
-
-            {/* post content */}
-            <div className="">
-              <p className="" dangerouslySetInnerHTML={{ __html: post.content }}></p>
-            </div>
-          </article>
+          <PostComponent post={post} />
 
           {/* display comments */}
           <article className="sm:p-8 w-full max-w-[70ch] mx-auto rounded-lg p-4 my-4 shadow-lg text-gray-900 bg-white">

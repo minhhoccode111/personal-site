@@ -1,9 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
 import { RiArrowUpDoubleLine } from 'react-icons/ri';
-import { useFetcher, useSubmit, useOutletContext } from 'react-router-dom';
+import { useFetcher, Link, useSubmit, useOutletContext } from 'react-router-dom';
 import BackgroundImage2 from './../assets/bg-2.jpg';
 import { SubmitButton } from '../components/button';
-import PostComponent from '../components/post-component';
 import axios from 'axios';
 // import Loading from '../components/loading';
 // import Error from '../components/error';
@@ -95,7 +94,7 @@ export default function Blog() {
       </div>
 
       {/* padding element so that the header don't seem like teleport when it sticky to top */}
-      <div className={'text-transparent px-8 py-4 border' + ' ' + (isSticky ? '' : 'hidden')}>Made with love by minhhoccode111</div>
+      <div className={'text-transparent px-8 py-4 border' + ' ' + (isSticky ? '' : 'hidden')}>Made with by minhhoccode111</div>
       <div
         id="stick-search"
         className={
@@ -185,9 +184,41 @@ export default function Blog() {
 
       <div className="p-2 sm:p-4 w-full max-w-[70ch] mx-auto my-8 rounded-lg">
         <ul className="">
-          {blogPosts.map((post) => {
-            return <PostComponent key={post.id} post={post} />;
-          })}
+          {blogPosts.map((post) => (
+            <li className="p-4 my-8 shadow-lg text-gray-900 rounded-md bg-white" key={post.id}>
+              <Link className="block pb-4" to={post.id}>
+                <h3
+                  className="text-link font-bold text-2xl"
+                  dangerouslySetInnerHTML={{
+                    __html: post.title.length < 100 ? post.title.charAt(0).toUpperCase() + post.title.slice(1) : post.title.charAt(0).toUpperCase() + post.title.slice(1, 98) + '...',
+                  }}
+                ></h3>
+              </Link>
+              <div className="flex gap-2 justify-between items-center italic">
+                <p
+                  dangerouslySetInnerHTML={{
+                    __html: post?.creator?.fullname,
+                  }}
+                  className=""
+                ></p>
+                <div className="flex gap-1 text-xs items-center justify-end">
+                  <p className="">{post.createdAtFormatted}</p>
+
+                  <p>|</p>
+
+                  {/* calculate speed base on content's characters */}
+                  <p className="">{Math.ceil(post.content.length / 5 / 238)} min read</p>
+
+                  {loginState?.user?.isCreator && (
+                    <>
+                      <p>|</p>
+                      <p className="">{post.published ? 'Published' : 'Unpublished'}</p>
+                    </>
+                  )}
+                </div>
+              </div>
+            </li>
+          ))}
         </ul>
 
         <div className="p-4 rounded-xl bg-gray-100 my-4">

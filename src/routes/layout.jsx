@@ -18,6 +18,7 @@ export default function Layout() {
 
   // blog posts to use through out this session
   const [blogPosts, setBlogPosts] = useState([]);
+  // console.log(blogPosts);
 
   // counter
   const [countBlogs, setCountBlogs] = useState(0);
@@ -163,7 +164,11 @@ export default function Layout() {
             <div className="flex gap-2 md:gap-4 max-sm:justify-end">
               {/* link to signup section */}
 
-              <p className="max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all text-success self-center">{loginState.user.isCreator ? 'Creator' : 'Viewer'}</p>
+              {loginState.user.isCreator ? (
+                <p className="max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all text-danger self-center">Creator</p>
+              ) : (
+                <p className="max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all text-success self-center">Viewer</p>
+              )}
 
               <div className="border border-slate-900 w-0"></div>
 
