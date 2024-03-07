@@ -22,11 +22,17 @@ export default function PostComponent({ post }) {
   async function handleEditPostSubmit(e) {
     e.preventDefault();
 
+    // console.log('update ', import.meta.env.VITE_API_ORIGIN + post.url);
+    // console.log('with title: ', titleRef.current.value);
+    // console.log('with content: ', contentRef.current.value);
+    // console.log('with published', publishedRef.current.value);
+    // return;
+
     // setIsLoadingPosts(() => true);
     try {
       await axios({
-        url: import.meta.env.VITE_API_ORIGIN + '/posts',
-        method: 'post',
+        url: import.meta.env.VITE_API_ORIGIN + post.url,
+        method: 'put',
         headers: {
           Authorization: `Bearer ${loginState?.token}`,
         },
@@ -43,8 +49,6 @@ export default function PostComponent({ post }) {
 
       // console.log(res.data);
 
-      // setBlogPosts((postComments) => [res?.data?.post, ...postComments]);
-
       // flip the switch to refetch
       setWillFetchPosts((current) => !current);
     } catch (err) {
@@ -52,6 +56,7 @@ export default function PostComponent({ post }) {
       // if not a 400 (data invalid) error, stop user from send request again
       // if (err.response.status !== 400) setIsErrorPosts(() => true);
     } finally {
+      setIsEditing(false);
       // setIsLoadingPosts(() => false);
     }
   }
@@ -93,7 +98,7 @@ export default function PostComponent({ post }) {
   if (isEditing) {
     jsx = (
       <>
-        <p className="">Edit this comment?</p>
+        <p className="">Edit this post?</p>
 
         {/* close confirm form */}
         <button className="text-danger" onClick={() => setIsEditing(false)}>
@@ -167,7 +172,7 @@ export default function PostComponent({ post }) {
 
           <p>|</p>
 
-          {/* calculate speed base on content's characters */}
+          {/* calculate read time base on content's characters */}
           <p className="">{Math.ceil(post.content.length / 5 / 238)} min read</p>
 
           {loginState?.user?.isCreator && (
@@ -191,55 +196,46 @@ export default function PostComponent({ post }) {
     </article>
   ) : (
     // edit
-    <div className="p-4 rounded-xl bg-gray-100 my-4">
-      <h4 className="text-lg font-bold text-link my-2">Create a new post</h4>
 
-      {loginState?.user?.isCreator ? (
+    <article className="sm:p-8 w-full max-w-[70ch] mx-auto rounded-lg p-4 my-4 shadow-lg bg-white">
+      <div className="p-4 rounded-xl bg-gray-100 my-4">
+        <h4 className="text-lg font-bold text-link my-2">Edit this post</h4>
+
         <form onSubmit={handleEditPostSubmit}>
           <label htmlFor="title" className="block text-sm font-medium text-gray-900">
             {' '}
             Title{' '}
           </label>
-          <textarea ref={titleRef} name="title" id="title" className="w-full box-border rounded-lg p-2 my-2" placeholder="Title..." required></textarea>
+          <textarea ref={titleRef} name="title" id="title" className="w-full box-border rounded-lg p-2 my-2" placeholder="Title..." required defaultValue={post.title}></textarea>
 
           <label htmlFor="content" className="block text-sm font-medium text-gray-900">
             {' '}
             Content{' '}
           </label>
-          <textarea ref={contentRef} name="content" id="content" className="w-full box-border rounded-lg p-2 my-2" placeholder="Content..." required></textarea>
+          <textarea ref={contentRef} name="content" id="content" className="w-full box-border rounded-lg p-2 my-2" placeholder="Content..." required defaultValue={post.content}></textarea>
 
           <label htmlFor="published" className="block text-sm font-medium text-gray-900">
             {' '}
             Published{' '}
           </label>
-          <select ref={publishedRef} name="published" id="published" className="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm p-2 bg-white">
+          <select
+            ref={publishedRef}
+            name="published"
+            id="published"
+            className="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm p-2 bg-white"
+            defaultValue={post.published ? 'true' : 'false'}
+          >
             {/* if not choose then default will be false because !== 'true' */}
             <option value="">Please choose</option>
             <option value="true">True</option>
             <option value="false">False</option>
           </select>
 
-          <div className="my-2 flex gap-2 justify-end items-center">
-            {/* {isErrorPosts ? (
-                  <SubmitButton isDisable={true}>
-                    <Error />
-                  </SubmitButton>
-                ) : isLoadingPosts ? (
-                  <SubmitButton isDisable={true}>
-                    <Loading />
-                  </SubmitButton>
-                ) : (
-                  <SubmitButton isDisable={false}>Post</SubmitButton>
-                )} */}
-
-            {/* <SubmitButton isDisable={false}>Post</SubmitButton> */}
-          </div>
+          {/* delete and edit buttons or confirm and cancel button */}
+          <div className="my-2 flex gap-2 items-center justify-end">{jsx}</div>
         </form>
-      ) : (
-        ''
-        // <p className="">Please consider log in as creator to create a post</p>
-      )}
-    </div>
+      </div>
+    </article>
   );
 }
 

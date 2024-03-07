@@ -27,17 +27,20 @@ export default function About() {
           </a>
           .
         </p>
+
         <p className="">
-          But only <code className="">/Blog</code> and <code className="">/Signup</code> and <code>/Login</code> are working to showcase{' '}
+          Currently, only the <code className="">/Blog</code>, <code className="">/Signup</code>, and <code>/Login</code> routes are functional. These routes showcase the{' '}
           <a href="https://github.com/minhhoccode111/blog-back" target="_blank" rel="noopener" className="text-link underline decoration-dotted hover:decoration-solid">
             Project Blog API
           </a>{' '}
-          of{' '}
+          developed for{' '}
           <a href="https://www.theodinproject.com/lessons/nodejs-blog-api" target="_blank" rel="noopener" className="text-link underline decoration-dotted hover:decoration-solid">
             The Odin Project&apos;s NodeJS course
           </a>
-          . Additional features are under development.
+          . Additional features are still under development.
         </p>
+
+        <p className="">This project&apos;s backend uses free tier hosting on Glitch, which can cause significant delays in the server&apos;s response time for API requests or data fetching.</p>
       </article>
     </section>
   );
