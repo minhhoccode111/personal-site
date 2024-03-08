@@ -1,4 +1,4 @@
-export default function  Footer  () {
+export default function Footer() {
   return (
     <footer className="bg-white">
       <div className="mx-auto max-w-screen-xl px-4 pb-6 pt-16 sm:px-6 lg:px-8 lg:pt-24">
@@ -214,7 +214,7 @@ export default function  Footer  () {
             </div>
 
             <div className="text-center sm:text-left">
-              <p className="text-lg font-medium text-gray-900">Contact Us</p>
+              <p className="text-lg font-medium text-gray-900">Contact Me</p>
 
               <ul className="mt-8 space-y-4 text-sm">
                 <li>
@@ -223,7 +223,7 @@ export default function  Footer  () {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
 
-                    <span className="flex-1 text-gray-700">vaiquyensach</span>
+                    <span className="flex-1 text-gray-700">minhhoccode111</span>
                   </a>
                 </li>
 
@@ -247,7 +247,7 @@ export default function  Footer  () {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
 
-                  <address className="-mt-0.5 flex-1 not-italic text-gray-700">District 10, Ho Chi Minh City, Viet Nam</address>
+                  <address className="-mt-0.5 flex-1 not-italic text-gray-700">Ho Chi Minh City, Viet Nam</address>
                 </li>
               </ul>
             </div>
@@ -276,6 +276,4 @@ export default function  Footer  () {
       </div>
     </footer>
   );
-};
-
-
+}

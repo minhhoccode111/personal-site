@@ -150,7 +150,7 @@ export default function CommentComponent({ comment, setWillFetchComments }) {
     // display normal when to editing
     <>
       {/* unescaped comment creator fullname */}
-      <h4 className="text-lg text-link cursor-pointer hover:underline">{domParser(comment?.creator?.fullname)}</h4>
+      <h4 className="text-xl font-bold text-gray-900 italic">{domParser(comment?.creator?.fullname)}</h4>
 
       {/* unescaped comment content */}
       <p

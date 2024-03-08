@@ -163,7 +163,7 @@ export default function Layout() {
                 <button className="peer flex items-stretch justify-stretch max-sm:p-4 p-2">{loginState?.user?.isCreator ? 'Creator' : 'Viewer'}</button>
 
                 {/* a tooltip to display user name */}
-                <span className="absolute transition-all px-6 py-3 rounded-md hidden peer-focus:block peer-hover:block max-sm:bottom-full sm:top-full my-4 bg-gray-800 left-1/2 -translate-x-1/2 text-center">
+                <span className="absolute transition-all px-6 py-3 rounded-md hidden peer-focus:block peer-hover:block max-sm:bottom-full sm:top-full my-4 bg-gray-800 left-1/2 -translate-x-1/2 text-center z-10">
                   {loginState?.user?.fullname}
                 </span>
               </p>

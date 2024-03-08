@@ -115,10 +115,10 @@ export default function Blog() {
       <ul className="">
         {blogPosts.map((post) => (
           <li className="p-4 my-8 shadow-lg text-gray-900 rounded-md bg-white" key={post.id}>
-            <Link className="block pb-4" to={post.id}>
+            <Link className="block pb-4 text-link font-bold text-2xl hover:underline transition-all" to={post.id}>
               {/* display multi line if title had \n */}
               <h3
-                className="text-link font-bold text-2xl"
+                className=""
                 dangerouslySetInnerHTML={{
                   __html: markdownParser(domParser(post?.title)),
                 }}

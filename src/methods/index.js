@@ -23,44 +23,39 @@ export function markdownParser(str) {
 
   const rules = [
     //header rules
-    [/#{6}\s?([^\n]+)/g, '<h6 style="font-weight:700;line-height:1rem,font-size:0.75rem">$1</h6>'],
-    // [/#{6}\s?([^\n]+)/g, '<h6 className="text-xs font-bold">$1</h6>'],
+    // come on. who is going to use h6 h5 h4
+    [/#{6}\s?([^\n]+)/g, '<h6>$1</h6>'],
 
-    [/#{5}\s?([^\n]+)/g, '<h5 style="font-size: 0.875rem; line-height: 1.25rem; font-weight: 700; ">$1</h5>'],
-    // [/#{5}\s?([^\n]+)/g, '<h5 className="text-sm font-bold">$1</h5>'],
+    [/#{5}\s?([^\n]+)/g, '<h5>$1</h5>'],
 
-    [/#{4}\s?([^\n]+)/g, '<h4 style="font-weight:700">$1</h4>'],
-    // [/#{4}\s?([^\n]+)/g, '<h4 className="font-bold">$1</h4>'],
+    [/#{4}\s?([^\n]+)/g, '<h4>$1</h4>'],
 
-    [/#{3}\s?([^\n]+)/g, '<h3 style="font-size: 1.125rem; line-height: 1.75rem; font-weight: 700;">$1</h3>'],
-    // [/#{3}\s?([^\n]+)/g, '<h3 className="text-lg font-bold">$1</h3>'],
+    [/#{3}\s?([^\n]+)/g, '<h3 class="text-xl font-bold text-green-400">$1</h3>'],
 
-    [/#{2}\s?([^\n]+)/g, '<h2 style="font-weight:700;line-height:1rem,font-size:0.75rem">$1</h2>'],
-    // [/#{2}\s?([^\n]+)/g, '<h2 className="text-xl font-bold">$1</h2>'],
+    [/#{2}\s?([^\n]+)/g, '<h2 class="text-2xl font-bold text-yellow-400">$1</h2>'],
 
-    [/#{1}\s?([^\n]+)/g, '<h1 style="font-weight:700;line-height:1rem,font-size:0.75rem">$1</h1>'],
-    // [/#{1}\s?([^\n]+)/g, '<h1 className="text-2xl font-bold">$1</h1>'],
+    [/#{1}\s?([^\n]+)/g, '<h1 class="text-3xl font-bold text-red-400">$1</h1>'],
 
     //bold, italics and paragraph rules
     [/\*\*\s?([^\n]+)\*\*/g, '<b>$1</b>'],
     [/\*\s?([^\n]+)\*/g, '<i>$1</i>'],
     [/__([^_]+)__/g, '<b>$1</b>'],
     [/_([^_`]+)_/g, '<i>$1</i>'],
+    [/~([^~`]+)~/g, '<strike>$1</strike>'],
     [/([^\n]+\n?)/g, '<p>$1</p>'],
 
-    //links
-    [/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" className="text-link">$1</a>'],
-
     //highlights
-    // [/(`)(\s?[^\n,]+\s?)(`)/g, '<a style="background-color:grey;color:black;text-decoration: none;border-radius: 3px;padding:0 2px;">$2</a>'],
-    [/(`)(\s?[^\n,]+\s?)(`)/g, '<a className="bg-gray-300 text-slate-900 rounded-md px-1">$2</a>'],
+    [/(`)(\s?[^\n,]+\s?)(`)/g, '<a class="bg-gray-300 text-slate-900 rounded-md px-1">$2</a>'],
 
-    //Lists
-    [/([^\n]+)(\+)([^\n]+)/g, '<ul><li>$3</li></ul>'],
-    [/([^\n]+)(\*)([^\n]+)/g, '<ul><li>$3</li></ul>'],
+    //Lists, only * and + because - will mess every else
+    [/([^\n]+)(\+)([^\n]+)/g, '<ul class="ml-6 list-disc"><li>$3</li></ul>'],
+    [/([^\n]+)(\*)([^\n]+)/g, '<ul class="ml-6 list-disc"><li>$3</li></ul>'],
 
     //Image
-    [/!\[([^\]]+)\]\(([^)]+)\s"([^")]+)"\)/g, '<img className="block w-full" src="$2" alt="$1" title="$3" />'],
+    [/!\[([^\]]+)\]\(([^)]+)\s"([^")]+)"\)/g, '<img class="block w-full" src="$2" alt="$1" title="$3" />'],
+
+    //links
+    [/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-link underline decoration-dotted hover:decoration-solid">$1</a>'],
   ];
 
   // console.log(str);
