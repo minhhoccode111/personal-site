@@ -16,37 +16,36 @@ export default function Index() {
   const [isLoadingQuote, setIsLoadingQuote] = useState(true);
   const [loadingQuoteError, setLoadingQuoteError] = useState(false);
 
-  // useEffect(() => {
-  //   const getQuote = async () => {
-  //     try {
-  //       const data = await fetch('https://api.quotable.io/random', { mode: 'cors' }).then((response) => response.json());
+  useEffect(() => {
+    const getQuote = async () => {
+      try {
+        const data = await fetch('https://api.quotable.io/random', { mode: 'cors' }).then((response) => response.json());
 
-  //       console.log(data.content);
+        // console.log(data.content);
 
-  //       // display quote
-  //       setCurrentQuote(data.content);
+        // display quote
+        setCurrentQuote(data.content);
 
-  //       // display author
-  //       setCurrentAuthor(data.author);
-  //     } catch (error) {
-  //       console.log(error);
+        // display author
+        setCurrentAuthor(data.author);
+      } catch (error) {
+        console.log(error);
 
-  //       // display errors (if occurs)
-  //       setLoadingQuoteError(true);
-  //     } finally {
-  //       // hide loading
-  //       setIsLoadingQuote(false);
-  //     }
-  //   };
+        // display errors (if occurs)
+        setLoadingQuoteError(true);
+      } finally {
+        // hide loading
+        setIsLoadingQuote(false);
+      }
+    };
 
-  //   getQuote(); // TODO turn on back when finishing develop
-  // }, [flag]);
+    getQuote(); // TODO turn on back when finishing develop
+  }, [flag]);
 
   return (
     <section className="flex-1 flex flex-col">
       {/* background image */}
       <div className="fixed -z-10 top-0 left-0 w-screen h-screen bg-white overflow-hidden">
-        {/* <img src="/bg-1.jpg" alt="Background image" className="object-cover border object-center h-full w-full brightness-90" /> */}
         <img src={BackgroundImage1} alt="Background image" className="object-cover border object-center h-full w-full brightness-90" />
       </div>
 

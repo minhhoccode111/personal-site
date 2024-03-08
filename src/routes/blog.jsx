@@ -4,8 +4,8 @@ import { RiArrowUpDoubleLine } from 'react-icons/ri';
 import axios from 'axios';
 import BackgroundImage2 from './../assets/bg-2.jpg';
 import { SubmitButton } from '../components/button';
-// import Loading from '../components/loading';
-// import Error from '../components/error';
+import Loading from '../components/loading';
+import Error from '../components/error';
 
 export async function loader() {
   return null;
@@ -27,18 +27,25 @@ export default function Blog() {
   // sticky search header
   const [isSticky, setIsSticky] = useState(false);
 
-  // blog posts from Layout
-  const { blogPosts, setWillFetchPosts, loginState } = useOutletContext();
+  // states from layout use context
+  const {
+    blogPosts,
+    loginState,
+    isErrorPosts,
+    isLoadingPosts,
+    setWillFetchPosts, // toggle a flag to refetch posts
+  } = useOutletContext();
 
-  // fetch states
-  // const [isLoadingPosts, setIsLoadingPosts] = useState(false);
-  // const [isErrorPosts, setIsErrorPosts] = useState(false);
+  // fetch state of create post form
+  const [isLoadingPostForm, setIsLoadingPostForm] = useState(false);
+  const [isErrorPostForm, setIsErrorPostForm] = useState(false);
 
   // handle create new post submit
   async function handleCreatePostSubmit(e) {
     e.preventDefault();
 
-    // setIsLoadingPosts(() => true);
+    setIsLoadingPostForm(() => true);
+
     try {
       await axios({
         url: import.meta.env.VITE_API_ORIGIN + '/posts',
@@ -59,16 +66,14 @@ export default function Blog() {
 
       // console.log(res.data);
 
-      // setBlogPosts((postComments) => [res?.data?.post, ...postComments]);
-
       // flip the switch to refetch
       setWillFetchPosts((current) => !current);
     } catch (err) {
       // console.log(err.response);
       // if not a 400 (data invalid) error, stop user from send request again
-      // if (err.response.status !== 400) setIsErrorPosts(() => true);
+      if (err.response.status !== 400) setIsErrorPostForm(() => true);
     } finally {
-      // setIsLoadingPosts(() => false);
+      setIsLoadingPostForm(() => false);
     }
   }
 
@@ -86,6 +91,66 @@ export default function Blog() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  let jsx;
+
+  // there server error or connection error when fetching posts
+  if (isErrorPosts) {
+    jsx = (
+      <div className="">
+        <Error />
+      </div>
+    );
+    // is fetching
+  } else if (isLoadingPosts) {
+    jsx = (
+      <div className="">
+        <Loading />
+      </div>
+    );
+    // data available
+  } else {
+    jsx = (
+      <ul className="">
+        {blogPosts.map((post) => (
+          <li className="p-4 my-8 shadow-lg text-gray-900 rounded-md bg-white" key={post.id}>
+            <Link className="block pb-4" to={post.id}>
+              <h3
+                className="text-link font-bold text-2xl"
+                dangerouslySetInnerHTML={{
+                  __html: post.title.length < 100 ? post.title.charAt(0).toUpperCase() + post.title.slice(1) : post.title.charAt(0).toUpperCase() + post.title.slice(1, 98) + '...',
+                }}
+              ></h3>
+            </Link>
+            <div className="flex gap-2 justify-between items-center italic">
+              <p
+                dangerouslySetInnerHTML={{
+                  __html: post?.creator?.fullname,
+                }}
+                className=""
+              ></p>
+              <div className="flex gap-1 text-xs items-center justify-end">
+                <p className="">{post.createdAtFormatted}</p>
+
+                <p>|</p>
+
+                {/* calculate speed base on content's characters */}
+                <p className="">{Math.ceil(post.content.length / 5 / 238)} min read</p>
+
+                {loginState?.user?.isCreator && (
+                  <>
+                    <p>|</p>
+                    <p className="">{post.published ? 'Published' : 'Unpublished'}</p>
+                  </>
+                )}
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
   return (
     <section className="">
       {/* background image */}
@@ -182,46 +247,11 @@ export default function Blog() {
         </div>
       </div>
 
-      {/* display each post in blogPosts to navigate */}
+      {/* display each post in blogPosts and its link to navigate to view */}
       <div className="p-2 sm:p-4 w-full max-w-[70ch] mx-auto my-8 rounded-lg">
-        <ul className="">
-          {blogPosts.map((post) => (
-            <li className="p-4 my-8 shadow-lg text-gray-900 rounded-md bg-white" key={post.id}>
-              <Link className="block pb-4" to={post.id}>
-                <h3
-                  className="text-link font-bold text-2xl"
-                  dangerouslySetInnerHTML={{
-                    __html: post.title.length < 100 ? post.title.charAt(0).toUpperCase() + post.title.slice(1) : post.title.charAt(0).toUpperCase() + post.title.slice(1, 98) + '...',
-                  }}
-                ></h3>
-              </Link>
-              <div className="flex gap-2 justify-between items-center italic">
-                <p
-                  dangerouslySetInnerHTML={{
-                    __html: post?.creator?.fullname,
-                  }}
-                  className=""
-                ></p>
-                <div className="flex gap-1 text-xs items-center justify-end">
-                  <p className="">{post.createdAtFormatted}</p>
+        {jsx}
 
-                  <p>|</p>
-
-                  {/* calculate speed base on content's characters */}
-                  <p className="">{Math.ceil(post.content.length / 5 / 238)} min read</p>
-
-                  {loginState?.user?.isCreator && (
-                    <>
-                      <p>|</p>
-                      <p className="">{post.published ? 'Published' : 'Unpublished'}</p>
-                    </>
-                  )}
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
-
+        {/* create new post field */}
         <div className="p-4 rounded-xl bg-gray-100 my-4">
           <h4 className="text-lg font-bold text-link my-2">Create a new post</h4>
 
@@ -251,20 +281,19 @@ export default function Blog() {
                 <option value="false">False</option>
               </select>
 
+              {/* a button based on create new post state, stop user from sending too many requests */}
               <div className="my-2 flex gap-2 justify-end items-center">
-                {/* {isErrorPosts ? (
+                {isErrorPostForm ? (
                   <SubmitButton isDisable={true}>
                     <Error />
                   </SubmitButton>
-                ) : isLoadingPosts ? (
+                ) : isLoadingPostForm ? (
                   <SubmitButton isDisable={true}>
                     <Loading />
                   </SubmitButton>
                 ) : (
                   <SubmitButton isDisable={false}>Post</SubmitButton>
-                )} */}
-
-                <SubmitButton isDisable={false}>Post</SubmitButton>
+                )}
               </div>
             </form>
           ) : (

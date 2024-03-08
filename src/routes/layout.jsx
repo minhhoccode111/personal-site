@@ -1,6 +1,6 @@
-import { IoIosCloseCircleOutline, IoIosCreate, IoIosLogIn, IoIosLogOut } from 'react-icons/io';
+import { IoIosCloseCircleOutline, IoIosMenu, IoIosCreate, IoIosLogIn, IoIosLogOut } from 'react-icons/io';
+import { FaRegLightbulb, FaLightbulb } from 'react-icons/fa';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { GiHamburgerMenu } from 'react-icons/gi';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Footer from './../components/footer';
@@ -11,7 +11,7 @@ export default function Layout() {
   const { pathname } = useLocation();
 
   // language
-  const [isVietnamese, setIsVietnamese] = useState(true);
+  const [isLightTheme, setIsLightTheme] = useState(true);
 
   // hamburger menu state
   const [isShowMenu, setIsShowMenu] = useState(false);
@@ -26,8 +26,8 @@ export default function Layout() {
   // const [countProjects, setCountProjects] = useState(0);
 
   // state of blog posts fetching
-  // const [isLoading, setIsLoading] = useState(false);
-  // const [isError, setIsError] = useState(false);
+  const [isLoadingPosts, setIsLoadingPosts] = useState(false);
+  const [isErrorPosts, setIsErrorPosts] = useState(false);
 
   // login state on local storage
   const [loginState, setLoginState] = useState({});
@@ -45,10 +45,11 @@ export default function Layout() {
   // a flag to fetch blog again to keep things sync
   const [willFetchPosts, setWillFetchPosts] = useState(false);
 
-  // start fetching blogs here when the page first load
+  // start fetching blogs here when the page first load or when user's authentication change
   useEffect(() => {
     async function tmp() {
-      // setIsLoading(()=>true)
+      setIsLoadingPosts(() => true);
+
       try {
         const res = await axios({
           mode: 'cors',
@@ -68,9 +69,11 @@ export default function Layout() {
         // console.log(res.data);
       } catch (err) {
         console.log(err.response);
-        // setIsError(() => true);
+
+        setIsErrorPosts(() => true);
       } finally {
-        // setIsLoading(() => false);
+        setIsLoadingPosts(() => false);
+
         // console.log(`blog fetched!`);
       }
     }
@@ -85,21 +88,18 @@ export default function Layout() {
         className={'flex gap-3 sm:gap-5 md:gap-7 lg:gap-9 items-center p-4 sm:p-5 md:p-6 lg:p-7 shadow-lg shadow-gray-300 text-slate-700 bg-white' + ' ' + (pathname !== '/' && 'bg-slate-50')}
         // color base on url path
       >
-        {/* <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl tracking-wider flex-1 whitespace-nowrap">
-          <Link to={'/'}>hoang minh</Link>
-        </h1> */}
-
-        {/* hamburger */}
+        {/* hamburger button */}
         <nav className={'sm:hidden'}>
           {/* click to toggle menu */}
-          <button className="hover:bg-gray-300 hover:text-black max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all" onClick={() => setIsShowMenu(!isShowMenu)}>
-            <GiHamburgerMenu />
+          <button className="hover:bg-gray-300 hover:text-black p-2 max-sm:rounded-xl rounded-md transition-all text-4xl" onClick={() => setIsShowMenu(!isShowMenu)}>
+            <IoIosMenu />
           </button>
         </nav>
 
+        {/* all nav links */}
         <nav
           className={
-            'flex max-sm:flex-col max-sm:gap-8 max-sm:text-4xl max-sm:fixed max-sm:top-0 max-sm:bottom-0 max-sm:right-0 max-sm:z-20 max-sm:bg-[#ffffff99] max-sm:px-8 max-sm:py-20 max-sm:shadow-2xl max-sm:text-right max-sm:w-3/4 max-sm:backdrop-blur-sm max-sm:items-stretch transition-all origin-top items-center gap-1 md:gap-3 lg:gap-5 text-lg md:text-xl' +
+            'flex max-sm:flex-col max-sm:gap-8 max-sm:text-4xl max-sm:fixed max-sm:top-0 max-sm:bottom-0 max-sm:right-0 max-sm:z-30 max-sm:bg-[#ffffff99] max-sm:px-8 max-sm:py-20 max-sm:shadow-2xl max-sm:text-right max-sm:w-3/4 max-sm:backdrop-blur-sm max-sm:items-stretch transition-all origin-top items-center gap-1 md:gap-3 lg:gap-5 text-lg md:text-xl' +
             ' ' +
             (isShowMenu ? 'max-sm:scale-y-100' : 'max-sm:scale-y-0')
             // show or hide base on isShowMenu
@@ -157,13 +157,16 @@ export default function Layout() {
           {/* token not expired */}
           {new Date(loginState?.expiresInDate) > new Date() ? (
             <div className="flex gap-2 md:gap-4 max-sm:justify-end">
-              {/* link to signup section */}
+              {/* display authentication */}
+              <p className={'max-sm:rounded-xl rounded-lg transition-all self-center relative border ' + (loginState?.user?.isCreator ? 'text-danger border-danger' : 'text-success border-success')}>
+                {/* a button to toggle username */}
+                <button className="peer flex items-stretch justify-stretch max-sm:p-4 p-2">{loginState?.user?.isCreator ? 'Creator' : 'Viewer'}</button>
 
-              {loginState.user.isCreator ? (
-                <p className="max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all text-danger self-center">Creator</p>
-              ) : (
-                <p className="max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all text-success self-center">Viewer</p>
-              )}
+                {/* a tooltip to display user name */}
+                <span className="absolute transition-all px-6 py-3 rounded-md hidden peer-focus:block peer-hover:block max-sm:bottom-full sm:top-full my-4 bg-gray-200 left-1/2 -translate-x-1/2">
+                  {loginState?.user?.fullname}
+                </span>
+              </p>
 
               <div className="border border-slate-900 w-0"></div>
 
@@ -201,16 +204,16 @@ export default function Layout() {
           )}
         </nav>
 
+        {/* change theme button */}
         <div className="flex-1">
           <button
             type="button"
-            className="hover:bg-gray-300 hover:text-black max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all"
+            className="hover:bg-gray-300 hover:text-black max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all text-xl"
             onClick={() => {
-              // change language
-              setIsVietnamese(!isVietnamese);
+              setIsLightTheme(!isLightTheme);
             }}
           >
-            {isVietnamese ? 'Vie' : 'Eng'}
+            {isLightTheme ? <FaLightbulb /> : <FaRegLightbulb />}
           </button>
         </div>
       </header>
@@ -220,11 +223,15 @@ export default function Layout() {
         {/* pass functions down without drilling */}
         <Outlet
           context={{
-            loginState,
-            setLoginState,
             blogPosts,
+            loginState,
             setBlogPosts,
+            isErrorPosts,
+            setLoginState,
+            isLoadingPosts,
+            setIsErrorPosts,
             setWillFetchPosts,
+            setIsLoadingPosts,
           }}
         />
       </main>
