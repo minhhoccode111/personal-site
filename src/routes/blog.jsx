@@ -97,15 +97,15 @@ export default function Blog() {
   // there server error or connection error when fetching posts
   if (isErrorPosts) {
     jsx = (
-      <div className="">
-        <Error />
+      <div className="mx-auto grid place-items-center text-warn">
+        <Error className="text-8xl" />
       </div>
     );
     // is fetching
   } else if (isLoadingPosts) {
     jsx = (
-      <div className="">
-        <Loading />
+      <div className="mx-auto grid place-items-center text-warn">
+        <Loading className="text-8xl" />
       </div>
     );
     // data available
