@@ -1,4 +1,4 @@
-import { IoIosCloseCircleOutline, IoIosMenu, IoIosCreate, IoIosLogIn, IoIosLogOut } from 'react-icons/io';
+import { IoIosCloseCircleOutline, IoIosPersonAdd, IoIosMenu, IoIosLogIn, IoIosLogOut } from 'react-icons/io';
 import { FaRegLightbulb, FaLightbulb } from 'react-icons/fa';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -66,7 +66,7 @@ export default function Layout() {
         // set count blogs
         setCountBlogs(() => res?.data?.posts?.length);
 
-        // console.log(res.data);
+        // console.log(res.data.posts);
       } catch (err) {
         console.log(err.response);
 
@@ -191,7 +191,7 @@ export default function Layout() {
                 to={'signup'}
                 title="Signup"
               >
-                <IoIosCreate className="text-6xl sm:text-2xl md:text-3xl" />
+                <IoIosPersonAdd className="text-6xl sm:text-2xl md:text-3xl" />
               </NavLink>
 
               <div className="border border-slate-900 w-0"></div>

@@ -6,6 +6,7 @@ import BackgroundImage2 from './../assets/bg-2.jpg';
 import { SubmitButton } from '../components/button';
 import Loading from '../components/loading';
 import Error from '../components/error';
+import { markdownParser, domParser } from '../methods';
 
 export async function loader() {
   return null;
@@ -44,7 +45,7 @@ export default function Blog() {
   async function handleCreatePostSubmit(e) {
     e.preventDefault();
 
-    setIsLoadingPostForm(() => true);
+    setIsLoadingPostForm(true);
 
     try {
       await axios({
@@ -73,7 +74,7 @@ export default function Blog() {
       // if not a 400 (data invalid) error, stop user from send request again
       if (err.response.status !== 400) setIsErrorPostForm(() => true);
     } finally {
-      setIsLoadingPostForm(() => false);
+      setIsLoadingPostForm(false);
     }
   }
 
@@ -115,15 +116,18 @@ export default function Blog() {
         {blogPosts.map((post) => (
           <li className="p-4 my-8 shadow-lg text-gray-900 rounded-md bg-white" key={post.id}>
             <Link className="block pb-4" to={post.id}>
+              {/* display multi line if title had \n */}
               <h3
                 className="text-link font-bold text-2xl"
                 dangerouslySetInnerHTML={{
-                  __html: post.title.length < 100 ? post.title.charAt(0).toUpperCase() + post.title.slice(1) : post.title.charAt(0).toUpperCase() + post.title.slice(1, 98) + '...',
+                  __html: markdownParser(domParser(post?.title)),
                 }}
               ></h3>
             </Link>
+
             <div className="flex gap-2 justify-between items-center italic">
               <p
+                // unescaped user's name has "'<>, no need to handle multi line
                 dangerouslySetInnerHTML={{
                   __html: post?.creator?.fullname,
                 }}
