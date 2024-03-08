@@ -23,12 +23,23 @@ export function markdownParser(str) {
 
   const rules = [
     //header rules
-    [/#{6}\s?([^\n]+)/g, '<h6 className="text-xs font-bold">$1</h6>'],
-    [/#{5}\s?([^\n]+)/g, '<h5 className="text-ms font-bold">$1</h5>'],
-    [/#{4}\s?([^\n]+)/g, '<h4 className="font-bold">$1</h4>'],
-    [/#{3}\s?([^\n]+)/g, '<h3 className="text-lg font-bold">$1</h3>'],
-    [/#{2}\s?([^\n]+)/g, '<h2 className="text-xl font-bold">$1</h2>'],
-    [/#{1}\s?([^\n]+)/g, '<h1 className="text-2xl font-bold">$1</h1>'],
+    [/#{6}\s?([^\n]+)/g, '<h6 style="font-weight:700;line-height:1rem,font-size:0.75rem">$1</h6>'],
+    // [/#{6}\s?([^\n]+)/g, '<h6 className="text-xs font-bold">$1</h6>'],
+
+    [/#{5}\s?([^\n]+)/g, '<h5 style="font-size: 0.875rem; line-height: 1.25rem; font-weight: 700; ">$1</h5>'],
+    // [/#{5}\s?([^\n]+)/g, '<h5 className="text-sm font-bold">$1</h5>'],
+
+    [/#{4}\s?([^\n]+)/g, '<h4 style="font-weight:700">$1</h4>'],
+    // [/#{4}\s?([^\n]+)/g, '<h4 className="font-bold">$1</h4>'],
+
+    [/#{3}\s?([^\n]+)/g, '<h3 style="font-size: 1.125rem; line-height: 1.75rem; font-weight: 700;">$1</h3>'],
+    // [/#{3}\s?([^\n]+)/g, '<h3 className="text-lg font-bold">$1</h3>'],
+
+    [/#{2}\s?([^\n]+)/g, '<h2 style="font-weight:700;line-height:1rem,font-size:0.75rem">$1</h2>'],
+    // [/#{2}\s?([^\n]+)/g, '<h2 className="text-xl font-bold">$1</h2>'],
+
+    [/#{1}\s?([^\n]+)/g, '<h1 style="font-weight:700;line-height:1rem,font-size:0.75rem">$1</h1>'],
+    // [/#{1}\s?([^\n]+)/g, '<h1 className="text-2xl font-bold">$1</h1>'],
 
     //bold, italics and paragraph rules
     [/\*\*\s?([^\n]+)\*\*/g, '<b>$1</b>'],
@@ -59,7 +70,7 @@ export function markdownParser(str) {
     // console.log(`the template belike: `, template);
     str = str.replace(rule, template);
   });
-  // console.log(str);
+  console.log(`final str belike: `, str);
 
   return str;
 }

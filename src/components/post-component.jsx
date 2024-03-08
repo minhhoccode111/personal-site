@@ -3,6 +3,7 @@ import { useOutletContext, useNavigate } from 'react-router-dom';
 import { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import { markdownParser, domParser } from '../methods';
 
 export default function PostComponent({ post }) {
   // navigate after deleting a post
@@ -155,17 +156,20 @@ export default function PostComponent({ post }) {
     <article className="sm:p-8 w-full max-w-[70ch] mx-auto rounded-lg p-4 my-4 shadow-lg bg-white">
       {/* post header */}
       <h3
-        className="text-warn font-bold text-3xl pb-4"
+        className="text-warn font-bold text-3xl pb-4 text-center"
         // unescaped post title
         dangerouslySetInnerHTML={{
-          __html: post.title.charAt(0).toUpperCase() + post.title.slice(1),
+          __html: markdownParser(domParser(post?.title)),
         }}
       ></h3>
 
       {/* info */}
       <div className="flex gap-2 justify-between items-center italic">
         {/* unescaped post creator fullname */}
-        <h4 className="" dangerouslySetInnerHTML={{ __html: post.creator.fullname }}></h4>
+        {/* <h4 className="" dangerouslySetInnerHTML={{ __html: post.creator.fullname }}></h4> */}
+
+        {/* don't need to use dangerouslySetInnerHTML because we are not parsing markdown */}
+        <h4 className="">{domParser(post?.creator?.fullname)}</h4>
 
         <div className="flex gap-1 text-xs items-center justify-end">
           <p className="">{post.createdAtFormatted}</p>
@@ -188,7 +192,14 @@ export default function PostComponent({ post }) {
 
       {/* post content */}
       <div className="">
-        <p className="" dangerouslySetInnerHTML={{ __html: post.content }}></p>
+        <p
+          className=""
+          dangerouslySetInnerHTML={{
+            // we display content with it's markdown format
+            __html: markdownParser(domParser(post.content)),
+          }}
+        ></p>
+        {/* <p className="">{markdownParser(domParser(post.content))}</p> */}
       </div>
 
       {/* delete and edit buttons or confirm and cancel button */}
@@ -206,13 +217,31 @@ export default function PostComponent({ post }) {
             {' '}
             Title{' '}
           </label>
-          <textarea ref={titleRef} name="title" id="title" className="w-full box-border rounded-lg p-2 my-2" placeholder="Title..." required defaultValue={post.title}></textarea>
+          <textarea
+            ref={titleRef}
+            name="title"
+            id="title"
+            className="w-full box-border rounded-lg p-2 my-2"
+            placeholder="Title..."
+            required
+            // serve user what they see as default value
+            defaultValue={domParser(post.title)}
+          ></textarea>
 
           <label htmlFor="content" className="block text-sm font-medium text-gray-900">
             {' '}
             Content{' '}
           </label>
-          <textarea ref={contentRef} name="content" id="content" className="w-full box-border rounded-lg p-2 my-2" placeholder="Content..." required defaultValue={post.content}></textarea>
+          <textarea
+            ref={contentRef}
+            name="content"
+            id="content"
+            className="w-full box-border rounded-lg p-2 my-2"
+            placeholder="Content..."
+            required
+            // serve user what they see as default value
+            defaultValue={domParser(post.content)}
+          ></textarea>
 
           <label htmlFor="published" className="block text-sm font-medium text-gray-900">
             {' '}
