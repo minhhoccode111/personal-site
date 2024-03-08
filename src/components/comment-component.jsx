@@ -3,8 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-// import Loading from './loading';
-// import Error from './error';
+import { markdownParser, domParser } from '../methods';
 
 export default function CommentComponent({ comment, setWillFetchComments }) {
   const { loginState } = useOutletContext();
@@ -13,9 +12,7 @@ export default function CommentComponent({ comment, setWillFetchComments }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // const [isCommentLoading, setIsCommentLoading] = useState(false);
-  // const [isCommentError, setIsCommentError] = useState(false);
-
+  // reference of comment's textarea
   const contentRef = useRef(null);
 
   async function handleEditCommentSubmit(e) {
@@ -153,10 +150,17 @@ export default function CommentComponent({ comment, setWillFetchComments }) {
     // display normal when to editing
     <>
       {/* unescaped comment creator fullname */}
-      <h4 className="text-lg text-link cursor-pointer hover:underline" dangerouslySetInnerHTML={{ __html: comment?.creator?.fullname }}></h4>
+      <h4 className="text-lg text-link cursor-pointer hover:underline">{domParser(comment?.creator?.fullname)}</h4>
 
       {/* unescaped comment content */}
-      <p className="" dangerouslySetInnerHTML={{ __html: comment?.content }}></p>
+      <p
+        className=""
+        dangerouslySetInnerHTML={{
+          __html:
+            // allow them to use markdown syntax
+            markdownParser(domParser(comment?.content)),
+        }}
+      ></p>
 
       {/* display comment's time created and time last modified */}
       <p className="text-xs italic inline-block pr-1">Created: {comment?.createdAtFormatted} </p>
@@ -169,10 +173,19 @@ export default function CommentComponent({ comment, setWillFetchComments }) {
     // display form when editing
     <form onSubmit={handleEditCommentSubmit}>
       {/* unescaped comment creator fullname */}
-      <h4 className="text-lg text-link cursor-pointer hover:underline" dangerouslySetInnerHTML={{ __html: comment?.creator?.fullname }}></h4>
+      <h4 className="text-lg text-link cursor-pointer hover:underline">{domParser(comment?.creator?.fullname)}</h4>
 
       {/* replace a p tag with textarea */}
-      <textarea ref={contentRef} name="content" id="" className="w-full box-border rounded-lg p-2 my-2" placeholder="Share your thoughts" required defaultValue={comment.content}></textarea>
+      <textarea
+        ref={contentRef}
+        name="content"
+        id=""
+        className="w-full box-border rounded-lg p-2 my-2"
+        placeholder="Share your thoughts"
+        required
+        // serve user what they see as default value
+        defaultValue={domParser(comment?.content)}
+      ></textarea>
 
       {/* display comment's time created and time last modified */}
       <p className="text-xs italic inline-block pr-1">Created: {comment?.createdAtFormatted} </p>

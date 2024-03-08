@@ -70,7 +70,7 @@ export function markdownParser(str) {
     // console.log(`the template belike: `, template);
     str = str.replace(rule, template);
   });
-  console.log(`final str belike: `, str);
+  // console.log(`final str belike: `, str);
 
   return str;
 }
