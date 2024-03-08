@@ -163,7 +163,7 @@ export default function Layout() {
                 <button className="peer flex items-stretch justify-stretch max-sm:p-4 p-2">{loginState?.user?.isCreator ? 'Creator' : 'Viewer'}</button>
 
                 {/* a tooltip to display user name */}
-                <span className="absolute transition-all px-6 py-3 rounded-md hidden peer-focus:block peer-hover:block max-sm:bottom-full sm:top-full my-4 bg-gray-200 left-1/2 -translate-x-1/2">
+                <span className="absolute transition-all px-6 py-3 rounded-md hidden peer-focus:block peer-hover:block max-sm:bottom-full sm:top-full my-4 bg-gray-800 left-1/2 -translate-x-1/2 text-center">
                   {loginState?.user?.fullname}
                 </span>
               </p>
@@ -172,7 +172,9 @@ export default function Layout() {
 
               {/* link to logout section */}
               <NavLink
-                className={({ isActive }) => (isActive ? 'bg-sky-400 text-white' : 'hover:bg-gray-300 hover:text-black') + ' ' + 'max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all'}
+                className={({ isActive }) =>
+                  (isActive ? 'bg-sky-400 text-white' : 'hover:bg-gray-300 hover:text-black') + ' ' + 'max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all grid place-items-center'
+                }
                 to={'logout'}
                 title="Logout"
               >
@@ -183,7 +185,9 @@ export default function Layout() {
             <div className="flex gap-2 md:gap-4 max-sm:justify-end">
               {/* link to signup section */}
               <NavLink
-                className={({ isActive }) => (isActive ? 'bg-sky-400 text-white' : 'hover:bg-gray-300 hover:text-black') + ' ' + 'max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all'}
+                className={({ isActive }) =>
+                  (isActive ? 'bg-sky-400 text-white' : 'hover:bg-gray-300 hover:text-black') + ' ' + 'max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all grid place-items-center'
+                }
                 to={'signup'}
                 title="Signup"
               >
@@ -194,7 +198,9 @@ export default function Layout() {
 
               {/* link to login section */}
               <NavLink
-                className={({ isActive }) => (isActive ? 'bg-sky-400 text-white' : 'hover:bg-gray-300 hover:text-black') + ' ' + 'max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all'}
+                className={({ isActive }) =>
+                  (isActive ? 'bg-sky-400 text-white' : 'hover:bg-gray-300 hover:text-black') + ' ' + 'max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all grid place-items-center'
+                }
                 to={'login'}
                 title="Login"
               >

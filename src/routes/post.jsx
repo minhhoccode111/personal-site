@@ -38,7 +38,7 @@ export default function Post() {
   // console.log(post);
 
   // store fetched comments
-  const [postComments, setPostComments] = useState([]);
+  const [postComments, setPostComments] = useState();
 
   // handle get comments fetch states
   const [isLoadingComments, setIsLoadingComments] = useState(false);
@@ -134,7 +134,13 @@ export default function Post() {
   } else {
     commentsJsx = (
       <ul className="">
-        {postComments !== undefined && postComments.length > 0 ? (
+        {/* if finished fetching and postComments still undefined */}
+        {!postComments ? (
+          <div className="mx-auto grid place-items-center text-warn">
+            <Error className="text-8xl" />
+          </div>
+        ) : // if not empty array
+        postComments.length > 0 ? (
           // if post has comments
           postComments.map((comment) => (
             <li key={comment.id} className="rounded-xl bg-fuchsia-50 p-4 my-4 relative">
@@ -142,7 +148,7 @@ export default function Post() {
             </li>
           ))
         ) : (
-          // if post doesn't has comments
+          // if empty array
           <li className="rounded-xl bg-fuchsia-50 p-4 my-4">
             <h4 className="text-lg">No comments yet</h4>
           </li>
@@ -188,7 +194,7 @@ export default function Post() {
           <h3 className="text-warn font-bold text-xl pb-4">Comments</h3>
 
           {/* count comments */}
-          <p className="italic">{postComments.length} comments</p>
+          <p className="italic">{postComments?.length} comments</p>
         </header>
 
         {/* display all post's comments */}
