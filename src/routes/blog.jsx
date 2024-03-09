@@ -1,6 +1,12 @@
-import { useFetcher, Link, useSubmit, useOutletContext } from 'react-router-dom';
-import { useEffect, useState, useRef } from 'react';
+import {
+  Link,
+  // useSubmit,
+  // useFetcher,
+  useOutletContext,
+} from 'react-router-dom';
+import { useEffect, useReducer, useState, useRef } from 'react';
 import { RiArrowUpDoubleLine } from 'react-icons/ri';
+import { matchSorter } from 'match-sorter';
 import axios from 'axios';
 import BackgroundImage2 from './../assets/bg-2.jpg';
 import { SubmitButton } from '../components/button';
@@ -18,7 +24,8 @@ export async function action() {
 
 export default function Blog() {
   // navigate with form
-  const [fetcher, submit] = [useFetcher(), useSubmit()];
+  // const fetcher = useFetcher();
+  // const submit = useSubmit();
 
   // keep track of 3 textarea
   const titleRef = useRef(null);
@@ -40,6 +47,51 @@ export default function Blog() {
   // fetch state of create post form
   const [isLoadingPostForm, setIsLoadingPostForm] = useState(false);
   const [isErrorPostForm, setIsErrorPostForm] = useState(false);
+
+  // search, sort and filter posts on inputs change
+  const [reduceState, dispatch] = useReducer(reducer, { posts: blogPosts });
+
+  // to keep reduceState in sync when blogPosts fetched, because when we first assign blogPosts to reduceState it's an empty array
+  useEffect(() => {
+    dispatch({ type: 'load' });
+  }, [blogPosts]);
+
+  // filter and sort the blogPosts, we don't need state because we use blogPosts state every time
+  function reducer(state, action) {
+    // TODO: implement reducer with tags like: frontend, backend, api, os, math, dsa, etc.
+    const type = action.type;
+    if (type === 'load') {
+      return { posts: [...blogPosts] };
+    } else if (type === 'az') {
+      // we have to clone blogPosts because we don't want to use reducer's own `state`
+      return { posts: [...blogPosts].sort((a, b) => (a.title.toLowerCase() > b.title.toLowerCase() ? 1 : -1)) };
+    } else if (type === 'za') {
+      return { posts: [...blogPosts].sort((a, b) => (a.title.toLowerCase() > b.title.toLowerCase() ? -1 : 1)) };
+    } else if (type === 'newest') {
+      return { posts: [...blogPosts].sort((a, b) => b.createdAtUnix - a.createdAtUnix) };
+    } else if (type === 'oldest') {
+      return { posts: [...blogPosts].sort((a, b) => a.createdAtUnix - b.createdAtUnix) };
+    } else if (type === 'search') {
+      return {
+        posts: matchSorter([...blogPosts], action.query, {
+          keys: [
+            'title',
+            // 'tag', // TODO search tags
+          ],
+        }),
+      };
+    } else {
+      throw new Error(`Unknown action: `, type);
+    }
+  }
+
+  function handleSortChange(e) {
+    dispatch({ type: e.target.value });
+  }
+
+  function handleSearchChange(e) {
+    dispatch({ type: 'search', query: e.target.value });
+  }
 
   // handle create new post submit
   async function handleCreatePostSubmit(e) {
@@ -78,6 +130,7 @@ export default function Blog() {
     }
   }
 
+  // BUG remove sticky header because it trigger rerender, or do some performant consideration when this whole Blog component rerender with that sticky bar
   // make search bar stick to the top when start scrolling
   useEffect(() => {
     const stickSearch = document.getElementById('stick-search');
@@ -113,7 +166,8 @@ export default function Blog() {
   } else {
     jsx = (
       <ul className="">
-        {blogPosts.map((post) => (
+        {/* {blogPosts.map((post) => ( */}
+        {reduceState.posts.map((post) => (
           <li className="p-4 my-8 shadow-lg text-gray-900 rounded-md bg-white" key={post.id}>
             <Link className="block pb-4 text-link font-bold text-2xl hover:underline transition-all" to={post.id}>
               {/* display multi line if title had \n */}
@@ -175,34 +229,33 @@ export default function Blog() {
 
         {/* search field */}
         <div className="max-sm:w-1/3">
-          <fetcher.Form method="get" role="search" className="">
-            <label
-              htmlFor="search-input"
-              className="relative block rounded-md sm:rounded-lg border border-gray-200 shadow-sm focus-within:border-sky-500 focus-within:ring-1 focus-within:ring-sky-500"
-            >
-              <input
-                id="search-input"
-                className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 sm:text-lg"
-                placeholder="Search for..."
-                type="search"
-                name="q"
-                onChange={(e) => {
-                  // submit search query on type
-                  submit(e.target.form);
-                }}
-              />
+          {/* <fetcher.Form method="get" role="search" className=""> */}
+          <label htmlFor="search-input" className="relative block rounded-md sm:rounded-lg border border-gray-200 shadow-sm focus-within:border-sky-500 focus-within:ring-1 focus-within:ring-sky-500">
+            <input
+              id="search-input"
+              className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 sm:text-lg"
+              placeholder="Search for..."
+              type="search"
+              name="q"
+              // onChange={(e) => {
+              //   // submit search query on type
+              //   submit(e.target.form);
+              // }}
+              onChange={handleSearchChange}
+            />
 
-              <span className="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:-top-1 peer-focus:text-xs peer-focus:sm:text-sm">
-                Search
-              </span>
-            </label>
-          </fetcher.Form>
+            <span className="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:-top-1 peer-focus:text-xs peer-focus:sm:text-sm">
+              Search
+            </span>
+          </label>
+          {/* </fetcher.Form> */}
         </div>
 
         {/* filter category */}
         <div className="">
-          <fetcher.Form method="get" className="flex gap-2 sm:gap-3 md:gap-4">
-            <div className="">
+          {/* <fetcher.Form method="get" className="flex gap-2 sm:gap-3 md:gap-4"> */}
+          <div className="flex gap-2 sm:gap-3 md:gap-4">
+            {/* <div className="">
               <label htmlFor="filter-by" className="block text-sm font-medium text-gray-900">
                 {' '}
                 Category{' '}
@@ -225,7 +278,7 @@ export default function Blog() {
                 <option value="dsa">Data Structures & Algorithms</option>
                 <option value="os">Operating System</option>
               </select>
-            </div>
+            </div> */}
 
             <div className="">
               <label htmlFor="sort-by" className="block text-sm font-medium text-gray-900">
@@ -234,20 +287,25 @@ export default function Blog() {
               </label>
               <select
                 // submit query on change
-                onChange={(e) => {
-                  submit(e.target.form);
-                }}
+                // onChange={(e) => {
+                //   submit(e.target.form);
+                // }}
+                onChange={handleSortChange}
                 name="sort"
                 id="sort-by"
+                defaultValue="newest"
                 className="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm md:text-base px-2 py-1 sm:px-3 sm:py-1.5 bg-white border shadow-sm focus-within:border-sky-500 focus-within:ring-1 focus-within:ring-sky-500 "
               >
                 <option value="newest">Newest</option>
                 <option value="oldest">Oldest</option>
-                <option value="most-like">Most like</option>
-                <option value="most-comment">Most comment</option>
+                <option value="az">A-Z</option>
+                <option value="za">Z-A</option>
+                {/* <option value="most-like">Most like</option>
+                <option value="most-comment">Most comment</option> */}
               </select>
             </div>
-          </fetcher.Form>
+          </div>
+          {/* </fetcher.Form> */}
         </div>
       </div>
 

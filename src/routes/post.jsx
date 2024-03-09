@@ -191,7 +191,7 @@ export default function Post() {
       <article className="sm:p-8 w-full max-w-[70ch] mx-auto rounded-lg p-4 my-4 shadow-lg text-gray-900 bg-white">
         {/* comments header */}
         <header className="flex gap-2 items-center justify-between">
-          <h3 className="text-warn font-bold text-xl pb-4">Comments</h3>
+          <h3 className="text-link font-bold text-xl pb-4">Comments</h3>
 
           {/* count comments */}
           <p className="italic">{postComments?.length} comments</p>

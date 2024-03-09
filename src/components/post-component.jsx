@@ -156,7 +156,7 @@ export default function PostComponent({ post }) {
     <article className="sm:p-8 w-full max-w-[70ch] mx-auto rounded-lg p-4 my-4 shadow-lg bg-white">
       {/* post header */}
       <h3
-        className="text-warn font-bold text-3xl pb-4 text-center"
+        className="text-link font-bold text-3xl pb-4 text-center"
         // unescaped post title
         dangerouslySetInnerHTML={{
           __html: markdownParser(domParser(post?.title)),
