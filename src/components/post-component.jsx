@@ -224,6 +224,7 @@ export default function PostComponent({ post }) {
             className="w-full box-border rounded-lg p-2 my-2"
             placeholder="Title..."
             required
+            rows={5}
             // serve user what they see as default value
             defaultValue={domParser(post.title)}
           ></textarea>
@@ -239,6 +240,7 @@ export default function PostComponent({ post }) {
             className="w-full box-border rounded-lg p-2 my-2"
             placeholder="Content..."
             required
+            rows={15}
             // serve user what they see as default value
             defaultValue={domParser(post.content)}
           ></textarea>

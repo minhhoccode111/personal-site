@@ -47,11 +47,11 @@ npm start
 
 ## **Idea to implement**
 
-- Use React Router to handle search, sort, filter posts in client
 - Some animations with Framer Motion
 - Up vote, down vote
 - Light, dark themes
 - Upload images
+- Performant consideration in `Blog` component when sticky search section trigger re-render on scroll (when it stick and un-stick)
 
 ## **Navigation**
 

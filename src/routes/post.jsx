@@ -208,7 +208,7 @@ export default function Post() {
           {loginState.user !== undefined ? (
             <form onSubmit={handleCreateCommentSubmit}>
               {/* comment's content field */}
-              <textarea ref={contentRef} name="content" id="" className="w-full box-border rounded-lg p-2 my-2" placeholder="Share your thoughts" required></textarea>
+              <textarea ref={contentRef} name="content" id="" className="w-full box-border rounded-lg p-2 my-2" placeholder="Share your thoughts" required rows={5}></textarea>
 
               {/* submit button */}
               <div className="my-2 flex gap-2 justify-end items-center">

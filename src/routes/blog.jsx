@@ -324,13 +324,13 @@ export default function Blog() {
                 {' '}
                 Title{' '}
               </label>
-              <textarea ref={titleRef} name="title" id="title" className="w-full box-border rounded-lg p-2 my-2" placeholder="Title..." required></textarea>
+              <textarea ref={titleRef} name="title" id="title" className="w-full box-border rounded-lg p-2 my-2" placeholder="Title..." required rows={5}></textarea>
 
               <label htmlFor="content" className="block text-sm font-medium text-gray-900">
                 {' '}
                 Content{' '}
               </label>
-              <textarea ref={contentRef} name="content" id="content" className="w-full box-border rounded-lg p-2 my-2" placeholder="Content..." required></textarea>
+              <textarea ref={contentRef} name="content" id="content" className="w-full box-border rounded-lg p-2 my-2" placeholder="Content..." required rows={15}></textarea>
 
               <label htmlFor="published" className="block text-sm font-medium text-gray-900">
                 {' '}

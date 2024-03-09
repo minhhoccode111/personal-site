@@ -183,7 +183,8 @@ export default function CommentComponent({ comment, setWillFetchComments }) {
         className="w-full box-border rounded-lg p-2 my-2"
         placeholder="Share your thoughts"
         required
-        // serve user what they see as default value
+        rows={5}
+        // serve user what they see (not the one server serve) as default value
         defaultValue={domParser(comment?.content)}
       ></textarea>
 
