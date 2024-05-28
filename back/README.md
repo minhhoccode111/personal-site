@@ -1,70 +1,28 @@
-# Blog API TOP
+# Personal Site Back
 
-The **Project Blog API** is created according to the assignment from **The Odin Project** [course](https://www.theodinproject.com/lessons/nodejs-blog-api).
+The **Personal Site Back** project is an expansion from the **Blog API** project, originally assigned in **The Odin Project** [course](https://www.theodinproject.com/lessons/nodejs-blog-api).
 <br>
 <br>
 
-<!-- ## Screenshot
+## [Demo](https://demo.realworld.io/)&nbsp;&nbsp;&nbsp;&nbsp;[RealWorld](https://github.com/gothinkster/realworld)
 
-![Members Only Screenshot](/public/images/members-only-screenshot.png)
+This codebase was created to demonstrate a fully fledged fullstack application built with **Express.js + MongoDB + JavaScript** including CRUD operations, authentication, routing, pagination, and more.
 
-![Members Only Bcrypt Screenshot](/public/images/members-only-screenshot-password.png) -->
+Adhere to the **Express.js + MongoDB + JavaScript** community styleguides & best practices.
 
-## **Demo** [here](https://minhhoccode.vercel.app/)
+## Getting started
 
-## **Features**
+1. install npm
+1. Run `npm install` in the project folder
+1. Run `npm run dev` for dev mode and `npm run start` for regualr mode
 
-- CRUD actions
-- JSON Web Token Authentication
-- CORS to only allow requests from my frontend
-- RESTful API
+## How it works
 
-## **Outcome**
+> All the routes are defined in the `routes` folder, and their corresponding controllers are implemented in the `controllers` folder.
 
-- Used **Express**
-- Used **MongoDb Atlas**
-- Used **express-validator**
-- Used **luxon**
-- Used **debug**
-- Used **dotenv**
-- Used **bcrypt**
-- Used **passport-jwt**
-- Used **jwt**
-- Used **cors**
+## Design Choices and Tradeoffs
 
-## **Idea to implement**
-
-- Request queries
-- Figure out how to handle text and response with their format (current the server will remove every `\n` new line character)
-
-## **Getting Started**
-
-HTTPS
-
-```bash
-git clone https://github.com/minhhoccode111/blog-back.git
-```
-
-or SSH
-
-```bash
-git clone git@github.com:minhhoccode111/blog-back.git
-```
-
-then
-
-```bash
-cd blog-back
-npm install
-npm start
-```
-
-## **Navigation**
-
-- See [all my projects'](https://github.com/minhhoccode111/all-projects-live-demos) live demos
-
-- See my previous project [Members Only TOP](https://github.com/minhhoccode111/members-only-top)
-
-- See this project's frontend [Personal Portfolio](https://github.com/minhhoccode111/personal-portfolio/)
-
-<!-- * See my next project []() -->
+- Only one `access_token_secret` is used for all the accounts registration and login. Drawback: data can be forged if this secret is leaked
+- Included array structures, e.g. list of comments in the article model, favorited articles in the user model, following users in the user model, tags in article model. Drawback: not good for scalability
+- Count favorite times of an article by going through every user and count each time that article appear in `favoriteArticles` array of each user instead of maintaining a `favoritesCount` variable in each article document. Drawback: not good for scalability
+- Usernames are case-sensitive
