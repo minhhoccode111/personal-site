@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const verifyJWT = require("../middleware/verifyJWT");
 const verifyJWTOptional = require("../middleware/verifyJWTOptional");
-const commentController = require("../controllers/commentsController");
+const commentController = require("../controller/commentsController");
 
 // current user comment on an article
 router.post(

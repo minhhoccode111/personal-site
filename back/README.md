@@ -18,7 +18,7 @@ Adhere to the **Express.js + MongoDB + JavaScript** community styleguides & best
 
 ## How it works
 
-> All the routes are defined in the `routes` folder, and their corresponding controllers are implemented in the `controllers` folder.
+> All the route are defined in the `route` folder, and their corresponding controllers are implemented in the `controllers` folder.
 
 ## Design Choices and Tradeoffs
 

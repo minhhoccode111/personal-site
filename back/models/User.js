@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema(
 
     bio: {
       type: String,
-      default: "Content is created automatically, please consider edit",
+      default: "Bio is created automatically, please consider edit",
     },
 
     image: {
@@ -68,6 +68,7 @@ userSchema.methods.generateAccessToken = function () {
         id: this._id,
         email: this.email,
         password: this.password,
+        isAuthor: this.isAuthor,
       },
     },
     process.env.ACCESS_TOKEN_SECRET,
@@ -91,11 +92,12 @@ userSchema.methods.toUserResponse = function () {
 
 // @desc
 // @required
-userSchema.methods.toProfileJSON = function (user) {
+userSchema.methods.toProfileJSON = function () {
   return {
-    username: this.username,
     bio: this.bio,
     image: this.image,
+    username: this.username,
+    isAuthor: this.isAuthor,
   };
 };
 

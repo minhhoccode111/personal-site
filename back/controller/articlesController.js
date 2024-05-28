@@ -10,13 +10,10 @@ const slugify = require("slugify");
 // @required fields {title, description, body}
 // @return Article
 const createArticle = asyncHandler(async (req, res) => {
-  // extract current user's id marked on the request object
   const id = req.userId;
 
-  // manually find current user in db
   const author = await User.findById(id).exec();
 
-  // extract data from article
   const { title, description, body, tagList } = req.body.article;
 
   // confirm data

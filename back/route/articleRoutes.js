@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const verifyJWT = require("../middleware/verifyJWT");
 const verifyJWTOptional = require("../middleware/verifyJWTOptional");
-const articleController = require("../controllers/articlesController");
+const verifyJWTAuthor = require("../middleware/verifyJWTAuthor");
+const articleController = require("../controller/articlesController");
 
 // feed endpoint must go before :slug endpoint
 // because we don't want to find an actual post named "feed"
@@ -17,15 +18,15 @@ router.get("/", verifyJWTOptional, articleController.listArticles);
 router.get("/:slug", articleController.getArticleWithSlug);
 
 // current user create an article
-router.post("/", verifyJWT, articleController.createArticle);
+router.post("/", verifyJWTAuthor, articleController.createArticle);
 
 // current user delete an article
-router.delete("/:slug", verifyJWT, articleController.deleteArticle);
+router.delete("/:slug", verifyJWTAuthor, articleController.deleteArticle);
 
-// current user add an article to favourtie
+// current user add an article to favorite
 router.post("/:slug/favorite", verifyJWT, articleController.favoriteArticle);
 
-// current user remove an article from favourtie
+// current user remove an article from favorite
 router.delete(
   "/:slug/favorite",
   verifyJWT,
@@ -33,6 +34,6 @@ router.delete(
 );
 
 // current user update an article
-router.put("/:slug", verifyJWT, articleController.updateArticle);
+router.put("/:slug", verifyJWTAuthor, articleController.updateArticle);
 
 module.exports = router;

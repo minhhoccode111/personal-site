@@ -5,8 +5,6 @@ GET {{url}}/index
 # manually type because the {{url}} === http://localhost:3000/api
 GET http://localhost:3000/test
 
-GET http://localhost:3000/kkk
-
 # sign up
 POST {{url}}/users
 Content-Type: application/json
@@ -14,7 +12,7 @@ Content-Type: application/json
   "_comment": "this is syntax of http json",
   "user": {
     "username":"asd1",
-    "email":"asd1@gmail.com",
+    "email":"1@gmail.com",
     "password":"Bruh0!0!"
   }
 }
@@ -25,24 +23,24 @@ Content-Type: application/json
 {
   "user": {
     "email":"asd1@gmail.com",
-    "password":"Bruh0!0!"
+    "password":"asd"
   }
 }
 
-# update user, need auth
+# update user
 PUT {{url}}/user
 Authorization: {{token0}}
 Content-Type: application/json
 {
   "user": {
-    "email": "asd4@gmail.com", 
-    "username": "asd4", 
-    "password": "Bruh0!0!", 
-    "image": "https://google.com",
+    "email": "minhhoccode111@gmail.com", 
+    "username": "minhhoccode111", 
+    "password": "asd", 
+    "image": "https://avatars.githubusercontent.com/u/39550308",
     "bio": "I write code (sometimes)"
   }
 }
 
-# get current user, need auth
+# get current user
 GET {{url}}/user
 Authorization: {{token0}}

@@ -1,11 +1,8 @@
-// list all allowed origins
 const allowedOrigins = [
-  "http://localhost:3000",
-  "http://localhost:5173", // front dev
-  "http://localhost:4173", // front preview
-  "http://localhost:4200",
-  "https://winterrrrrff.github.io", // front deployed
-  "https://angular-realworld-example-app-neon.vercel.app",
+  "http://localhost:5173", // frontend dev
+  "http://localhost:4173", // frontend preview
+  "https://minhhoccode111.vercel.app", // frontend deployed
+  "http://localhost:3000", // postman
 ];
 
 module.exports = allowedOrigins;

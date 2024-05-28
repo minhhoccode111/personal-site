@@ -39,66 +39,6 @@ const getProfile = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc follow a user's profile
-// @route POST /api/profiles/:username/follow
-// @access Private
-// @return profile user's info
-const followUser = asyncHandler(async (req, res) => {
-  // extract :username param
-  const { username } = req.params;
-
-  // manually find current user in db because the auth step not query in db
-  const loginUser = await User.findOne({ email: req.userEmail }).exec();
-  // find user param
-  const user = await User.findOne({ username }).exec();
-
-  // return 404 if not both existed
-  if (!user || !loginUser) {
-    return res.status(404).json({
-      message: "User Not Found",
-    });
-  }
-
-  // else call follow method with profile user's id
-  await loginUser.follow(user._id);
-
-  return res.status(200).json({
-    // return profile and connection with current user
-    profile: user.toProfileJSON(loginUser),
-  });
-});
-
-// @desc unfollow a user's profile
-// @route DELETE /api/profiles/:username/follow
-// @access Private
-// @return profile user's info
-const unFollowUser = asyncHandler(async (req, res) => {
-  // extract :username param
-  const { username } = req.params;
-
-  // manually find current user in db because the auth step not query in db
-  const loginUser = await User.findOne({ email: req.userEmail }).exec();
-  // find user param
-  const user = await User.findOne({ username }).exec();
-
-  // return 404 if not both existed
-  if (!user || !loginUser) {
-    return res.status(404).json({
-      message: "User Not Found",
-    });
-  }
-
-  // else call unfollow method with profile user's id
-  await loginUser.unfollow(user._id);
-
-  return res.status(200).json({
-    // return profile and connection with current user
-    profile: user.toProfileJSON(loginUser),
-  });
-});
-
 module.exports = {
   getProfile,
-  followUser,
-  unFollowUser,
 };

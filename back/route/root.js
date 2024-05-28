@@ -4,7 +4,7 @@ const path = require("path");
 
 // default greeting root route
 router.get("^/$|/index(.html)?", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "views", "index.html"));
+  res.sendFile(path.join(__dirname, "..", "view", "index.html"));
 });
 
 module.exports = router;

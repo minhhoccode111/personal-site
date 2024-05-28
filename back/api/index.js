@@ -30,25 +30,25 @@ app.disable("x-powered-by"); // reduce fingerprinting
 
 // static route
 app.use("/", express.static(path.join(__dirname, "/public")));
-app.use("/", require("../routes/root"));
+app.use("/", require("../route/root"));
 
-// user routes - for testing
-app.use("/test", require("../routes/testRoutes"));
+// user route - for testing
+app.use("/test", require("../route/testRoutes"));
 
-// user routes - for /api/users and /api/user
-app.use("/api", require("../routes/userRoutes"));
+// user route - for /api/users and /api/user
+app.use("/api", require("../route/userRoutes"));
 
-// user routes - for profiles
-app.use("/api/profiles", require("../routes/profileRoutes"));
+// user route - for profiles
+app.use("/api/profiles", require("../route/profileRoutes"));
 
-// article routes
-app.use("/api/articles", require("../routes/articleRoutes"));
+// article route
+app.use("/api/articles", require("../route/articleRoutes"));
 
-// tag routes
-app.use("/api/tags", require("../routes/tagRoutes"));
+// tag route
+app.use("/api/tags", require("../route/tagRoutes"));
 
-// comment routes
-app.use("/api/articles", require("../routes/commentRoutes"));
+// comment route
+app.use("/api/articles", require("../route/commentRoutes"));
 
 mongoose.connection.once("open", () => {
   app.listen(PORT, () => {
