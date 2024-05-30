@@ -1,5 +1,5 @@
 # return index.html
-GET {{url}}/index
+GET http://localhost:3000/index
 
 # return "successful"
 # manually type because the {{url}} === http://localhost:3000/api
@@ -9,11 +9,10 @@ GET http://localhost:3000/test
 POST {{url}}/users
 Content-Type: application/json
 {
-  "_comment": "this is syntax of http json",
   "user": {
-    "username":"asd1",
-    "email":"1@gmail.com",
-    "password":"Bruh0!0!"
+    "username":"123",
+    "email":"123@gmail.com",
+    "password":"asd"
   }
 }
 

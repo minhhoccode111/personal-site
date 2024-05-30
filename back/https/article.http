@@ -1,60 +1,49 @@
 # createArticle
 POST {{url}}/articles
-Authorization: {{token1}}
+Authorization: {{token0}}
 Content-Type: application/json
 {
   "article": {
-    "_title": "asd1 article 2 title", 
-    "title": "asd1 0", 
-    "_description": "asd1 article 2 description", 
-    "description": "asd1 article 2 description", 
-    "_body": "asd1 article 2 body", 
-    "body": "asd1 article 2 body", 
-    "tagList": ["ngu"]
+    "title": "short", 
+    "description": "this is a description", 
+    "body": "this is a body", 
+    "tagList": ["some", "random", "tags"]
   }
 }
 
 # deleteArticle
-DELETE {{url}}/articles/asd0-article-0-title
+DELETE {{url}}/articles/short
 Authorization: {{token0}}
 
 # favoriteArticle
-POST {{url}}/articles/asd1-article-0-title/favorite
-Authorization: {{token0}}
+POST {{url}}/articles/short/favorite
+Authorization: {{token1}}
 
 # unfavoriteArticle
-DELETE {{url}}/articles/asd0-article-0-title/favorite
+DELETE {{url}}/articles/short/favorite
 Authorization: {{token1}}
 
 # getArticleWithSlug
-GET {{url}}/articles/asd0-article-0-title
-Authorization: {{token1}}
+GET {{url}}/articles/short
+# Authorization: {{token1}}
 
 # updateArticle
-PUT {{url}}/articles/asd0-article-0-title
+PUT {{url}}/articles/short
 Authorization: {{token0}}
 Content-Type: application/json
 {
   "article": {
-    "title": "asd0 article 0 title", 
-    "description": "asd0 article 0 description", 
-    "body": "asd0 article 0 body", 
-    "tagList": ["tag", "list", "0", "asd0"]
+    "title": "short", 
+    "description": "short updated", 
+    "body": "short updated", 
+    "tagList": ["bruh"]
   }
 }
 
-# feedArticles all
-GET {{url}}/articles/feed
-Authorization: {{token0}}
-
-# feedArticles with queries
-GET {{url}}/articles/feed?limit=1&offset=0
-Authorization: {{token0}}
-
 # listArticles all
 GET {{url}}/articles
-Authorization: {{token0}}
+# Authorization: {{token0}}
 
 # listArticles with queries
-GET {{url}}/articles?favorited=asd0
-Authorization: {{token1}}
+GET {{url}}/articles?offset=5
+Authorization: {{token0}}

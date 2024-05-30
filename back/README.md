@@ -23,6 +23,6 @@ Adhere to the **Express.js + MongoDB + JavaScript** community styleguides & best
 ## Design Choices and Tradeoffs
 
 - Only one `access_token_secret` is used for all the accounts registration and login. Drawback: data can be forged if this secret is leaked
-- Included array structures, e.g. list of comments in the article model, favorited articles in the user model, following users in the user model, tags in article model. Drawback: not good for scalability
+- Included array structures, e.g. list of comments in the article model, favorited articles in the user model, tags in article model. Drawback: not good for scalability
 - Count favorite times of an article by going through every user and count each time that article appear in `favoriteArticles` array of each user instead of maintaining a `favoritesCount` variable in each article document. Drawback: not good for scalability
 - Usernames are case-sensitive

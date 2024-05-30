@@ -66,6 +66,7 @@ async function createArticles(number) {
       .map((tag) => tag.toLowerCase());
 
     const author = pointer.author;
+    // console.log(`article author belike: `, author);
 
     const article = new Article({
       body,
@@ -93,22 +94,29 @@ async function createUsers(number) {
     const userDetail = {
       email: `asd${i}@gmail.com`,
       password,
-      username: faker.person.fullName(),
+      // username: faker.person.fullName(),
+      username: `asd${i}`, // easier testing
       bio: faker.lorem.paragraph(),
       image: escapeHtml(faker.image.avatar()),
     };
 
     const user = new User(userDetail);
 
-    const favoriteArticles = faker.helpers.arrayElements(articles);
+    const favoriteArticles = faker.helpers.arrayElements(articles, {
+      min: 5,
+      max: 15,
+    });
 
-    user.favoriteArticles = favoriteArticles;
+    for (const art of favoriteArticles) {
+      await user.favorite(art._id);
+      await art.updateFavoriteCount();
+    }
 
     // in case name not unique
     try {
       await user.save();
       users.push(user);
-      console.log(`user: `, i);
+      console.log(`user: `, i, user);
     } catch (err) {
       i--;
       console.log(`duplicated username`);
@@ -144,9 +152,9 @@ async function createComments(number) {
 
 const main = async () => {
   await createMe();
-  await createArticles(100);
+  await createArticles(10);
   await createUsers(25);
-  await createComments(400);
+  await createComments(40);
 };
 
 connect(main);

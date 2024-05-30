@@ -70,7 +70,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 
   res.status(200).json({
     // schema method to response only information that we want and 1 day token
-    // but exclude password, favorite posts, following users
+    // but exclude password, favorite posts
     user: user.toUserResponse(),
   });
 });
@@ -107,7 +107,7 @@ const userLogin = asyncHandler(async (req, res) => {
 
   res.status(200).json({
     // schema method to response only information that we want and 1 day token
-    // but exclude password, favorite posts, following users
+    // but exclude password, favorite posts
     user: loginUser.toUserResponse(),
   });
 });

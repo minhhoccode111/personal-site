@@ -5,11 +5,6 @@ const verifyJWTOptional = require("../middleware/verifyJWTOptional");
 const verifyJWTAuthor = require("../middleware/verifyJWTAuthor");
 const articleController = require("../controller/articlesController");
 
-// feed endpoint must go before :slug endpoint
-// because we don't want to find an actual post named "feed"
-// get all articles of current user's following
-router.get("/feed", verifyJWT, articleController.feedArticles);
-
 // get all articles of current user, auth optional to display connection with
 // the article and connection with the article's author
 router.get("/", verifyJWTOptional, articleController.listArticles);

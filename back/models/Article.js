@@ -82,6 +82,7 @@ articleSchema.methods.updateFavoriteCount = async function () {
 // @required
 articleSchema.methods.toArticleResponse = async function (user) {
   const authorObj = await User.findById(this.author).exec();
+
   return {
     slug: this.slug,
     body: this.body,
@@ -92,7 +93,7 @@ articleSchema.methods.toArticleResponse = async function (user) {
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
     favorited: user ? user.isFavorite(this._id) : false,
-    author: authorObj.toProfileJSON(user),
+    author: authorObj.toProfileJSON(),
   };
 };
 

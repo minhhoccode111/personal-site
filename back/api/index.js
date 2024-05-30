@@ -19,12 +19,12 @@ const PORT = process.env.PORT || 3000;
 connectDB(); // connect to database
 
 const limiter = RateLimit({ windowMs: 1 * 60 * 1000, max: 60 }); // max res/min
-app.use(limiter); // rate limite
+app.use(limiter); // rate limit
 app.use(helmet()); // security HTTP header
 app.use(compression()); // compress responses performant
 app.use(express.json()); // middleware to parse json
 app.use(cookieParser()); // middleware to parse cookie
-app.use(cors(corsOptions)); // set cors withj options
+app.use(cors(corsOptions)); // set cors with options
 app.disable("x-powered-by"); // reduce fingerprinting
 // app.use(express.urlencoded({ extended: false }));
 

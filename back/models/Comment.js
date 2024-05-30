@@ -24,7 +24,7 @@ const commentSchema = new mongoose.Schema(
   },
 );
 
-commentSchema.methods.toCommentResponse = async function (user) {
+commentSchema.methods.toCommentResponse = async function () {
   const authorObj = await User.findById(this.author).exec();
 
   return {
@@ -32,7 +32,7 @@ commentSchema.methods.toCommentResponse = async function (user) {
     body: this.body,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
-    author: authorObj.toProfileJSON(user),
+    author: authorObj.toProfileJSON(),
   };
 };
 

@@ -18,7 +18,7 @@ async function connectDB(callback) {
 
     mongoose.connect(URI);
 
-    // executing scripts, need close connection
+    // executing scripts, need close connection after
     if (callback !== undefined) {
       console.log(`about to execute callback`);
 

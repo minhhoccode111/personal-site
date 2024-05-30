@@ -14,21 +14,18 @@ const createArticle = asyncHandler(async (req, res) => {
 
   const author = await User.findById(id).exec();
 
+  // check user existence
+  if (!author) {
+    return res.status(401).json({
+      message: "User Not Found",
+    });
+  }
+
   const { title, description, body, tagList } = req.body.article;
 
   // confirm data
   if (!title || !description || !body) {
     res.status(400).json({ message: "All fields are required" });
-  }
-
-  // WARN: check for slug name 'feed' edge case
-  const slug = slugify(title, { lower: true, replacement: "-" });
-  if (slug === "feed") {
-    return res.status(422).json({
-      errors: {
-        message: "Unable to create that article",
-      },
-    });
   }
 
   // create a new article with input data
@@ -147,8 +144,7 @@ const favoriteArticle = asyncHandler(async (req, res) => {
   return res.status(200).json({
     // return the article with needed information
     // pass in current user to help identify
-    // // if current user favorited the article
-    // // and the connection between current user with article's author
+    // if current user favorited the article
     article: await updatedArticle.toArticleResponse(loginUser),
   });
 });
@@ -187,8 +183,7 @@ const unfavoriteArticle = asyncHandler(async (req, res) => {
   return res.status(200).json({
     // return the article with needed information
     // pass in current user to help identify
-    // // if current user favorited the article
-    // // and the connection between current user with article's author
+    // if current user favorited the article
     article: await article.toArticleResponse(loginUser),
   });
 });
@@ -210,7 +205,6 @@ const getArticleWithSlug = asyncHandler(async (req, res) => {
 
   return res.status(200).json({
     // return the article with needed information
-    // no need to identify the connection with the article's author
     article: await article.toArticleResponse(false),
   });
 });
@@ -274,66 +268,6 @@ const updateArticle = asyncHandler(async (req, res) => {
   });
 });
 
-// @desc current user get own feed
-// @route GET /api/articles/feed
-// @access Private
-// @return Articles of authors the current user is following
-const feedArticles = asyncHandler(async (req, res) => {
-  // default query
-  let limit = 20; // max 20 articles a time
-  let offset = 0; // first skip article
-
-  // extract limit from the query
-  if (req.query.limit) {
-    limit = req.query.limit;
-  }
-
-  // extract offset from the query
-  if (req.query.offset) {
-    offset = req.query.offset;
-  }
-
-  const userId = req.userId;
-
-  // retrieve current user in db
-  const loginUser = await User.findById(userId).exec();
-
-  // console.log(loginUser.followingUsers)
-
-  const [filteredArticles, articlesCount] = await Promise.all([
-    // find articles that
-    Article.find({
-      // the author is in current user's followingUsers array
-      author: { $in: loginUser.followingUsers },
-    })
-      .limit(Number(limit)) // max number of articles
-      .skip(Number(offset)) // skip number of articles
-      .exec(),
-
-    // count articles that
-    Article.countDocuments({
-      // the author is in current user's followingUsers array
-      author: { $in: loginUser.followingUsers },
-    }).exec(),
-  ]);
-
-  // console.log(`articles: ${filteredArticles}`);
-
-  // user promise.all to wait for all article promises return from .map()
-  const articles = await Promise.all(
-    filteredArticles.map(async (article) => {
-      // pass current user to identify connection with the article
-      // and connection with the article's author
-      return await article.toArticleResponse(loginUser);
-    }),
-  );
-
-  return res.status(200).json({
-    articles,
-    articlesCount,
-  });
-});
-
 // @desc current user get all articles
 // @route GET /api/articles
 // @access Public
@@ -356,7 +290,6 @@ const listArticles = asyncHandler(async (req, res) => {
 
   // extract tag from the query parameters if provided
   if (req.query.tag) {
-    // NOTE: big brain
     // add a tagList property to the query, only 1 tag
     query.tagList = { $in: [req.query.tag] };
   }
@@ -364,21 +297,9 @@ const listArticles = asyncHandler(async (req, res) => {
   // console.log(`the query belike: `, query);
   // console.log(`the query.tag belike: `, req.query.tag);
 
-  // if an author is specified in the query parameters
-  if (req.query.author) {
-    // NOTE: big brain
-    // Find the user with the specified username
-    const author = await User.findOne({ username: req.query.author }).exec();
-    // Only add author to the query if the user exists
-    if (author) {
-      query.author = author._id;
-    }
-  }
-
   // favorited is a username param to help get all articles
   // which that user mark as favorite
   if (req.query.favorited) {
-    // NOTE: big brain
     // Find the user who favorited articles
     const favoriter = await User.findOne({
       username: req.query.favorited,
@@ -386,7 +307,6 @@ const listArticles = asyncHandler(async (req, res) => {
 
     // If the user exists, add their favorite articles to the query
     if (favoriter) {
-      // NOTE: big brain
       // adds their favorite articles to the query if the user exists
       // e.g. query will be { _id: { $in: ['articleId1', 'articleId2', 'articleId3']} }
       query._id = { $in: favoriter.favoriteArticles };
@@ -416,7 +336,6 @@ const listArticles = asyncHandler(async (req, res) => {
         filteredArticles.map(async (article) => {
           // return needed information of article
           // and connection of current user with the article
-          // and connection of current user with the article's author
           return await article.toArticleResponse(loginUser);
         }),
       ),
@@ -444,6 +363,5 @@ module.exports = {
   unfavoriteArticle,
   getArticleWithSlug,
   updateArticle,
-  feedArticles,
   listArticles,
 };
