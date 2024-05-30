@@ -12,11 +12,7 @@ router.post(
 );
 
 // current user get all comment of an article, auth optional
-router.get(
-  "/:slug/comments",
-  verifyJWTOptional,
-  commentController.getCommentsFromArticle,
-);
+router.get("/:slug/comments", commentController.getCommentsFromArticle);
 
 // current user delete a comment in an article
 router.delete(

@@ -1,10 +1,11 @@
-const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
+
+const User = require("../models/User");
 
 // @desc get a user's profile
 // @route GET /api/profiles/:username
-// @access Private
-// @return User's profile info
+// @access Public
+// @return User
 const getProfile = asyncHandler(async (req, res) => {
   // extract the username param
   const { username } = req.params;

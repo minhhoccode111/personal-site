@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const verifyJWTAuthor = (req, res, next) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
 
-  // NOTE: remember start with "Token "
+  // NOTE: start with "Token " instead of "Bearer "?
   if (!authHeader?.startsWith("Token ")) {
     return res.status(401).json({ message: "Unauthorized" });
   }

@@ -1,6 +1,7 @@
-const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
+
+const User = require("../models/User");
 
 // @desc registration for a user
 // @route POST /api/users
@@ -28,9 +29,6 @@ const registerUser = asyncHandler(async (req, res) => {
     email: user.email,
   };
 
-  // NOTE: what this returns when an uniqueness error occurs
-  // why the example code use this combine with createdUser existed conditional
-  // const createdUser = await User.create(userObject)
   const createdUser = new User(userObject);
 
   // mongoose-unique-validator help us to do this
@@ -150,7 +148,6 @@ const updateUser = asyncHandler(async (req, res) => {
     target.password = hashedPwd;
   }
 
-  // NOTE: why have to check different
   // if data from client includes image
   if (typeof user.image !== "undefined") {
     // then update

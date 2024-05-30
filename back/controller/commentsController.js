@@ -1,9 +1,15 @@
-const mongoose = require("mongoose");
-const Article = require("../models/Article");
-const User = require("../models/User");
-const Comment = require("../models/Comment");
 const asyncHandler = require("express-async-handler");
+const mongoose = require("mongoose");
 
+const User = require("../models/User");
+const Article = require("../models/Article");
+const Comment = require("../models/Comment");
+
+// @desc current user add a comment to article
+// @route POST /api/articles/:slug/comment
+// @access Private
+// @required fields {body}
+// @return Comment
 const addCommentsToArticle = asyncHandler(async (req, res) => {
   const id = req.userId;
 
@@ -44,14 +50,14 @@ const addCommentsToArticle = asyncHandler(async (req, res) => {
   await article.addComment(newComment._id);
 
   return res.status(200).json({
-    // return the needed information of the comment
-    // and commenter is used to identify connection between current user
-    // with the comment's author, this method is not needed in this route
-    // but really helpful when getting all comments of a post
-    comment: await newComment.toCommentResponse(commenter),
+    comment: await newComment.toCommentResponse(),
   });
 });
 
+// @desc current user get all comments of an article
+// @route GET /api/articles/:slug/comments
+// @access Public
+// @return Comments
 const getCommentsFromArticle = asyncHandler(async (req, res) => {
   const { slug } = req.params;
 
@@ -63,37 +69,20 @@ const getCommentsFromArticle = asyncHandler(async (req, res) => {
     });
   }
 
-  const loggedin = req.loggedin;
-
-  if (loggedin) {
-    // get current user if loggedin
-    const loginUser = await User.findById(req.userId).exec();
-
-    return res.status(200).json({
-      comments: await Promise.all(
-        article.comments.map(async (commentId) => {
-          const commentObj = await Comment.findById(commentId).exec();
-          // comment's connection with current user
-          return await commentObj.toCommentResponse(loginUser);
-        }),
-      ),
-    });
-  } else {
-    return res.status(200).json({
-      comments: await Promise.all(
-        article.comments.map(async (commentId) => {
-          const commentObj = await Comment.findById(commentId).exec();
-          // console.log(commentObj);
-          // no need for connection with comment
-          const temp = await commentObj.toCommentResponse(false);
-          // console.log(temp);
-          return temp;
-        }),
-      ),
-    });
-  }
+  res.status(200).json({
+    comments: await Promise.all(
+      article.comments.map(async (commentId) => {
+        const commentObj = await Comment.findById(commentId).exec();
+        return await commentObj.toCommentResponse();
+      }),
+    ),
+  });
 });
 
+// @desc current user delete a comment of an article
+// @route DELETE /api/articles/:slug/comments/:id
+// @access Private
+// @return resule messages
 const deleteComment = asyncHandler(async (req, res) => {
   const userId = req.userId;
 
@@ -138,7 +127,6 @@ const deleteComment = asyncHandler(async (req, res) => {
 
   // check for comment's authorization
   if (comment.author.toString() === commenter._id.toString()) {
-    // NOTE: change to Promise.all to improve performant
     await Promise.all([
       // remove the comment in article's comments array
       article.removeComment(comment._id),
@@ -148,12 +136,12 @@ const deleteComment = asyncHandler(async (req, res) => {
 
     // return success message
     return res.status(200).json({
-      message: "comment has been successfully deleted!!!",
+      message: "comment has been successfully deleted",
     });
   } else {
     // if current user not own the comment the a 403 return
     return res.status(403).json({
-      error: "only the author of the comment can delete the comment",
+      message: "Cannot delete comments not own",
     });
   }
 });

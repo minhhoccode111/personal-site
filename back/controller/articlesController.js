@@ -1,8 +1,7 @@
-const Article = require("../models/Article");
-const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
 
-const slugify = require("slugify");
+const Article = require("../models/Article");
+const User = require("../models/User");
 
 // @desc current user create a article
 // @route POST /api/articles
@@ -60,7 +59,7 @@ const createArticle = asyncHandler(async (req, res) => {
 // @desc current user delete an article
 // @route DELETE /api/articles/:slug
 // @access Private
-// @return operations result
+// @return resule messages
 const deleteArticle = asyncHandler(async (req, res) => {
   const id = req.userId;
 
