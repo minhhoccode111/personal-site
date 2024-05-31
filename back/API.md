@@ -1,5 +1,72 @@
 # API Design
 
+## Database model response methods
+
+#### `user.toUserResponse()`
+
+```js
+userSchema.methods.toUserResponse = function () {
+  return {
+    bio: this.bio,
+    email: this.email,
+    image: this.image,
+    username: this.username,
+    isAuthor: this.isAuthor,
+    token: this.generateAccessToken(),
+  };
+};
+```
+
+#### `user.toProfileJSON()`
+
+```js
+userSchema.methods.toProfileJSON = function () {
+  return {
+    bio: this.bio,
+    image: this.image,
+    username: this.username,
+    isAuthor: this.isAuthor,
+  };
+};
+```
+
+#### `comment.toCommentResponse()`
+
+```js
+commentSchema.methods.toCommentResponse = async function () {
+  const authorObj = await User.findById(this.author).exec();
+
+  return {
+    id: this._id,
+    body: this.body,
+    createdAt: this.createdAt,
+    updatedAt: this.updatedAt,
+    author: authorObj.toProfileJSON(),
+  };
+};
+```
+
+#### `article.toArticleResponse()`
+
+```js
+articleSchema.methods.toArticleResponse = async function (user) {
+  const authorObj = await User.findById(this.author).exec();
+
+  return {
+    slug: this.slug,
+    body: this.body,
+    title: this.title,
+    tagList: this.tagList,
+    createdAt: this.createdAt,
+    updatedAt: this.updatedAt,
+    description: this.description,
+    favoritesCount: this.favoritesCount,
+    author: authorObj.toProfileJSON(),
+    favorited: user ? user.isFavorite(this._id) : false,
+  };
+};
+```
+
 ## Dummy routes
 
 #### `GET /`, `GET /index`, `GET /index.html`
@@ -182,7 +249,7 @@ res.status(401).json({ message: "Article Not Found" });
 res.status(403).json({ message: "Only the author can delete his article" });
 
 // success
-res.status(200).json({ message: "Article successfully deleted!!!" });
+res.status(200).json({ message: "Article successfully deleted" });
 ```
 
 #### `POST /articles/:slug/favorite`

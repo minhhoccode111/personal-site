@@ -88,12 +88,12 @@ articleSchema.methods.toArticleResponse = async function (user) {
     body: this.body,
     title: this.title,
     tagList: this.tagList,
-    description: this.description,
-    favoritesCount: this.favoritesCount,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
-    favorited: user ? user.isFavorite(this._id) : false,
+    description: this.description,
+    favoritesCount: this.favoritesCount,
     author: authorObj.toProfileJSON(),
+    favorited: user ? user.isFavorite(this._id) : false,
   };
 };
 
