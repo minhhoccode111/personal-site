@@ -1,64 +1,36 @@
-# Personal Portfolio
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-The **Personal Portfolio** project is a frontend used to consume API of multiple backend projects including: [Blog](https://github.com/minhhoccode111/blog-back), [Message](https://github.com/minhhocode111/message-app-top/). And many more.
-<br>
-<br>
+## Getting Started
 
-![Preview](public/)
-
-### 🔗 **Live preview** of the project is [here](https://minhhoccode.vercel.app/).
-
-## **Features**
-
-- MERN stack
-- RESTful API
-- CRUD actions
-- Allow user to put anything they want while still sanitize and validate data in backend
-- Handle loading and error data fetching states properly
-- Simple markdown parser
-- Fully responsive
-<!-- - Beautiful UI ^^ -->
-
-## **Outcome**
-
-- Used **React**
-- Used **Tailwindcss**
-- Used **Bun**
-- Used **Vite**
-- Used **animista** for beautiful animations
-- Used **[quotable](https://github.com/lukePeavey/quotable)** API, thanks to the generosity of [Luke Peavey](https://github.com/lukePeavey)
-- Used **[Blog API](https://github.com/minhhoccode111/blog-api-top)** - my backend
-- Used **React Router Dom**
-- Learned markdown parser, dom parser
-
-## **Getting Started**
+First, run the development server:
 
 ```bash
-HTTPS - git clone https://github.com/minhhoccode111/personal-portfolio.git
-
-SSH - git clone git@github.com:minhhoccode111/personal-portfolio.git
-
-cd personal-portfolio
-
-npm install
-
-npm start
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-## **Idea to implement**
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-- Some animations with Framer Motion
-- Up vote, down vote
-- Light, dark themes
-- Upload images
-- Performant consideration in `Blog` component when sticky search section trigger re-render on scroll (when it stick and un-stick)
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-## **Navigation**
+This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-- See [all my projects'](https://github.com/minhhoccode111/all-projects-live-demos) live demos
+## Learn More
 
-* See my previous project [Members Only TOP](https://github.com/minhhoccode111/members-only-top)
+To learn more about Next.js, take a look at the following resources:
 
-* See this project backend [Blog API](https://github.com/minhhoccode111/blog-back)
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-<!-- * See my next project []() -->
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
