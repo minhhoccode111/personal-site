@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+* docs: https://tailwindcss.com/docs/functions-and-directives 
+*/
+
+/* some dummies */
+@layer base {
+  .text-xxs {
+    @apply text-[8px];
+  }
+}
+
+@layer components {
+  .center {
+    @apply grid place-items-center;
+  }
+}
+
+@layer utilities {
+  .filter-grayscale {
+    filter: grayscale(100%);
+  }
+}
