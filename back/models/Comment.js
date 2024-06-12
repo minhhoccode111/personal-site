@@ -32,7 +32,7 @@ commentSchema.methods.toCommentResponse = async function () {
     body: this.body,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
-    author: authorObj.toProfileJSON(),
+    author: authorObj.toProfileJSON(), // to display name and image
   };
 };
 

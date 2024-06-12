@@ -1,6 +1,8 @@
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 
+const { verifyInputRegisterUser } = require("../middleware/verifyInput");
+
 const User = require("../models/User");
 
 // @desc registration for a user
@@ -8,47 +10,51 @@ const User = require("../models/User");
 // @access Public
 // @required fields {email, username, password}
 // @return User
-const registerUser = asyncHandler(async (req, res) => {
-  // extract user object from body
-  const { user } = req.body;
+const registerUser = [
+  verifyInputRegisterUser,
 
-  // console.log(`user sign up belike: `, user);
+  asyncHandler(async (req, res) => {
+    // extract user object from body
+    const { user } = req.body;
 
-  // validate data input (no sanitize)
-  if (!user || !user.email || !user.username || !user.password) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
+    // console.log(`user sign up belike: `, user);
 
-  // hash password to store in db
-  const hashedPwd = await bcrypt.hash(user.password, 10); // salt rounds
+    // validate data input (no sanitize)
+    // if (!user || !user.email || !user.username || !user.password) {
+    //   return res.status(400).json({ message: "All fields are required" });
+    // }
 
-  // an object data object user provide
-  const userObject = {
-    username: user.username,
-    password: hashedPwd,
-    email: user.email,
-  };
+    // hash password to store in db
+    const hashedPwd = await bcrypt.hash(user.password, 10); // salt rounds
 
-  const createdUser = new User(userObject);
+    // an object data object user provide
+    const userObject = {
+      username: user.username,
+      password: hashedPwd,
+      email: user.email,
+    };
 
-  // mongoose-unique-validator help us to do this
-  createdUser.save(function (err) {
-    // error while create new user
-    if (err) {
-      return res.status(422).json({
-        errors: {
-          body: "Unable to register a user",
-        },
+    const createdUser = new User(userObject);
+
+    // mongoose-unique-validator help us to do this
+    createdUser.save(function (err) {
+      // error while create new user
+      if (err) {
+        return res.status(422).json({
+          errors: {
+            body: "Unable to register a user",
+          },
+        });
+      }
+
+      // successfully create user
+      res.status(201).json({
+        // response with needed information
+        user: createdUser.toUserResponse(),
       });
-    }
-
-    // successfully create user
-    res.status(201).json({
-      // response with needed information
-      user: createdUser.toUserResponse(),
     });
-  });
-});
+  }),
+];
 
 // @desc get currently logged-in user
 // @route GET /api/user

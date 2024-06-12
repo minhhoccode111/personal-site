@@ -4,10 +4,11 @@ const jwt = require("jsonwebtoken");
 
 const userSchema = new mongoose.Schema(
   {
+    // NOTE: strict length later
     username: {
       type: String,
       required: true,
-      unique: true,
+      // unique: true, // only unique email
       lowercase: true,
     },
 
@@ -21,8 +22,8 @@ const userSchema = new mongoose.Schema(
       required: true,
       lowercase: true,
       unique: true,
-      match: [/\S+@\S+\.\S+/, "is invalid"],
-      index: true,
+      // match: [/\S+@\S+\.\S+/, "is invalid"], // use express-validator instead
+      index: true, // index this field to improve performance
     },
 
     bio: {
@@ -59,6 +60,8 @@ userSchema.plugin(uniqueValidator, {
   message: "Error, expected {PATH} to be unique.",
 });
 
+const TOKEN = process.env.ACCESS_TOKEN_SECRET;
+
 // @desc
 // @required
 userSchema.methods.generateAccessToken = function () {
@@ -71,7 +74,7 @@ userSchema.methods.generateAccessToken = function () {
         isAuthor: this.isAuthor,
       },
     },
-    process.env.ACCESS_TOKEN_SECRET,
+    TOKEN,
     { expiresIn: "7d" },
   );
   return accessToken;
@@ -103,8 +106,8 @@ userSchema.methods.toProfileJSON = function () {
 
 // @desc
 // @required
-userSchema.methods.isFavorite = function (id) {
-  const idStr = id.toString();
+userSchema.methods.isFavorite = function (articleId) {
+  const idStr = articleId.toString();
   for (const article of this.favoriteArticles) {
     if (article.toString() === idStr) return true;
   }
@@ -113,17 +116,18 @@ userSchema.methods.isFavorite = function (id) {
 
 // @desc
 // @required
-userSchema.methods.favorite = function (id) {
-  if (this.favoriteArticles.indexOf(id) === -1) this.favoriteArticles.push(id);
+userSchema.methods.favorite = function (articleId) {
+  if (this.favoriteArticles.indexOf(articleId) === -1)
+    this.favoriteArticles.push(articleId);
 
   return this.save();
 };
 
 // @desc
 // @required
-userSchema.methods.unfavorite = function (id) {
-  if (this.favoriteArticles.indexOf(id) !== -1)
-    this.favoriteArticles.remove(id);
+userSchema.methods.unfavorite = function (articleId) {
+  if (this.favoriteArticles.indexOf(articleId) !== -1)
+    this.favoriteArticles.remove(articleId);
   return this.save();
 };
 
