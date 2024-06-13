@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 const slugify = require("slugify");
 const User = require("./User");
+const Favorite = require("./Favorite");
 
 const articleSchema = new mongoose.Schema(
   {
@@ -15,16 +16,22 @@ const articleSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
+      maxLength: 100,
+      trim: true,
     },
 
     description: {
       type: String,
       required: true,
+      maxLength: 1000,
+      trim: true,
     },
 
     body: {
       type: String,
       required: true,
+      maxLength: 30000,
+      trim: true,
     },
 
     tagList: [
@@ -43,13 +50,6 @@ const articleSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-
-    comments: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Comment",
-      },
-    ],
   },
   {
     timestamps: true, // automatic add createdAt and updatedAt
@@ -69,19 +69,12 @@ articleSchema.pre("save", function (next) {
 
 // @desc
 // @required
-articleSchema.methods.updateFavoriteCount = async function () {
-  const favoriteCount = await User.countDocuments({
-    favoriteArticles: { $in: [this._id] },
-  }).exec();
-
-  this.favoritesCount = favoriteCount;
-  return this.save();
-};
-
-// @desc
-// @required
 articleSchema.methods.toArticleResponse = async function (user) {
-  const authorObj = await User.findById(this.author).exec();
+  const [authorObj, favoritesCount, favorited] = await Promise.all([
+    User.findById(this.author).exec(),
+    Favorite.countDocuments({ articleid: this._id }).exec(),
+    user?.isFavorite(this._id),
+  ]);
 
   return {
     slug: this.slug,
@@ -91,26 +84,10 @@ articleSchema.methods.toArticleResponse = async function (user) {
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
     description: this.description,
-    favoritesCount: this.favoritesCount,
     author: authorObj.toProfileJSON(),
-    favorited: user ? user.isFavorite(this._id) : false,
+    favorited: !!favorited,
+    favoritesCount,
   };
-};
-
-// @desc
-// @required
-articleSchema.methods.addComment = function (commentId) {
-  if (this.comments.indexOf(commentId) === -1) this.comments.push(commentId);
-
-  return this.save();
-};
-
-// @desc
-// @required
-articleSchema.methods.removeComment = function (commentId) {
-  if (this.comments.indexOf(commentId) !== -1) this.comments.remove(commentId);
-
-  return this.save();
 };
 
 module.exports = mongoose.model("Article", articleSchema);

@@ -1,56 +1,54 @@
 const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 const jwt = require("jsonwebtoken");
+const Favorite = require("./Favorite");
 
 const userSchema = new mongoose.Schema(
   {
-    // NOTE: strict length later
     username: {
       type: String,
       required: true,
-      // unique: true, // only unique email
       lowercase: true,
+      maxLength: 100,
+      trim: true,
     },
 
     password: {
       type: String,
       required: true,
+      maxLength: 100,
     },
 
     email: {
+      index: true, // index for performance
       type: String,
       required: true,
       lowercase: true,
       unique: true,
-      // match: [/\S+@\S+\.\S+/, "is invalid"], // use express-validator instead
-      index: true, // index this field to improve performance
+      maxLength: 100,
+      trim: true,
     },
 
     bio: {
       type: String,
       default: "Bio is created automatically, please consider edit",
+      maxLength: 1000,
     },
 
     image: {
       type: String,
       default: "https://static.productionready.io/images/smiley-cyrus.jpg",
+      maxLength: 1000,
     },
 
     isAuthor: {
       type: Boolean,
       default: false,
     },
-
-    favoriteArticles: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Article",
-      },
-    ],
   },
 
   {
-    timestamps: true,
+    timestamps: true, // access createdAt, updatedAt
   },
 );
 
@@ -106,29 +104,34 @@ userSchema.methods.toProfileJSON = function () {
 
 // @desc
 // @required
-userSchema.methods.isFavorite = function (articleId) {
-  const idStr = articleId.toString();
-  for (const article of this.favoriteArticles) {
-    if (article.toString() === idStr) return true;
+userSchema.methods.isFavorite = async (articleid) => {
+  const favorite = await Favorite.findOne(
+    {
+      userid: this._id,
+      articleid,
+    },
+    "_id",
+  )
+    .lean()
+    .exec();
+
+  return !!favorite;
+};
+
+// @desc
+// @required
+userSchema.methods.favorite = async (articleid) => {
+  try {
+    await new Favorite({ userid: this._id, articleid }).save();
+  } catch (err) {
+    console.log(`Already favorited that article.`);
   }
-  return false;
 };
 
 // @desc
 // @required
-userSchema.methods.favorite = function (articleId) {
-  if (this.favoriteArticles.indexOf(articleId) === -1)
-    this.favoriteArticles.push(articleId);
-
-  return this.save();
-};
-
-// @desc
-// @required
-userSchema.methods.unfavorite = function (articleId) {
-  if (this.favoriteArticles.indexOf(articleId) !== -1)
-    this.favoriteArticles.remove(articleId);
-  return this.save();
+userSchema.methods.unfavorite = async (articleid) => {
+  await Favorite.deleteOne({ userid: this._id, articleid });
 };
 
 module.exports = mongoose.model("User", userSchema);

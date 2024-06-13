@@ -6,6 +6,8 @@ const commentSchema = new mongoose.Schema(
     body: {
       type: String,
       required: true,
+      maxLength: 30000,
+      trim: true,
     },
 
     author: {
@@ -16,6 +18,7 @@ const commentSchema = new mongoose.Schema(
     article: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Article",
+      index: true, // always find comments using this
     },
   },
 
