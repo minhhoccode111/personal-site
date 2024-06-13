@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+      minLength: 8,
       maxLength: 100,
     },
 
@@ -25,6 +26,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       lowercase: true,
       unique: true,
+      minLength: 8,
       maxLength: 100,
       trim: true,
     },
@@ -38,7 +40,7 @@ const userSchema = new mongoose.Schema(
     image: {
       type: String,
       default: "https://static.productionready.io/images/smiley-cyrus.jpg",
-      maxLength: 1000,
+      maxLength: 3000,
     },
 
     isAuthor: {
