@@ -6,7 +6,7 @@ const {
   verifyInputRegisterUser,
 } = require("../middleware/verifyInput");
 
-const User = require("../models/User");
+const User = require("../model/User");
 
 // @desc registration for a user
 // @route POST /api/users
@@ -20,6 +20,7 @@ const registerUser = [
 
     console.log(`user sign up belike: `, user);
 
+    // process.env.SALT no need await but a number 13 is needed
     const hashedPwd = await bcrypt.hash(user.password, process.env.SALT);
 
     const userObject = {
@@ -53,7 +54,8 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email }).exec();
 
-  if (!user) return res.status(404).json({ message: "User Not Found" });
+  if (!user)
+    return res.status(404).json({ errors: { body: "User Not Found" } });
 
   res.status(200).json({ user: user.toUserResponse() });
 });
@@ -72,12 +74,15 @@ const userLogin = [
 
     console.log(loginUser);
 
-    if (!loginUser) return res.status(404).json({ message: "User Not Found" });
+    if (!loginUser)
+      return res.status(404).json({ errors: { body: "User Not Found" } });
 
     const match = await bcrypt.compare(user.password, loginUser.password);
 
     if (!match)
-      return res.status(401).json({ message: "Unauthorized: Wrong password" });
+      return res
+        .status(401)
+        .json({ errors: { body: "Unauthorized: Wrong password" } });
 
     res.status(200).json({ user: loginUser.toUserResponse() });
   }),

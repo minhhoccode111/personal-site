@@ -1,8 +1,8 @@
 const connect = require("./../config/dbConnect");
 
-const User = require("./../models/User");
-const Article = require("./../models/Article");
-const Comment = require("./../models/Comment");
+const User = require("./../model/User");
+const Article = require("./../model/Article");
+const Comment = require("./../model/Comment");
 
 const main = async () => {
   await User.deleteMany({});

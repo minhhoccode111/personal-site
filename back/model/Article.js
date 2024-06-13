@@ -90,4 +90,8 @@ articleSchema.methods.toArticleResponse = async function (user) {
   };
 };
 
+// articleSchema.methods.isAuthor = function (user) {
+//   return user._id.toString() === this.author.toString();
+// };
+
 module.exports = mongoose.model("Article", articleSchema);

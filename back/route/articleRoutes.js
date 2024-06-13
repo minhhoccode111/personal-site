@@ -10,6 +10,7 @@ const articleController = require("../controller/articlesController");
 router.get("/", verifyJWTOptional, articleController.listArticles);
 
 // get a specific article using its slug, no auth required
+// NOTE: should optional auth? because to display favorite?
 router.get("/:slug", articleController.getArticleWithSlug);
 
 // current user create an article

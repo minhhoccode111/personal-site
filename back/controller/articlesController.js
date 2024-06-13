@@ -1,110 +1,80 @@
 const asyncHandler = require("express-async-handler");
 
-const Article = require("../models/Article");
-const User = require("../models/User");
+const Article = require("../model/Article");
+const User = require("../model/User");
+
+const {
+  verifyInputCreateArticle,
+  verifyInputUpdateArticle,
+} = require("../middleware/verifyInput");
 
 // @desc current user create a article
 // @route POST /api/articles
 // @access Private
 // @required fields {title, description, body}
 // @return Article
-const createArticle = asyncHandler(async (req, res) => {
-  const id = req.userId;
+const createArticle = [
+  verifyInputCreateArticle,
+  asyncHandler(async (req, res) => {
+    const userid = req.userId;
 
-  const author = await User.findById(id).exec();
+    const author = await User.findById(userid).exec();
 
-  // check user existence
-  if (!author) {
-    return res.status(401).json({
-      message: "User Not Found",
-    });
-  }
-
-  const { title, description, body, tagList } = req.body.article;
-
-  // confirm data
-  if (!title || !description || !body) {
-    res.status(400).json({ message: "All fields are required" });
-  }
-
-  // create a new article with input data
-  const article = new Article({ title, description, body });
-
-  // mark current user as article's author
-  article.author = id;
-
-  // if tagList is valid, save to article
-  if (Array.isArray(tagList) && tagList.length > 0) {
-    article.tagList = tagList;
-  }
-
-  // then save created article
-  article.save(async function (err) {
-    if (err) {
-      return res.status(422).json({
-        errors: {
-          message: "Unable to create that article",
-        },
+    if (!author) {
+      return res.status(401).json({
+        errors: { body: "User Not Found" },
       });
     }
 
-    res.status(200).json({
-      // await to retrieve db for article's author
-      // schema method to response only information that we want
-      article: await article.toArticleResponse(author),
+    const { title, description, body, tagList } = req.body.article;
+
+    const article = new Article({ title, description, body });
+
+    article.author = author;
+
+    if (Array.isArray(tagList) && tagList.length > 0) {
+      article.tagList = tagList;
+    }
+
+    console.log(`created article belike: `, article);
+
+    article.save(async function (err) {
+      if (err) {
+        return res.status(422).json({
+          errors: {
+            body: "Unable to create that article",
+          },
+        });
+      }
+
+      res
+        .status(200)
+        .json({ article: await article.toArticleResponse(author) });
     });
-  });
-});
+  }),
+];
 
 // @desc current user delete an article
 // @route DELETE /api/articles/:slug
 // @access Private
-// @return resule messages
+// @return result messages
 const deleteArticle = asyncHandler(async (req, res) => {
   const id = req.userId;
 
   const { slug } = req.params;
 
-  // console.log(id);
+  Article.deleteOne({ slug, author: id }, function (_, result) {
+    // NOTE: this is new
+    if (result.deletedCount === 0) {
+      return res.status(401).json({
+        errors: { body: "Article Not Found" },
+      });
+    }
 
-  // retrieve current user in db
-  const loginUser = await User.findById(id).exec();
-
-  // check user existence
-  if (!loginUser) {
-    return res.status(401).json({
-      message: "User Not Found",
+    return res.status(200).json({
+      messages: { body: "Article successfully deleted!!!" },
     });
-  }
-
-  // retrieve article with slug
-  const article = await Article.findOne({ slug }).exec();
-
-  // check article existence
-  if (!article) {
-    return res.status(401).json({
-      message: "Article Not Found",
-    });
-  }
-
-  // console.log(`article author is ${article.author}`)
-  // console.log(`login user id is ${loginUser}`)
-
-  // if both existed and current user is the article's author
-  if (article.author.toString() === loginUser._id.toString()) {
-    // delete the article
-    await Article.deleteOne({ slug: slug });
-
-    // return success message
-    res.status(200).json({
-      message: "Article successfully deleted!!!",
-    });
-  } else {
-    // return fail message
-    res.status(403).json({
-      message: "Only the author can delete his article",
-    });
-  }
+  });
 });
 
 // @desc current user add an article to favorite
@@ -120,7 +90,7 @@ const favoriteArticle = asyncHandler(async (req, res) => {
 
   if (!loginUser) {
     return res.status(401).json({
-      message: "User Not Found",
+      errors: { body: "User Not Found" },
     });
   }
 
@@ -128,23 +98,16 @@ const favoriteArticle = asyncHandler(async (req, res) => {
 
   if (!article) {
     return res.status(401).json({
-      message: "Article Not Found",
+      errors: { body: "Article Not Found" },
     });
   }
-  // console.log(`article info ${article}`);
 
-  // current user add current article's id to favorite array
+  console.log(`article info belike: `, article);
+
   await loginUser.favorite(article._id);
 
-  // update the article's favorite count and return updated article
-  // the implement `return this.save()` return a promise so we have to await
-  const updatedArticle = await article.updateFavoriteCount();
-
   return res.status(200).json({
-    // return the article with needed information
-    // pass in current user to help identify
-    // if current user favorited the article
-    article: await updatedArticle.toArticleResponse(loginUser),
+    article: await article.toArticleResponse(loginUser),
   });
 });
 
@@ -161,7 +124,7 @@ const unfavoriteArticle = asyncHandler(async (req, res) => {
 
   if (!loginUser) {
     return res.status(401).json({
-      message: "User Not Found",
+      errors: { body: "User Not Found" },
     });
   }
 
@@ -169,20 +132,14 @@ const unfavoriteArticle = asyncHandler(async (req, res) => {
 
   if (!article) {
     return res.status(401).json({
-      message: "Article Not Found",
+      errors: { body: "Article Not Found" },
     });
   }
 
-  // remove the article's id from current user's favoriteArticles array
+  // NOTE: can't use Promise.all() because of race conditios
+  // when deleting and counting at the same time
   await loginUser.unfavorite(article._id);
-
-  // update the article favorite count
-  await article.updateFavoriteCount();
-
   return res.status(200).json({
-    // return the article with needed information
-    // pass in current user to help identify
-    // if current user favorited the article
     article: await article.toArticleResponse(loginUser),
   });
 });
@@ -197,13 +154,13 @@ const getArticleWithSlug = asyncHandler(async (req, res) => {
   const article = await Article.findOne({ slug }).exec();
 
   if (!article) {
-    return res.status(401).json({
-      message: "Article Not Found",
+    return res.status(404).json({
+      errors: { body: "Article Not Found" },
     });
   }
 
   return res.status(200).json({
-    // return the article with needed information
+    // NOTE: should retrieve and pass user to this to display favorite?
     article: await article.toArticleResponse(false),
   });
 });
@@ -213,59 +170,59 @@ const getArticleWithSlug = asyncHandler(async (req, res) => {
 // @access Private
 // @optional fields {title, description, body, tagList}
 // @return Article
-const updateArticle = asyncHandler(async (req, res) => {
-  const userId = req.userId;
+const updateArticle = [
+  verifyInputUpdateArticle,
+  asyncHandler(async (req, res) => {
+    const userId = req.userId;
 
-  const { article } = req.body;
+    const { article } = req.body;
 
-  const { slug } = req.params;
+    const { slug } = req.params;
 
-  const loginUser = await User.findById(userId).exec();
+    const loginUser = await User.findById(userId).exec();
 
-  const target = await Article.findOne({ slug }).exec();
+    // also find with current userId
+    const target = await Article.findOne({ slug, author: userId }).exec();
 
-  // check article existence
-  if (!target) {
-    return res.status(401).json({
-      message: "Article Not Found",
-    });
-  }
-
-  // console.log(target.title);
-  // console.log(req.userId);
-
-  if (article.title) {
-    target.title = article.title;
-  }
-
-  if (article.description) {
-    target.description = article.description;
-  }
-
-  if (article.body) {
-    target.body = article.body;
-  }
-
-  if (article.tagList) {
-    target.tagList = article.tagList;
-  }
-
-  // save after current user updated the article
-  target.save(async function (err) {
-    if (err) {
-      return res.status(422).json({
-        errors: {
-          message: "Unable to update that article",
-        },
+    if (!target) {
+      return res.status(401).json({
+        errors: { body: "Article Not Found" },
       });
     }
 
-    // async because we have to retrive db to get the article's author
-    return res.status(200).json({
-      article: await target.toArticleResponse(loginUser),
+    if (article.title) {
+      target.title = article.title;
+    }
+
+    if (article.description) {
+      target.description = article.description;
+    }
+
+    if (article.body) {
+      target.body = article.body;
+    }
+
+    if (article.tagList) {
+      target.tagList = article.tagList;
+    }
+
+    // save after current user updated the article
+    target.save(async function (err) {
+      if (err) {
+        return res.status(422).json({
+          errors: {
+            body: "Unable to update that article",
+          },
+        });
+      }
+
+      // async because we have to retrive db to get the article's author
+      return res.status(200).json({
+        article: await target.toArticleResponse(loginUser),
+      });
     });
-  });
-});
+  }),
+];
 
 // @desc current user get all articles
 // @route GET /api/articles

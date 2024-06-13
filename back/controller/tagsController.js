@@ -1,6 +1,6 @@
 const asyncHandler = require("express-async-handler");
 
-const Article = require("../models/Article");
+const Article = require("../model/Article");
 
 // @desc get all tags that existed
 // @route GET /api/tags

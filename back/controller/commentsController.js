@@ -1,9 +1,9 @@
 const asyncHandler = require("express-async-handler");
 const mongoose = require("mongoose");
 
-const User = require("../models/User");
-const Article = require("../models/Article");
-const Comment = require("../models/Comment");
+const User = require("../model/User");
+const Article = require("../model/Article");
+const Comment = require("../model/Comment");
 
 // @desc current user add a comment to article
 // @route POST /api/articles/:slug/comment

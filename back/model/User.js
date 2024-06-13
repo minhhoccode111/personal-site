@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       lowercase: true,
+      unique: true,
       maxLength: 100,
       trim: true,
     },
@@ -106,7 +107,7 @@ userSchema.methods.toProfileJSON = function () {
 
 // @desc
 // @required
-userSchema.methods.isFavorite = async (articleid) => {
+userSchema.methods.isFavorite = async function (articleid) {
   const favorite = await Favorite.findOne(
     {
       userid: this._id,
@@ -132,8 +133,14 @@ userSchema.methods.favorite = async (articleid) => {
 
 // @desc
 // @required
-userSchema.methods.unfavorite = async (articleid) => {
+userSchema.methods.unfavorite = async function (articleid) {
   await Favorite.deleteOne({ userid: this._id, articleid });
+};
+
+// @desc
+// @required
+userSchema.methods.isAuthor = function (article) {
+  return this._id.toString() === article.author.toString();
 };
 
 module.exports = mongoose.model("User", userSchema);
