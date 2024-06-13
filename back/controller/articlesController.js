@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 
 const Article = require("../model/Article");
 const User = require("../model/User");
+const Favorite = require("../model/Favorite");
 
 const {
   verifyInputCreateArticle,
@@ -136,7 +137,7 @@ const unfavoriteArticle = asyncHandler(async (req, res) => {
     });
   }
 
-  // NOTE: can't use Promise.all() because of race conditios
+  // NOTE: can't use Promise.all() because of race conditions
   // when deleting and counting at the same time
   await loginUser.unfavorite(article._id);
   return res.status(200).json({
@@ -160,7 +161,6 @@ const getArticleWithSlug = asyncHandler(async (req, res) => {
   }
 
   return res.status(200).json({
-    // NOTE: should retrieve and pass user to this to display favorite?
     article: await article.toArticleResponse(false),
   });
 });
@@ -179,10 +179,11 @@ const updateArticle = [
 
     const { slug } = req.params;
 
-    const loginUser = await User.findById(userId).exec();
-
-    // also find with current userId
-    const target = await Article.findOne({ slug, author: userId }).exec();
+    // with author to make sure current user is qualified
+    const [author, target] = await Promise.all([
+      User.findById(userId).exec(),
+      Article.findOne({ slug, author: userId }).exec(),
+    ]);
 
     if (!target) {
       return res.status(401).json({
@@ -206,7 +207,6 @@ const updateArticle = [
       target.tagList = article.tagList;
     }
 
-    // save after current user updated the article
     target.save(async function (err) {
       if (err) {
         return res.status(422).json({
@@ -216,9 +216,8 @@ const updateArticle = [
         });
       }
 
-      // async because we have to retrive db to get the article's author
       return res.status(200).json({
-        article: await target.toArticleResponse(loginUser),
+        article: await target.toArticleResponse(author),
       });
     });
   }),
@@ -229,69 +228,56 @@ const updateArticle = [
 // @access Public
 // @return Articles
 const listArticles = asyncHandler(async (req, res) => {
-  // default params' values
   let limit = 20;
   let offset = 0;
   let query = {};
 
-  // extract limit from the query parameters if provided
   if (req.query.limit) {
     limit = req.query.limit;
   }
 
-  // extract offset from the query parameters if provided
   if (req.query.offset) {
     offset = req.query.offset;
   }
 
-  // extract tag from the query parameters if provided
   if (req.query.tag) {
-    // add a tagList property to the query, only 1 tag
     query.tagList = { $in: [req.query.tag] };
   }
 
-  // console.log(`the query belike: `, query);
-  // console.log(`the query.tag belike: `, req.query.tag);
-
-  // favorited is a username param to help get all articles
-  // which that user mark as favorite
   if (req.query.favorited) {
-    // Find the user who favorited articles
     const favoriter = await User.findOne({
       username: req.query.favorited,
     }).exec();
 
-    // If the user exists, add their favorite articles to the query
     if (favoriter) {
-      // adds their favorite articles to the query if the user exists
-      // e.g. query will be { _id: { $in: ['articleId1', 'articleId2', 'articleId3']} }
-      query._id = { $in: favoriter.favoriteArticles };
+      const favoritedArticles = await Favorite.find({
+        userid: favoriter._id,
+      }).exec();
+
+      const favoritedArticlesArr = favoritedArticles.map(
+        (ref) => ref.articleid,
+      );
+
+      query._id = { $in: favoritedArticlesArr };
     }
   }
 
-  // find articles matching the query with limit and offset
   const [filteredArticles, articlesCount] = await Promise.all([
     Article.find(query)
-      .limit(Number(limit)) // Limit the number of articles
-      .skip(Number(offset)) // Skip the specified number of articles
-      // Sort articles by creation date in descending order
+      .limit(Number(limit))
+      .skip(Number(offset))
       .sort({ createdAt: "desc" })
       .exec(),
 
-    // count the total number of articles matching the query
-    Article.countDocuments(query).exec(),
+    Article.countDocuments(query).exec(), // count all not limit or skip
   ]);
 
-  // check if current user is logged in
   if (req.loggedin) {
-    // retrieve current user
     const loginUser = await User.findById(req.userId).exec();
 
     return res.status(200).json({
       articles: await Promise.all(
         filteredArticles.map(async (article) => {
-          // return needed information of article
-          // and connection of current user with the article
           return await article.toArticleResponse(loginUser);
         }),
       ),
@@ -302,7 +288,6 @@ const listArticles = asyncHandler(async (req, res) => {
     return res.status(200).json({
       articles: await Promise.all(
         filteredArticles.map(async (article) => {
-          // return needed information of article without connection info
           return await article.toArticleResponse(false);
         }),
       ),

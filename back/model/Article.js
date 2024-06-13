@@ -85,7 +85,7 @@ articleSchema.methods.toArticleResponse = async function (user) {
     updatedAt: this.updatedAt,
     description: this.description,
     author: authorObj.toProfileJSON(),
-    favorited: !!favorited,
+    favorited: favorited,
     favoritesCount,
   };
 };
