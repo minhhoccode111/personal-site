@@ -62,9 +62,9 @@ const deleteArticle = asyncHandler(async (req, res) => {
       });
     }
 
-    return res.status(200).json({
-      messages: { body: "Article successfully deleted" },
-    });
+    return res
+      .status(200)
+      .json({ messages: { body: "Article successfully deleted" } });
   });
 });
 
@@ -98,9 +98,9 @@ const favoriteArticle = asyncHandler(async (req, res) => {
 
   await loginUser.favorite(article._id);
 
-  return res.status(200).json({
-    article: await article.toArticleResponse(loginUser),
-  });
+  return res
+    .status(200)
+    .json({ article: await article.toArticleResponse(loginUser) });
 });
 
 // @desc current user remove an article from favorite
@@ -131,9 +131,9 @@ const unfavoriteArticle = asyncHandler(async (req, res) => {
   // NOTE: can't use Promise.all() because of race conditions
   // when deleting and counting at the same time
   await loginUser.unfavorite(article._id);
-  return res.status(200).json({
-    article: await article.toArticleResponse(loginUser),
-  });
+  return res
+    .status(200)
+    .json({ article: await article.toArticleResponse(loginUser) });
 });
 
 // @desc current user get an article
@@ -151,9 +151,7 @@ const getArticleWithSlug = asyncHandler(async (req, res) => {
     });
   }
 
-  return res.status(200).json({
-    article: await article.toArticleResponse(),
-  });
+  return res.status(200).json({ article: await article.toArticleResponse() });
 });
 
 // @desc current user update a article
@@ -205,9 +203,9 @@ const updateArticle = asyncHandler(async (req, res) => {
       });
     }
 
-    return res.status(200).json({
-      article: await target.toArticleResponse(author),
-    });
+    return res
+      .status(200)
+      .json({ article: await target.toArticleResponse(author) });
   });
 });
 

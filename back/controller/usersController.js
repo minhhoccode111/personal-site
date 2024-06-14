@@ -120,9 +120,7 @@ const updateUser = asyncHandler(async (req, res) => {
       });
     }
 
-    res.status(200).json({
-      user: target.toUserResponse(),
-    });
+    res.status(200).json({ user: target.toUserResponse() });
   });
 });
 

@@ -10,9 +10,7 @@ const getTags = asyncHandler(async (_, res) => {
   const tags = await Article.find().distinct("tagList").exec();
 
   // console.log(tags);
-  res.status(200).json({
-    tags,
-  });
+  res.status(200).json({ tags });
 });
 
 module.exports = {

@@ -1,8 +1,8 @@
-# Template NextJS + Shadcn UI + Redux + SWR + Zod
+# Template NextJS + Shadcn UI + Zustand + SWR + Zod
 
 ## Getting started
 
 ```bash
-npm install
-npm run dev
+yarn install
+yarn run dev
 ```

@@ -39,9 +39,7 @@ const addCommentsToArticle = asyncHandler(async (req, res) => {
     await newComment.toCommentResponse(author),
   ]);
 
-  return res.status(200).json({
-    comment: commentResponse,
-  });
+  res.status(200).json({ comment: commentResponse });
 });
 
 // @desc current user get all comments of an article
@@ -113,9 +111,9 @@ const deleteComment = asyncHandler(async (req, res) => {
       });
     }
 
-    return res.status(200).json({
-      messages: { body: "Comment successfully deleted" },
-    });
+    return res
+      .status(200)
+      .json({ messages: { body: "Comment successfully deleted" } });
   });
 });
 

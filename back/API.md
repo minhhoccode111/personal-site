@@ -1,350 +1,251 @@
 # API Design
 
-## Database model response methods
-
-#### `user.toUserResponse()`
+## Invalid Request Input Fields
 
 ```js
-userSchema.methods.toUserResponse = function () {
-  return {
-    bio: this.bio,
-    email: this.email,
-    image: this.image,
-    username: this.username,
-    isAuthor: this.isAuthor,
-    token: this.generateAccessToken(),
-  };
-};
+return res.status(400).json({ errors: errors.array() });
 ```
 
-#### `user.toProfileJSON()`
+## Can't save document to database (conflict)
 
 ```js
-userSchema.methods.toProfileJSON = function () {
-  return {
-    bio: this.bio,
-    image: this.image,
-    username: this.username,
-    isAuthor: this.isAuthor,
-  };
-};
+res.status(422).json({ errors: { body: "Unable to register a user" } });
 ```
 
-#### `comment.toCommentResponse()`
+## Authenticate and Authorization
 
 ```js
-commentSchema.methods.toCommentResponse = async function () {
-  const authorObj = await User.findById(this.author).exec();
-
-  return {
-    id: this._id,
-    body: this.body,
-    createdAt: this.createdAt,
-    updatedAt: this.updatedAt,
-    author: authorObj.toProfileJSON(),
-  };
-};
+return res.status(401).json({ errors: { body: "Unauthorized" } });
+return res
+  .status(401)
+  .json({ errors: { body: "Unauthorized: Wrong password" } });
+return res.status(403).json({ errors: { body: "Forbidden" } });
 ```
 
-#### `article.toArticleResponse()`
+## Not Found
 
 ```js
-articleSchema.methods.toArticleResponse = async function (user) {
-  const authorObj = await User.findById(this.author).exec();
-
-  return {
-    slug: this.slug,
-    body: this.body,
-    title: this.title,
-    tagList: this.tagList,
-    createdAt: this.createdAt,
-    updatedAt: this.updatedAt,
-    description: this.description,
-    favoritesCount: this.favoritesCount,
-    author: authorObj.toProfileJSON(),
-    favorited: user ? user.isFavorite(this._id) : false,
-  };
-};
+return res.status(404).json({ errors: { body: "[something] Not Found" } });
 ```
 
-## Dummy routes
+## Test routes
 
-#### `GET /`, `GET /index`, `GET /index.html`
+### `GET /`, `GET /index`, `GET /index.html`
 
-- A greet `index.html`
+Response
 
-#### `GET /test`
+```js
+res.sendFile(path.join(__dirname, "..", "view", "index.html"));
+```
 
-- A test json message
+### `GET /test`
 
-```json
-{
-  "message": "successful"
-}
+Response
+
+```js
+res.status(200).json({ errors: { body: "successful" } });
 ```
 
 ## User routes
 
-#### `POST /api/users`
+### `POST /api/users`
 
-- Sign up user
-- `req.body`
-
-```json
-{
-  "user": {
-    "username": "123",
-    "email": "123@gmail.com",
-    "password": "asd"
-  }
-}
-```
-
-- `res.`
+Expect
 
 ```js
-// fail
-res.status(400).json({ message: "All fields are required" });
-res.status(422).json({ errors: { body: "Unable to register a user" } });
+req.body = {
+  user: {
+    username: "123",
+    email: "123@gmail.com",
+    password: "Bruh0!0!",
+  },
+};
+```
 
-// success
+Response
+
+```js
 res.status(201).json({ user: createdUser.toUserResponse() });
 ```
 
-#### `POST /api/users/login`
+### `POST /api/users/login`
 
-- Sign in user
-- `req.body`
-
-```json
-{
-  "user": {
-    "email": "123@gmail.com",
-    "password": "asd"
-  }
-}
-```
-
-- `res.`
+Expect
 
 ```js
-// fail
-res.status(400).json({ message: "All fields are required" });
-res.status(404).json({ message: "User Not Found" });
-res.status(401).json({ message: "Unauthorized: Wrong password" });
+req.body = {
+  user: {
+    email: "123@gmail.com",
+    password: "Bruh0!0!",
+  },
+};
+```
 
-// success
+Response
+
+```js
 res.status(200).json({ user: loginUser.toUserResponse() });
 ```
 
-#### `PUT /api/user`
+### `PUT /api/user` (auth)
 
-- Update user
-- `req.body`, need auth
-
-```json
-{
-  "user": {
-    "email": "minhhoccode111@gmail.com",
-    "username": "minhhoccode111",
-    "password": "asd",
-    "image": "https://avatars.githubusercontent.com/u/39550308",
-    "bio": "I write code (sometimes)"
-  }
-}
-```
-
-- `res.`
+Expect
 
 ```js
-// fail
-res.status(400).json({ message: "Required a User object" });
-res.status(422).json({ errors: { body: "Unable to update user" } });
+req.body = {
+  user: {
+    email: "minhhoccode111@gmail.com",
+    username: "minhhoccode111",
+    password: "asd",
+    image: "https://avatars.githubusercontent.com/u/39550308",
+    bio: "I write code (sometimes)",
+  },
+};
+```
 
-// success
+Response
+
+```js
 res.status(200).json({ user: target.toUserResponse() });
 ```
 
-#### `GET /user`
+### `GET /user` (auth)
 
-- Get current user
-- Need auth
-- `res.`
+Response
 
 ```js
-// fail
-res.status(404).json({ message: "User Not Found" });
-
-// success
 res.status(200).json({ user: user.toUserResponse() });
 ```
 
 ## Tags route
 
-#### `GET /tags`
+### `GET /tags`
 
-- Get all articles' tags
-- `res.`
+Response
 
 ```js
-// success
 res.status(200).json({ tags });
 ```
 
 ## Profile route
 
-#### `GET /profiles/:username`
+### `GET /profiles/:username` (auth optional)
 
-- Get a user profile
-- `res.`
+Response
 
 ```js
-// fail
-res.status(404).json({ message: "User Not Found" });
-
-// success
 res.status(200).json({ profile: user.toProfileJSON() });
 ```
 
 ## Article routes
 
-#### `POST /articles`
+### `POST /articles` (auth, authz)
 
-- Create a new article
-- `req.body`, need auth, need authz
-
-```json
-{
-  "article": {
-    "title": "this is a title",
-    "description": "this is a description",
-    "body": "this is a body",
-    "tagList": ["some", "random", "tags"]
-  }
-}
-```
-
-- `res.`
+Expect
 
 ```js
-// fail
-res.status(401).json({ message: "User Not Found" });
-res.status(400).json({ message: "All fields are required" });
-res.status(422).json({ errors: { message: "Unable to create that article" } });
+req.body = {
+  article: {
+    title: "this is a title",
+    description: "this is a description",
+    body: "this is a body",
+    tagList: ["some", "random", "tags"],
+  },
+};
+```
 
-// success
+Response
+
+```js
 res.status(200).json({ article: await article.toArticleResponse(author) });
 ```
 
-#### `DELETE /articles/:slug`
+### `DELETE /articles/:slug` (auth, authz)
 
-- Delete an article
-- Need auth, need authz
-- `res.`
+Response
 
 ```js
-// fail
-res.status(401).json({ message: "User Not Found" });
-res.status(401).json({ message: "Article Not Found" });
-res.status(403).json({ message: "Only the author can delete his article" });
-
-// success
-res.status(200).json({ message: "Article successfully deleted" });
+return res
+  .status(200)
+  .json({ messages: { body: "Article successfully deleted" } });
 ```
 
-#### `POST /articles/:slug/favorite`
+### `POST /articles/:slug/favorite` (auth)
 
-- Add an article to favorite
-- Need auth
-- `res.`
+Response
 
 ```js
-// fail
-res.status(401).json({ message: "User Not Found" });
-res.status(401).json({ message: "Article Not Found" });
-
-// success
 res
   .status(200)
   .json({ article: await updatedArticle.toArticleResponse(loginUser) });
 ```
 
-#### `DELETE /articles/:slug/favorite`
+### `DELETE /articles/:slug/favorite` (auth)
 
-- Remove an article from favorite
-- Need auth
-- `res.`
+Response
 
 ```js
-// fail
-res.status(401).json({ message: "User Not Found" });
-res.status(401).json({ message: "Article Not Found" });
-
-// success
 res
   .status(200)
   .json({ article: await updatedArticle.toArticleResponse(loginUser) });
 ```
 
-#### `GET /articles/:slug`
+### `GET /articles/:slug`
 
-- Get an article
-- `res.`
-
-```js
-// fail
-res.status(401).json({ message: "Article Not Found" });
-
-// success
-res.status(200).json({ article: await article.toArticleResponse(false) });
-```
-
-#### `PUT /articles/:slug`
-
-- Update an article
-- `req.body`, need auth, need authz
-
-```json
-{
-  "article": {
-    "title": "short",
-    "description": "short updated",
-    "body": "short updated",
-    "tagList": ["bruh"]
-  }
-}
-```
-
-- `res.`
+Response
 
 ```js
-// fail
-res.status(401).json({ message: "Article Not Found" });
-res.status(422).json({ errors: { message: "Unable to update that article" } });
-
-// success
-res.status(200).json({ article: await target.toArticleResponse(loginUser) });
+return res.status(200).json({ article: await article.toArticleResponse() });
 ```
 
-#### `GET /articles`
+### `PUT /articles/:slug` (auth, authz)
 
-- List articles
-- Optional auth
-- Accept params:
-  - `limit` limit number of articles (default 20)
-  - `offset` for pagination (default 0)
-  - `tag` articles include that tag
-  - `favorited` get all favorite articles of a user
-- `res.`
+Expect
+
+```js
+req.body = {
+  article: {
+    title: "short",
+    description: "short updated",
+    body: "short updated",
+    tagList: ["bruh"],
+  },
+};
+```
+
+Response
+
+```js
+return res
+  .status(200)
+  .json({ article: await target.toArticleResponse(author) });
+```
+
+### `GET /articles` (auth optional)
+
+Expect
+
+```js
+req.params = {
+  limit: "5",
+  offset: "5",
+  tag: "programming",
+  favorited: "username123",
+};
+```
+
+- `limit` limit number of articles
+- `offset` for pagination
+- `tag` articles include that tag
+- `favorited` a user's all favorited articles
+
+Response
 
 ```js
 res.status(200).json({
   articles: await Promise.all(
     filteredArticles.map(async (article) => {
-      // auth, to mark favorite ones
       return await article.toArticleResponse(loginUser);
-      // no auth
-      return await article.toArticleResponse(false);
     }),
   ),
   articlesCount,
@@ -353,65 +254,42 @@ res.status(200).json({
 
 ## Comment routes
 
-#### `POST /articles/:slug/comments`
+### `POST /articles/:slug/comments` (auth)
 
-- Create a comment on post
-- `req.body`, need auth
+Expect
 
 ```js
-{
-  "comment": {
-    "body": "contact"
-  }
-}
+req.body = {
+  comment: {
+    body: "something",
+  },
+};
 ```
 
-- `res.`
+Response
 
 ```js
-// fail
-res.status(401).json({ message: "User Not Found" });
-res.status(401).json({ message: "Article Not Found" });
-
-// success
-res.status(200).json({ comment: await newComment.toCommentResponse() });
+res.status(200).json({ comment: await newComment.toCommentResponse(author) });
 ```
 
-#### `GET /articles/:slug/comments`
+### `GET /articles/:slug/comments`
 
-- Get all comments on a post
-- `res.`
+Response
 
 ```js
-// fail
-res.status(401).json({ message: "Article Not Found" });
-
-// success
 res.status(200).json({
   comments: await Promise.all(
-    article.comments.map(async (commentId) => {
-      const commentObj = await Comment.findById(commentId).exec();
-      return await commentObj.toCommentResponse();
-    }),
+    comments.map(async (comment) => await comment.toCommentResponse()),
   ),
 });
 ```
 
-#### `DELETE /articles/:slug/comments/:id`
+### `DELETE /articles/:slug/comments/:id` (auth)
 
-- Delete a comment on a post
-- Need auth
-- `res.`
+Response
 
 ```js
-// fail
-res.status(401).json({ message: "Comment Not Found" });
-res.status(401).json({ message: "User Not Found" });
-res.status(401).json({ message: "Article Not Found" });
-res
-  .status(403)
-  .json({ message: "Only the author of the comment can delete the comment" });
-
-// success
-res.status(200).json({ message: "comment has been successfully deleted!!!" });
+return res
+  .status(200)
+  .json({ messages: { body: "Comment successfully deleted" } });
 ```

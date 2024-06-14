@@ -5,14 +5,14 @@ const verifyJWT = (req, res, next) => {
 
   // NOTE: start with "Token " instead of "Bearer "?
   if (!authHeader?.startsWith("Token ")) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(401).json({ errors: { body: "Unauthorized" } });
   }
 
   const token = authHeader.split(" ")[1];
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
     if (err) {
-      return res.status(403).json({ message: "Forbidden" });
+      return res.status(403).json({ errors: { body: "Forbidden" } });
     }
 
     req.userId = decoded.user.id;

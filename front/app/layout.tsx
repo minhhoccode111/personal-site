@@ -11,7 +11,7 @@ const fontSans = FontSans({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: { template: "%s | App Name", default: "Home | App Name" },
-  description: "Template NextJS + ShadcnUI + Redux + SWR + Zod",
+  description: "Template NextJS + ShadcnUI + Zustand + SWR + Zod",
   // metadataBase: new URL(`https://basedurl.vercel.app`),
 };
 

@@ -1,5 +1,5 @@
 {
-  "name": "next-shadcn-redux-swr-zod",
+  "name": "next-shadcn-zustand-swr-zod",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,7 +11,6 @@
   "dependencies": {
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@radix-ui/react-slot": "^1.0.2",
-    "@reduxjs/toolkit": "^2.2.5",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "framer-motion": "^11.2.10",
@@ -21,12 +20,11 @@
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.51.5",
-    "react-redux": "^9.1.2",
-    "redux-persist": "^6.0.0",
     "swr": "^2.2.5",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@types/node": "^20",

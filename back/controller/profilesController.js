@@ -18,9 +18,7 @@ const getProfile = asyncHandler(async (req, res) => {
     });
   }
 
-  return res.status(200).json({
-    profile: user.toProfileJSON(),
-  });
+  return res.status(200).json({ profile: user.toProfileJSON() });
 });
 
 module.exports = {
