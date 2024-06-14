@@ -10,8 +10,8 @@ import ThemeProvider from "@/components/theme-provider";
 const fontSans = FontSans({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: { template: "%s | App Name", default: "Home | App Name" },
-  description: "Template NextJS + ShadcnUI + Zustand + SWR + Zod",
+  title: { template: "%s | mhc111", default: "Home | App Name" },
+  description: "Personal Site",
   // metadataBase: new URL(`https://basedurl.vercel.app`),
 };
 
@@ -42,7 +42,7 @@ export default function RootLayout({
           {/* nav */}
 
           {/* main */}
-          {children}
+          <main className="flex-1">{children}</main>
 
           {/* footer */}
           <SiteFooter />

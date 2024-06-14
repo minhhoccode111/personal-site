@@ -16,11 +16,13 @@ type ActionAuthStore = {
 };
 
 type AuthData = {
-  token?: string;
-  isLogin?: boolean;
-  self?: {
-    id: string;
-    fullname: string;
+  user?: {
+    bio: string;
+    email: string;
+    image: string;
+    username: string;
+    isAuthor: boolean;
+    token: string;
   };
 };
 

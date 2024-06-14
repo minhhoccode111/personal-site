@@ -1,4 +1,4 @@
-# Template NextJS + Shadcn UI + Zustand + SWR + Zod
+# Personal Site Front
 
 ## Getting started
 
