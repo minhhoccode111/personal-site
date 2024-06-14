@@ -4,17 +4,56 @@ The **Personal Site Back** project is an expansion from the **Blog API** project
 <br>
 <br>
 
-## [Demo](https://demo.realworld.io/)&nbsp;&nbsp;&nbsp;&nbsp;[RealWorld](https://github.com/gothinkster/realworld)
-
 This codebase was created to demonstrate a fully fledged fullstack application built with **Express.js + MongoDB + JavaScript** including CRUD operations, authentication, routing, pagination, and more.
 
 Adhere to the **Express.js + MongoDB + JavaScript** community styleguides & best practices.
 
 ## Getting started
 
-1. install npm
-1. Run `npm install` in the project folder
-1. Run `npm run dev` for dev mode and `npm run start` for regualr mode
+Clone the repo
+
+```bash
+
+git clone git@github.com:minhhoccode111/personal-site.git
+cd personal-site
+
+```
+
+Use the required Node engine
+
+```bash
+
+nvm install 16
+nvm use 16
+
+```
+
+Install packages
+
+```bash
+
+cd back
+npm install
+```
+
+Populate developemnt database
+
+(You can use the default `DATABASE_URI` in `.env` file or override with your own)
+
+```bash
+node script/cleardb.js
+node script/populatedb.js
+node script/infodb.js
+```
+
+And start
+
+```bash
+
+npm run dev
+npm run start
+
+```
 
 ## How it works
 
@@ -26,3 +65,4 @@ Adhere to the **Express.js + MongoDB + JavaScript** community styleguides & best
 - Choose a denormalized data model for the tags array within the Article model because the likelihood of an article having an infinite number of tags is low
 - Separate model Favorite with many-to-many relationship between User and Article (instead of an array of articles' id inside of user) for better scalability
 - Separate model Comment with many-to-many relationship between Comment and Article (instead of an array of comments' id inside of comment) for better scalability
+- Not setup a `debug` logger and use `console.log` (synchronous) which can impact performance in production

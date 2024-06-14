@@ -65,7 +65,7 @@ articleSchema.pre("save", function (next) {
 // @desc
 // @required
 articleSchema.methods.toArticleResponse = async function (user) {
-  console.log(`user in toArticleResponse belike: `, user);
+  // console.log(`user in toArticleResponse belike: `, user);
 
   const [authorObj, favoritesCount, favorited] = await Promise.all([
     User.findById(this.author).exec(),

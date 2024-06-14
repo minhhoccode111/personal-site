@@ -1,27 +1,37 @@
+# Database design
+
 ## User
 
 - username
   - unique
   - lowercase
-- password
 - email
   - unique
   - lowercase
   - index
+- password
 - bio
-  - default
 - image
-  - default
 - isAuthor
-  - default
-- favoriteArticles (x)
 - { timestamp: true }
-- generateAccessToken()
-- toUserResponse()
-- toProfileJSON()
-- isFavorite(id)
-- favorite(id)
-- unfavorite(id)
+- generateAccessToken() return
+  - accessToken
+- toUserResponse() return
+  - bio
+  - email
+  - image
+  - username
+  - isAuthor
+  - generateAccessToken()
+- toProfileJSON() return
+  - bio
+  - image
+  - username
+  - isAuthor
+- isFavorite(articleid) return
+  - !!favorited
+- favorite(articleid)
+- unfavorite(articleid)
 
 ## Article
 
@@ -34,13 +44,18 @@
 - body
 - tagList
 - author
-- favoritesCount
-- comments (x)
 - { timestamp: true }
-- updateFavoriteCount()
-- toArticleResponse(user)
-- addComment(commentId)
-- removeComment(commentId)
+- toArticleResponse(user) return
+  - slug
+  - body
+  - title
+  - tagList
+  - createdAt
+  - updatedAt
+  - description
+  - !!favorited
+  - favoritesCount
+  - author.toProfileJSON()
 
 ## Comment
 
@@ -48,9 +63,14 @@
 - author
 - article
 - { timestamp: true }
-- toCommentResponse()
+- toCommentResponse() return
+  - id
+  - body
+  - createdAt
+  - updatedAt
+  - author.toProfileJSON()
 
 ## Favorite
 
-- userId
-- articleId
+- userid
+- articleid

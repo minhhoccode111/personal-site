@@ -36,11 +36,11 @@ commentSchema.methods.toCommentResponse = async function (author) {
   };
 
   if (author) {
-    result.author = author;
+    result.author = author.toProfileJSON();
     return result;
   } else {
-    const findAuthor = await User.findById(this.author).exec();
-    result.author = findAuthor;
+    const commentAuthor = await User.findById(this.author).exec();
+    result.author = commentAuthor.toProfileJSON();
     return result;
   }
 };

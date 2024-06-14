@@ -1,6 +1,6 @@
 # addCommentsToArticle,
 POST {{url}}/articles/short/comments
-Authorization: {{token1}}
+Authorization: {{token0}}
 Content-Type: application/json
 {
   "comment": {
@@ -9,7 +9,7 @@ Content-Type: application/json
 }
 
 # getCommentsFromArticle,
-GET {{url}}/articles/short/comments
+GET {{url}}/articles/swan-prattle-now-steep-where/comments
 
 # deleteComment,
 DELETE {{url}}/articles/short/comments/666bc73e0468773871939b84

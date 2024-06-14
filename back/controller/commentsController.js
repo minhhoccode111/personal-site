@@ -67,7 +67,7 @@ const getCommentsFromArticle = asyncHandler(async (req, res) => {
 
   res.status(200).json({
     comments: await Promise.all(
-      comments.map(async (comment) => await comment.toCommentResponse(false)),
+      comments.map(async (comment) => await comment.toCommentResponse()),
     ),
   });
 });

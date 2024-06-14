@@ -61,11 +61,10 @@ userSchema.plugin(uniqueValidator, {
   message: "Error, expected {PATH} to be unique.",
 });
 
-const TOKEN = process.env.ACCESS_TOKEN_SECRET;
-
 // @desc
 // @required
 userSchema.methods.generateAccessToken = function () {
+  const TOKEN = process.env.ACCESS_TOKEN_SECRET;
   const accessToken = jwt.sign(
     {
       user: {
@@ -108,7 +107,7 @@ userSchema.methods.toProfileJSON = function () {
 // @desc
 // @required
 userSchema.methods.isFavorite = async function (articleid) {
-  const favorite = await Favorite.findOne(
+  const favorited = await Favorite.findOne(
     {
       userid: this._id,
       articleid,
@@ -118,18 +117,16 @@ userSchema.methods.isFavorite = async function (articleid) {
     .lean()
     .exec();
 
-  return !!favorite;
+  return !!favorited;
 };
 
 // @desc
 // @required
-// WARN: forgot that we can't access this. using arrow function
+// WARN: forgot that we can't access "this" when using arrow function
 userSchema.methods.favorite = async function (articleid) {
   try {
     await new Favorite({ userid: this._id, articleid }).save();
   } catch (err) {
-    // console.log(`error occurs when trying to favorite that article id: `, err);
-
     console.log(`Already favorited that article.`);
   }
 };
@@ -137,13 +134,9 @@ userSchema.methods.favorite = async function (articleid) {
 // @desc
 // @required
 userSchema.methods.unfavorite = async function (articleid) {
-  await Favorite.deleteOne({ userid: this._id, articleid });
-};
+  const result = await Favorite.deleteOne({ userid: this._id, articleid });
 
-// // @desc
-// // @required
-// userSchema.methods.isAuthor = function (article) {
-//   return this._id.toString() === article.author.toString();
-// };
+  if (result.deletedCount === 0) console.log(`Already deleted that favorite`);
+};
 
 module.exports = mongoose.model("User", userSchema);
