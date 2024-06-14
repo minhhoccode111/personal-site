@@ -57,8 +57,8 @@ const verifyInputUpdateUser = [
   body("user.image").trim().optional().isLength({ max: 3000 }).escape(),
 
   body("user.username")
-    .optional({ values: "falsy" })
     .trim()
+    .optional({ values: "falsy" })
     .notEmpty()
     .withMessage("Username is required")
     .isLength({ max: 100 })
@@ -66,8 +66,8 @@ const verifyInputUpdateUser = [
     .escape(),
 
   body("user.email")
-    .optional({ values: "falsy" })
     .trim()
+    .optional({ values: "falsy" })
     .isEmail()
     .withMessage("Invalid email address")
     .isLength({ min: 8, max: 100 })
@@ -75,8 +75,8 @@ const verifyInputUpdateUser = [
     .normalizeEmail(), // instead of escape
 
   body("user.password")
-    .optional({ values: "falsy" })
     .trim()
+    .optional({ values: "falsy" })
     .isLength({ min: 8, max: 100 })
     .withMessage("Password must be between 8 and 100 characters")
     .isStrongPassword()
@@ -130,8 +130,8 @@ const verifyInputCreateArticle = [
 const verifyInputUpdateArticle = [
   body("article", "Article object is required").isObject(),
   body("article.title")
-    .optional({ values: "falsy" })
     .trim()
+    .optional({ values: "falsy" })
     .notEmpty()
     .withMessage("Title is required")
     .isLength({ max: 100 })
@@ -139,8 +139,8 @@ const verifyInputUpdateArticle = [
     .escape(),
 
   body("article.description")
-    .optional({ values: "falsy" })
     .trim()
+    .optional({ values: "falsy" })
     .notEmpty()
     .withMessage("Description is required")
     .isLength({ max: 1000 })
@@ -148,8 +148,8 @@ const verifyInputUpdateArticle = [
     .escape(),
 
   body("article.body")
-    .optional({ values: "falsy" })
     .trim()
+    .optional({ values: "falsy" })
     .notEmpty()
     .withMessage("Body is required")
     .isLength({ max: 30000 })
@@ -179,10 +179,31 @@ const verifyInputUpdateArticle = [
   },
 ];
 
+const verifyInputCreateComment = [
+  body("comment", "Comment object is required").isObject(),
+
+  body("article.body")
+    .trim()
+    .notEmpty()
+    .withMessage("Comment body is required")
+    .isLength({ max: 30000 })
+    .withMessage("Comment body must be less than 30000 characters")
+    .escape(),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  },
+];
+
 module.exports = {
   verifyInputRegisterUser,
   verifyInputUserLogin,
   verifyInputUpdateUser,
   verifyInputCreateArticle,
   verifyInputUpdateArticle,
+  verifyInputCreateComment,
 };

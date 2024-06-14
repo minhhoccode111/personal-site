@@ -1,22 +1,23 @@
 const express = require("express");
 const router = express.Router();
 const verifyJWT = require("../middleware/verifyJWT");
-const verifyJWTOptional = require("../middleware/verifyJWTOptional");
 const commentController = require("../controller/commentsController");
 
-// current user comment on an article
+const { verifyInputUpdateArticle } = require("../middleware/verifyInput");
+
+// @desc add comment to an article
+// @required fields {body}
 router.post(
   "/:slug/comments",
   verifyJWT,
+  verifyInputUpdateArticle,
   commentController.addCommentsToArticle,
 );
 
-// current user get all comment of an article, auth optional
 router.get("/:slug/comments", commentController.getCommentsFromArticle);
 
-// current user delete a comment in an article
 router.delete(
-  "/:slug/comments/:id",
+  "/:slug/comments/:commentid",
   verifyJWT,
   commentController.deleteComment,
 );

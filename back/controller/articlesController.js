@@ -4,67 +4,57 @@ const Article = require("../model/Article");
 const User = require("../model/User");
 const Favorite = require("../model/Favorite");
 
-const {
-  verifyInputCreateArticle,
-  verifyInputUpdateArticle,
-} = require("../middleware/verifyInput");
-
 // @desc current user create a article
 // @route POST /api/articles
 // @access Private
 // @required fields {title, description, body}
 // @return Article
-const createArticle = [
-  verifyInputCreateArticle,
-  asyncHandler(async (req, res) => {
-    const userid = req.userId;
+const createArticle = asyncHandler(async (req, res) => {
+  const userid = req.userId;
 
-    const author = await User.findById(userid).exec();
+  const author = await User.findById(userid).exec();
 
-    if (!author) {
-      return res.status(401).json({
-        errors: { body: "User Not Found" },
+  if (!author) {
+    return res.status(401).json({
+      errors: { body: "User Not Found" },
+    });
+  }
+
+  const { title, description, body, tagList } = req.body.article;
+
+  const article = new Article({ title, description, body });
+
+  article.author = author;
+
+  if (Array.isArray(tagList) && tagList.length > 0) {
+    article.tagList = tagList;
+  }
+
+  console.log(`created article belike: `, article);
+
+  article.save(async function (err) {
+    if (err) {
+      return res.status(422).json({
+        errors: {
+          body: "Unable to create that article",
+        },
       });
     }
 
-    const { title, description, body, tagList } = req.body.article;
-
-    const article = new Article({ title, description, body });
-
-    article.author = author;
-
-    if (Array.isArray(tagList) && tagList.length > 0) {
-      article.tagList = tagList;
-    }
-
-    console.log(`created article belike: `, article);
-
-    article.save(async function (err) {
-      if (err) {
-        return res.status(422).json({
-          errors: {
-            body: "Unable to create that article",
-          },
-        });
-      }
-
-      res
-        .status(200)
-        .json({ article: await article.toArticleResponse(author) });
-    });
-  }),
-];
+    res.status(200).json({ article: await article.toArticleResponse(author) });
+  });
+});
 
 // @desc current user delete an article
 // @route DELETE /api/articles/:slug
 // @access Private
 // @return result messages
 const deleteArticle = asyncHandler(async (req, res) => {
-  const id = req.userId;
+  const authorid = req.userId;
 
   const { slug } = req.params;
 
-  Article.deleteOne({ slug, author: id }, function (_, result) {
+  Article.deleteOne({ slug, author: authorid }, function (_, result) {
     // NOTE: this is new
     if (result.deletedCount === 0) {
       return res.status(401).json({
@@ -73,7 +63,7 @@ const deleteArticle = asyncHandler(async (req, res) => {
     }
 
     return res.status(200).json({
-      messages: { body: "Article successfully deleted!!!" },
+      messages: { body: "Article successfully deleted" },
     });
   });
 });
@@ -170,58 +160,55 @@ const getArticleWithSlug = asyncHandler(async (req, res) => {
 // @access Private
 // @optional fields {title, description, body, tagList}
 // @return Article
-const updateArticle = [
-  verifyInputUpdateArticle,
-  asyncHandler(async (req, res) => {
-    const userId = req.userId;
+const updateArticle = asyncHandler(async (req, res) => {
+  const userId = req.userId;
 
-    const { article } = req.body;
+  const { article } = req.body;
 
-    const { slug } = req.params;
+  const { slug } = req.params;
 
-    // with author to make sure current user is qualified
-    const [author, target] = await Promise.all([
-      User.findById(userId).exec(),
-      Article.findOne({ slug, author: userId }).exec(),
-    ]);
+  // with author to make sure current user is qualified
+  const [author, target] = await Promise.all([
+    User.findById(userId).exec(),
+    Article.findOne({ slug, author: userId }).exec(),
+  ]);
 
-    if (!target) {
-      return res.status(401).json({
-        errors: { body: "Article Not Found" },
-      });
-    }
-
-    if (article.title) {
-      target.title = article.title;
-    }
-
-    if (article.description) {
-      target.description = article.description;
-    }
-
-    if (article.body) {
-      target.body = article.body;
-    }
-
-    if (article.tagList) {
-      target.tagList = article.tagList;
-    }
-
-    target.save(async function (err) {
-      if (err) {
-        return res.status(422).json({
-          errors: {
-            body: "Unable to update that article",
-          },
-        });
-      }
-
-      return res.status(200).json({
-        article: await target.toArticleResponse(author),
-      });
+  if (!target) {
+    return res.status(401).json({
+      errors: { body: "Article Not Found" },
     });
-  }),
-];
+  }
+
+  if (article.title) {
+    target.title = article.title;
+  }
+
+  if (article.description) {
+    target.description = article.description;
+  }
+
+  if (article.body) {
+    target.body = article.body;
+  }
+
+  if (article.tagList) {
+    target.tagList = article.tagList;
+  }
+
+  target.save(async function (err) {
+    if (err) {
+      return res.status(422).json({
+        errors: {
+          body: "Unable to update that article",
+        },
+      });
+    }
+
+    return res.status(200).json({
+      article: await target.toArticleResponse(author),
+    });
+  });
+});
 
 // @desc current user get all articles
 // @route GET /api/articles

@@ -18,7 +18,7 @@ const commentSchema = new mongoose.Schema(
     article: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Article",
-      index: true, // always find comments using this
+      index: true, // comments are usually found using this field
     },
   },
 
@@ -27,15 +27,15 @@ const commentSchema = new mongoose.Schema(
   },
 );
 
-commentSchema.methods.toCommentResponse = async function () {
-  const authorObj = await User.findById(this.author).exec();
-
+commentSchema.methods.toCommentResponse = async function (author) {
   return {
     id: this._id,
     body: this.body,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
-    author: authorObj.toProfileJSON(), // to display name and image
+    author: author
+      ? author
+      : await User.findById(this.author).exec().toProfileJSON(),
   };
 };
 

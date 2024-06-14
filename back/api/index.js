@@ -44,11 +44,11 @@ app.use("/api/profiles", require("../route/profileRoutes"));
 // article route
 app.use("/api/articles", require("../route/articleRoutes"));
 
-// tag route
-app.use("/api/tags", require("../route/tagRoutes"));
-
 // comment route
 app.use("/api/articles", require("../route/commentRoutes"));
+
+// tag route
+app.use("/api/tags", require("../route/tagRoutes"));
 
 mongoose.connection.once("open", () => {
   app.listen(PORT, () => {

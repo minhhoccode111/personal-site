@@ -1,11 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 
-const {
-  verifyInputUserLogin,
-  verifyInputRegisterUser,
-} = require("../middleware/verifyInput");
-
 const User = require("../model/User");
 
 // @desc registration for a user
@@ -13,37 +8,34 @@ const User = require("../model/User");
 // @access Public
 // @required fields {email, username, password}
 // @return User
-const registerUser = [
-  verifyInputRegisterUser,
-  asyncHandler(async (req, res) => {
-    const { user } = req.body;
+const registerUser = asyncHandler(async (req, res) => {
+  const { user } = req.body;
 
-    console.log(`user sign up belike: `, user);
+  console.log(`user sign up belike: `, user);
 
-    // process.env.SALT no need await but a number 13 is needed
-    const hashedPwd = await bcrypt.hash(user.password, process.env.SALT);
+  // process.env.SALT no need await but a number 13 is needed
+  const hashedPwd = await bcrypt.hash(user.password, process.env.SALT);
 
-    const userObject = {
-      username: user.username,
-      password: hashedPwd,
-      email: user.email,
-    };
+  const userObject = {
+    username: user.username,
+    password: hashedPwd,
+    email: user.email,
+  };
 
-    const createdUser = new User(userObject);
+  const createdUser = new User(userObject);
 
-    createdUser.save(function (err) {
-      if (err) {
-        return res.status(422).json({
-          errors: {
-            body: "Unable to register a user",
-          },
-        });
-      }
+  createdUser.save(function (err) {
+    if (err) {
+      return res.status(422).json({
+        errors: {
+          body: "Unable to register a user",
+        },
+      });
+    }
 
-      res.status(201).json({ user: createdUser.toUserResponse() });
-    });
-  }),
-];
+    res.status(201).json({ user: createdUser.toUserResponse() });
+  });
+});
 
 // @desc get currently logged-in user
 // @route GET /api/user
@@ -65,31 +57,28 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 // @access Public
 // @required fields {email, password}
 // @return User
-const userLogin = [
-  verifyInputUserLogin,
-  asyncHandler(async (req, res) => {
-    const { user } = req.body;
+const userLogin = asyncHandler(async (req, res) => {
+  const { user } = req.body;
 
-    const loginUser = await User.findOne({ email: user.email }).exec();
+  const loginUser = await User.findOne({ email: user.email }).exec();
 
-    console.log(loginUser);
+  console.log(loginUser);
 
-    if (!loginUser)
-      return res.status(404).json({ errors: { body: "User Not Found" } });
+  if (!loginUser)
+    return res.status(404).json({ errors: { body: "User Not Found" } });
 
-    const match = await bcrypt.compare(user.password, loginUser.password);
+  const match = await bcrypt.compare(user.password, loginUser.password);
 
-    if (!match)
-      return res
-        .status(401)
-        .json({ errors: { body: "Unauthorized: Wrong password" } });
+  if (!match)
+    return res
+      .status(401)
+      .json({ errors: { body: "Unauthorized: Wrong password" } });
 
-    res.status(200).json({ user: loginUser.toUserResponse() });
-  }),
-];
+  res.status(200).json({ user: loginUser.toUserResponse() });
+});
 
 // @desc update currently logged-in user
-// Warning: if password or email is updated, client-side must update the token
+// @warning if password or email is updated, client-side must update the token
 // @route PUT /api/user
 // @access Private
 // @return User

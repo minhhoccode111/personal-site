@@ -13,44 +13,34 @@ const Comment = require("../model/Comment");
 const addCommentsToArticle = asyncHandler(async (req, res) => {
   const id = req.userId;
 
-  // current user create the comment
-  const commenter = await User.findById(id).exec();
-
-  // if current user not found
-  if (!commenter) {
-    return res.status(401).json({
-      message: "User Not Found",
-    });
-  }
-
-  // extract the article title slug
-  const { slug } = req.params;
-
-  // console.log(`the slug is ${slug}`)
-  const article = await Article.findOne({ slug }).exec();
-
-  // check for existence
-  if (!article) {
-    return res.status(401).json({
-      message: "Article Not Found",
-    });
-  }
-
-  // extract comment body (content) from body
   const { body } = req.body.comment;
 
-  // current user post a new comment to the article
-  const newComment = await Comment.create({
+  const { slug } = req.params;
+
+  const [author, article] = await Promise.all([
+    User.findById(id).exec(),
+    Article.findOne({ slug }).exec(),
+  ]);
+
+  if (!author || !article) {
+    return res.status(401).json({
+      errors: { body: "Article or Author Not Found" },
+    });
+  }
+
+  const newComment = new Comment({
     body,
-    author: commenter._id,
-    article: article._id,
+    article,
+    author,
   });
 
-  // add comment's id to the article array, await because of this.save()
-  await article.addComment(newComment._id);
+  const [_, commentResponse] = await Promise.all([
+    newComment.save(),
+    await newComment.toCommentResponse(author),
+  ]);
 
   return res.status(200).json({
-    comment: await newComment.toCommentResponse(),
+    comment: commentResponse,
   });
 });
 
@@ -65,16 +55,19 @@ const getCommentsFromArticle = asyncHandler(async (req, res) => {
 
   if (!article) {
     return res.status(401).json({
-      message: "Article Not Found",
+      errors: { body: "Article Not Found" },
     });
   }
 
+  const comments = await Comment.find({
+    article,
+  })
+    .sort({ createdAt: -1 })
+    .exec();
+
   res.status(200).json({
     comments: await Promise.all(
-      article.comments.map(async (commentId) => {
-        const commentObj = await Comment.findById(commentId).exec();
-        return await commentObj.toCommentResponse();
-      }),
+      comments.map(async (comment) => await comment.toCommentResponse(false)),
     ),
   });
 });
@@ -86,64 +79,44 @@ const getCommentsFromArticle = asyncHandler(async (req, res) => {
 const deleteComment = asyncHandler(async (req, res) => {
   const userId = req.userId;
 
-  // the article's slug title and comment id
-  const { slug, id } = req.params;
+  const { slug, commentid } = req.params;
 
-  // check valid mongodb id to return soon
-  const validId = mongoose.isValidObjectId(id);
+  const validId = mongoose.isValidObjectId(commentid);
   if (!validId) {
     return res.status(401).json({
-      message: "Comment Not Found",
+      errors: { body: "Comment Not Found" },
     });
   }
 
-  const [commenter, article, comment] = await Promise.all([
+  const [author, article] = await Promise.all([
     User.findById(userId).exec(),
     Article.findOne({ slug }).exec(),
-    Comment.findById(id).exec(),
   ]);
-
-  // check for existence of current user
-  if (!commenter) {
-    return res.status(401).json({
-      message: "User Not Found",
-    });
-  }
 
   if (!article) {
     return res.status(401).json({
-      message: "Article Not Found",
+      errors: { body: "Article Not Found" },
     });
   }
 
-  if (!comment) {
+  if (!author) {
     return res.status(401).json({
-      message: "Comment Not Found",
+      errors: { body: "Author Not Found" },
     });
   }
 
-  // console.log(`comment author id: ${comment.author}`);
-  // console.log(`commenter id: ${commenter._id}`)
+  Comment.deleteOne({ article, author, id: commentid }, function (_, result) {
+    // NOTE: this is new
+    if (result.deletedCount === 0) {
+      return res.status(401).json({
+        errors: { body: "Comment Not Found" },
+      });
+    }
 
-  // check for comment's authorization
-  if (comment.author.toString() === commenter._id.toString()) {
-    await Promise.all([
-      // remove the comment in article's comments array
-      article.removeComment(comment._id),
-      // remove the comment document
-      Comment.deleteOne({ _id: comment._id }),
-    ]);
-
-    // return success message
     return res.status(200).json({
-      message: "comment has been successfully deleted",
+      messages: { body: "Comment successfully deleted" },
     });
-  } else {
-    // if current user not own the comment the a 403 return
-    return res.status(403).json({
-      message: "Cannot delete comments not own",
-    });
-  }
+  });
 });
 
 module.exports = {
