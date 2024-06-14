@@ -105,8 +105,8 @@ const deleteComment = asyncHandler(async (req, res) => {
     });
   }
 
-  Comment.deleteOne({ article, author, id: commentid }, function (_, result) {
-    // NOTE: this is new
+  Comment.deleteOne({ article, author, _id: commentid }, function (_, result) {
+    // NOTE: this new
     if (result.deletedCount === 0) {
       return res.status(401).json({
         errors: { body: "Comment Not Found" },

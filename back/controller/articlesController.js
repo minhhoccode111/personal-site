@@ -55,7 +55,7 @@ const deleteArticle = asyncHandler(async (req, res) => {
   const { slug } = req.params;
 
   Article.deleteOne({ slug, author: authorid }, function (_, result) {
-    // NOTE: this is new
+    // NOTE: this new
     if (result.deletedCount === 0) {
       return res.status(401).json({
         errors: { body: "Article Not Found" },
@@ -77,7 +77,10 @@ const favoriteArticle = asyncHandler(async (req, res) => {
 
   const { slug } = req.params;
 
-  const loginUser = await User.findById(id).exec();
+  const [loginUser, article] = await Promise.all([
+    User.findById(id).exec(),
+    Article.findOne({ slug }).exec(),
+  ]);
 
   if (!loginUser) {
     return res.status(401).json({
@@ -85,15 +88,13 @@ const favoriteArticle = asyncHandler(async (req, res) => {
     });
   }
 
-  const article = await Article.findOne({ slug }).exec();
-
   if (!article) {
     return res.status(401).json({
       errors: { body: "Article Not Found" },
     });
   }
 
-  console.log(`article info belike: `, article);
+  // console.log(`article info belike: `, article);
 
   await loginUser.favorite(article._id);
 
@@ -151,7 +152,7 @@ const getArticleWithSlug = asyncHandler(async (req, res) => {
   }
 
   return res.status(200).json({
-    article: await article.toArticleResponse(false),
+    article: await article.toArticleResponse(),
   });
 });
 
@@ -275,7 +276,7 @@ const listArticles = asyncHandler(async (req, res) => {
     return res.status(200).json({
       articles: await Promise.all(
         filteredArticles.map(async (article) => {
-          return await article.toArticleResponse(false);
+          return await article.toArticleResponse();
         }),
       ),
 

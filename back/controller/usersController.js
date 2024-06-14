@@ -13,8 +13,8 @@ const registerUser = asyncHandler(async (req, res) => {
 
   console.log(`user sign up belike: `, user);
 
-  // process.env.SALT no need await but a number 13 is needed
-  const hashedPwd = await bcrypt.hash(user.password, process.env.SALT);
+  const SALT = Number(process.env.SALT);
+  const hashedPwd = await bcrypt.hash(user.password, SALT);
 
   const userObject = {
     username: user.username,

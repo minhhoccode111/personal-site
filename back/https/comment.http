@@ -1,18 +1,16 @@
 # addCommentsToArticle,
-POST {{url}}/articles/asd1-0/comments
+POST {{url}}/articles/short/comments
 Authorization: {{token1}}
 Content-Type: application/json
 {
   "comment": {
-    "body": "contact"
+    "body": "third comment"
   }
 }
 
-
 # getCommentsFromArticle,
-GET {{url}}/articles/asd1-0/comments
-
+GET {{url}}/articles/short/comments
 
 # deleteComment,
-DELETE {{url}}/articles/asd1-0/comments/665445db1d9d0635c1ddc54e
-Authorization: {{token1}}
+DELETE {{url}}/articles/short/comments/666bc73e0468773871939b84
+Authorization: {{token0}}

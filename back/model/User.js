@@ -123,10 +123,13 @@ userSchema.methods.isFavorite = async function (articleid) {
 
 // @desc
 // @required
-userSchema.methods.favorite = async (articleid) => {
+// WARN: forgot that we can't access this. using arrow function
+userSchema.methods.favorite = async function (articleid) {
   try {
     await new Favorite({ userid: this._id, articleid }).save();
   } catch (err) {
+    // console.log(`error occurs when trying to favorite that article id: `, err);
+
     console.log(`Already favorited that article.`);
   }
 };
@@ -137,10 +140,10 @@ userSchema.methods.unfavorite = async function (articleid) {
   await Favorite.deleteOne({ userid: this._id, articleid });
 };
 
-// @desc
-// @required
-userSchema.methods.isAuthor = function (article) {
-  return this._id.toString() === article.author.toString();
-};
+// // @desc
+// // @required
+// userSchema.methods.isAuthor = function (article) {
+//   return this._id.toString() === article.author.toString();
+// };
 
 module.exports = mongoose.model("User", userSchema);

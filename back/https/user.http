@@ -12,29 +12,29 @@ Content-Type: application/json
   "user": {
     "username":"123",
     "email":"123@gmail.com",
-    "password":"asd"
+    "password":"Bruh0!0!"
   }
 }
 
-# sign in
+# log in
 POST {{url}}/users/login
 Content-Type: application/json
 {
   "user": {
     "email":"asd1@gmail.com",
-    "password":"asd"
+    "password":"Bruh0!0!"
   }
 }
 
 # update user
 PUT {{url}}/user
-Authorization: {{token0}}
+Authorization: {{token1}}
 Content-Type: application/json
 {
   "user": {
-    "email": "minhhoccode111@gmail.com", 
-    "username": "minhhoccode111", 
-    "password": "asd", 
+    "email": "asd1@gmail.com", 
+    "username": "1234", 
+    "password": "Bruh0!0!", 
     "image": "https://avatars.githubusercontent.com/u/39550308",
     "bio": "I write code (sometimes)"
   }

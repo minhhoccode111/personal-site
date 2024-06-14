@@ -45,11 +45,6 @@ const articleSchema = new mongoose.Schema(
       required: true,
       type: mongoose.Schema.Types.ObjectId,
     },
-
-    favoritesCount: {
-      type: Number,
-      default: 0,
-    },
   },
   {
     timestamps: true, // automatic add createdAt and updatedAt
@@ -70,6 +65,8 @@ articleSchema.pre("save", function (next) {
 // @desc
 // @required
 articleSchema.methods.toArticleResponse = async function (user) {
+  console.log(`user in toArticleResponse belike: `, user);
+
   const [authorObj, favoritesCount, favorited] = await Promise.all([
     User.findById(this.author).exec(),
     Favorite.countDocuments({ articleid: this._id }).exec(),
@@ -85,13 +82,9 @@ articleSchema.methods.toArticleResponse = async function (user) {
     updatedAt: this.updatedAt,
     description: this.description,
     author: authorObj.toProfileJSON(),
-    favorited: favorited,
+    favorited: !!favorited,
     favoritesCount,
   };
 };
-
-// articleSchema.methods.isAuthor = function (user) {
-//   return user._id.toString() === this.author.toString();
-// };
 
 module.exports = mongoose.model("Article", articleSchema);

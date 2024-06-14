@@ -182,7 +182,7 @@ const verifyInputUpdateArticle = [
 const verifyInputCreateComment = [
   body("comment", "Comment object is required").isObject(),
 
-  body("article.body")
+  body("comment.body")
     .trim()
     .notEmpty()
     .withMessage("Comment body is required")

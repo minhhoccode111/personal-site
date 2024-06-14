@@ -12,7 +12,8 @@ const users = [];
 const articles = [];
 const comments = [];
 
-const PASSWORD = "asd";
+// use env var
+const PASSWORD = "Bruh0!0!";
 const SALT = 10;
 
 // manually created, not reliable
@@ -38,11 +39,12 @@ function escapeHtml(str) {
 async function createMe() {
   const password = await bcrypt.hash(PASSWORD, SALT);
   const detail = {
-    email: "minhhoccode111@gmail.com",
     password,
-    username: "minhhoccode111",
-    bio: "I write code (sometimes)",
     isAuthor: true,
+    username: "minhhoccode111",
+    email: "minhhoccode111@gmail.com",
+    bio: "I write code (sometimes)",
+    image: escapeHtml(faker.image.avatar()),
   };
 
   const me = new User(detail);
@@ -82,7 +84,7 @@ async function createArticles(number) {
       console.log(`article: `, i);
     } catch (err) {
       i--;
-      console.log("duplicated article");
+      console.log("duplicated article slug");
     }
   }
 }
@@ -107,14 +109,16 @@ async function createUsers(number) {
       max: 15,
     });
 
-    for (const art of favoriteArticles) {
-      await user.favorite(art._id);
-      await art.updateFavoriteCount();
-    }
-
     // in case name not unique
     try {
-      await user.save();
+      await Promise.all([
+        user.save(),
+
+        favoriteArticles.map(
+          async (article) => await user.favorite(article._id),
+        ),
+      ]);
+
       users.push(user);
       console.log(`user: `, i, user);
     } catch (err) {
@@ -128,21 +132,17 @@ async function createComments(number) {
   users.push(pointer.author);
 
   for (let i = 0; i < number; i++) {
-    const author = faker.helpers.arrayElement(users);
+    const author = faker.helpers.arrayElement(users); // pick a user
 
-    const article = faker.helpers.arrayElement(articles);
+    const article = faker.helpers.arrayElement(articles); // pick an article
 
     const body = faker.word.words({ count: { min: 5, max: 100 } });
 
-    const comment = new Comment({
+    const comment = await new Comment({
       author,
       body,
       article,
-    });
-
-    await comment.save();
-
-    await article.addComment(comment._id);
+    }).save();
 
     comments.push(comment);
 
@@ -152,9 +152,9 @@ async function createComments(number) {
 
 const main = async () => {
   await createMe();
-  await createArticles(10);
+  await createArticles(30);
   await createUsers(25);
-  await createComments(40);
+  await createComments(400);
 };
 
 connect(main);

@@ -3,14 +3,14 @@ const router = express.Router();
 const verifyJWT = require("../middleware/verifyJWT");
 const commentController = require("../controller/commentsController");
 
-const { verifyInputUpdateArticle } = require("../middleware/verifyInput");
+const { verifyInputCreateComment } = require("../middleware/verifyInput");
 
 // @desc add comment to an article
 // @required fields {body}
 router.post(
   "/:slug/comments",
   verifyJWT,
-  verifyInputUpdateArticle,
+  verifyInputCreateComment,
   commentController.addCommentsToArticle,
 );
 

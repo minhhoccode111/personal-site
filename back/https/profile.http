@@ -1,3 +1,3 @@
 # get a profile
 GET {{url}}/profiles/minhhoccode111
-Authorization: {{token0}}
+Authorization: {{token1}}
