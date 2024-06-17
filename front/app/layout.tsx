@@ -1,5 +1,4 @@
 import { Inter as FontSans } from "next/font/google";
-import type { Metadata } from "next";
 
 import "@/styles/globals.css";
 import { cn } from "@/lib/utils";
@@ -8,12 +7,6 @@ import SiteHeader from "@/components/site-header";
 import ThemeProvider from "@/components/theme-provider";
 
 const fontSans = FontSans({ subsets: ["latin"], variable: "--font-sans" });
-
-export const metadata: Metadata = {
-  title: { template: "%s | mhc111", default: "Home | App Name" },
-  description: "Personal Site",
-  // metadataBase: new URL(`https://basedurl.vercel.app`),
-};
 
 export default function RootLayout({
   children,
@@ -42,7 +35,7 @@ export default function RootLayout({
           {/* nav */}
 
           {/* main */}
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 self-center max-w-xl w-full">{children}</main>
 
           {/* footer */}
           <SiteFooter />

@@ -5,7 +5,7 @@ export default function RouteHeader({
 }>) {
   return (
     <header className="">
-      <h2 className="">{children}</h2>
+      <h2 className="font-extrabold text-xl">{children}</h2>
     </header>
   );
 }
