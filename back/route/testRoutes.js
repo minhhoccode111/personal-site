@@ -8,7 +8,7 @@ router.get(
   "/",
   asyncHandler(async (_, res) => {
     console.log("successful!");
-    res.status(200).json({ errors: { body: "successful" } });
+    res.status(200).json({ messages: { body: "successful" } });
   }),
 );
 
