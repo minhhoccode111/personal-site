@@ -9,6 +9,8 @@ const {
   verifyInputRegisterUser,
 } = require("../middleware/verifyInput");
 
+// WARN: add google login here "/users/login/federated/google" above normal login to be handle first
+
 // @desc login for a user
 // @required fields user{email, password}
 router.post("/users/login", verifyInputUserLogin, userController.userLogin);

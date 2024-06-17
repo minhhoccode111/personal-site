@@ -94,10 +94,10 @@ async function createUsers(number) {
 
   for (let i = 0; i < number; i++) {
     const userDetail = {
-      email: `asd${i}@gmail.com`,
+      email: `${i}asd@gmail.com`,
       password,
       // username: faker.person.fullName(),
-      username: `asd${i}`, // easier testing
+      username: `${i}asd`, // easier testing
       bio: faker.lorem.paragraph(),
       image: escapeHtml(faker.image.avatar()),
     };
