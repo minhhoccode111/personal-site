@@ -31,6 +31,8 @@
     "mongoose": "^6.8.1",
     "mongoose-unique-validator": "^3.1.0",
     "morgan": "^1.10.0",
+    "passport": "^0.7.0",
+    "passport-google-oidc": "^0.1.0",
     "slugify": "^1.6.5"
   },
   "devDependencies": {

@@ -1,2 +1,7 @@
 node_modules
+
+# google authentication api environment variables
+google.env
+
+# normal environment variables
 # .env

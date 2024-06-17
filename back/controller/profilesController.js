@@ -10,7 +10,8 @@ const getProfile = asyncHandler(async (req, res) => {
   const { username } = req.params;
 
   // username must be unique
-  const user = await User.findOne({ username }).exec();
+  // NOTE: slug instead of real username
+  const user = await User.findOne({ slug: username }).exec();
 
   if (!user) {
     return res.status(404).json({

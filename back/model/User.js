@@ -5,6 +5,13 @@ const Favorite = require("./Favorite");
 
 const userSchema = new mongoose.Schema(
   {
+    slug: {
+      type: String,
+      unique: true,
+      lowercase: true,
+      index: true,
+    },
+
     username: {
       type: String,
       required: true,
@@ -54,6 +61,13 @@ const userSchema = new mongoose.Schema(
     timestamps: true, // access createdAt, updatedAt
   },
 );
+
+// @desc
+// @required
+userSchema.pre("save", function (next) {
+  this.slug = slugify(this.username, { lower: true, replacement: "-" });
+  next();
+});
 
 // @desc
 // @required

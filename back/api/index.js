@@ -35,6 +35,10 @@ app.use("/", require("../route/root"));
 // user route - for testing
 app.use("/test", require("../route/testRoutes"));
 
+// user route - for /users/login/federated/google
+// WARN: this route must be placed before normal /users/login
+app.use("/api", require("../route/googleRoutes"));
+
 // user route - for /api/users and /api/user
 app.use("/api", require("../route/userRoutes"));
 

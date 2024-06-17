@@ -6,14 +6,16 @@ export default function Home() {
   return (
     <>
       <RouteHeader>
-        <Image
-          src="/vercel.svg"
-          alt="Vercel Logo"
-          className="dark:invert"
-          width={100}
-          height={24}
-          priority
-        />
+        <div className="">
+          {/* <Image
+            src="/vercel.svg"
+            alt="Vercel Logo"
+            className="dark:invert block w-full"
+            width={100}
+            height={24}
+            priority
+          /> */}
+        </div>
       </RouteHeader>
     </>
   );
