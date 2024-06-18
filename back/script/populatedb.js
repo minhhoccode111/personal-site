@@ -102,6 +102,9 @@ async function createUsers(number) {
       image: escapeHtml(faker.image.avatar()),
     };
 
+    console.log(`email belike: `, userDetail.email);
+    console.log(`username belike: `, userDetail.username);
+
     const user = new User(userDetail);
 
     const favoriteArticles = faker.helpers.arrayElements(articles, {

@@ -8,18 +8,14 @@ const { verifyInputCreateComment } = require("../middleware/verifyInput");
 // @desc add comment to an article
 // @required fields {body}
 router.post(
-  "/:slug/comments",
+  "/",
   verifyJWT,
   verifyInputCreateComment,
   commentController.addCommentsToArticle,
 );
 
-router.get("/:slug/comments", commentController.getCommentsFromArticle);
+router.get("/", commentController.getCommentsFromArticle);
 
-router.delete(
-  "/:slug/comments/:commentid",
-  verifyJWT,
-  commentController.deleteComment,
-);
+router.delete("/:commentid", verifyJWT, commentController.deleteComment);
 
 module.exports = router;

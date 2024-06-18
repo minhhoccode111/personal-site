@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 const jwt = require("jsonwebtoken");
 const Favorite = require("./Favorite");
+const slugify = require("slugify");
 
 const userSchema = new mongoose.Schema(
   {

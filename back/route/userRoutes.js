@@ -1,17 +1,13 @@
 const express = require("express");
 const router = express.Router();
+
 const userController = require("../controller/usersController");
 const verifyJWT = require("../middleware/verifyJWT");
 
 const {
-  verifyInputUserLogin,
   verifyInputUpdateUser,
   verifyInputRegisterUser,
 } = require("../middleware/verifyInput");
-
-// @desc login for a user
-// @required fields user{email, password}
-router.post("/users/login", verifyInputUserLogin, userController.userLogin);
 
 // @desc registration for a user
 // @required fields user{email, username, password}
