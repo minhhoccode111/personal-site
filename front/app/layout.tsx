@@ -16,6 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       {/* theme wrapper */}
+      <head>
+        <title>mhc111</title>
+      </head>
 
       <body
         className={cn(

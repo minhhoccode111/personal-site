@@ -14,8 +14,8 @@ export default function Page() {
     e.preventDefault();
     try {
       const res = await axios({
-        url: constants.ApiUrl + "/users/login",
-        method: "get",
+        url: constants.ApiUrl + "/auth/login",
+        method: "post",
         data: {
           // WARN: note that data must be structure like this
           // user: {
@@ -26,7 +26,7 @@ export default function Page() {
       });
       console.log(res);
     } catch (err) {
-      //
+      console.log(`error login: `, err);
     } finally {
       //
     }
@@ -41,9 +41,12 @@ export default function Page() {
       const email = randomNumber + constants.GuestUsersEmailPrefix;
       const password = constants.GuestUsersPassword;
 
+      console.log(`email belike: `, email);
+      console.log(`password belike: `, password);
+
       const res = await axios({
-        url: constants.ApiUrl + "/users/login",
-        method: "get",
+        url: constants.ApiUrl + "/auth/login",
+        method: "post",
         data: {
           // WARN: note that data must be structure like this
           user: {
@@ -54,7 +57,7 @@ export default function Page() {
       });
       console.log(res);
     } catch (err) {
-      //
+      console.log(`error login: `, err);
     } finally {
       //
     }
@@ -67,13 +70,13 @@ export default function Page() {
 
     try {
       const res = await axios({
-        url: constants.ApiUrl + "/users/login/federated/google",
+        url: constants.ApiUrl + "/auth/login/google",
         method: "get",
       });
 
       console.log(res);
     } catch (err) {
-      //
+      console.log(`error login: `, err);
     } finally {
       //
     }
