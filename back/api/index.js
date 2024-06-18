@@ -9,10 +9,12 @@ const helmet = require("helmet");
 const path = require("path");
 const cors = require("cors");
 
+const app = express();
+
 const corsOptions = require("../config/corsOptions");
 const connectDB = require("../config/dbConnect");
 
-const app = express();
+// console.log(`corsOptions belike: `, corsOptions);
 
 const PORT = process.env.PORT || 3000;
 
@@ -34,10 +36,7 @@ app.use("/", require("../route/root"));
 
 // user route - for testing
 app.use("/test", require("../route/testRoutes"));
-
-// user route - for /users/login/federated/google
-// WARN: this route must be placed before normal /users/login
-app.use("/api", require("../route/googleRoutes"));
+app.use("/api/test", require("../route/testRoutes"));
 
 // user route - for /api/users and /api/user
 app.use("/api", require("../route/userRoutes"));

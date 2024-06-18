@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema(
 
     bio: {
       type: String,
-      default: "Bio is created automatically, please consider edit",
+      default: "Bio is created automatically",
       maxLength: 1000,
     },
 
@@ -58,7 +58,7 @@ const userSchema = new mongoose.Schema(
   },
 
   {
-    timestamps: true, // access createdAt, updatedAt
+    timestamps: true,
   },
 );
 
@@ -89,7 +89,7 @@ userSchema.methods.generateAccessToken = function () {
       },
     },
     TOKEN,
-    { expiresIn: "7d" },
+    { expiresIn: "1d" },
   );
   return accessToken;
 };
@@ -136,7 +136,6 @@ userSchema.methods.isFavorite = async function (articleid) {
 
 // @desc
 // @required
-// WARN: forgot that we can't access "this" when using arrow function
 userSchema.methods.favorite = async function (articleid) {
   try {
     await new Favorite({ userid: this._id, articleid }).save();
