@@ -35,47 +35,16 @@ const userLogin = asyncHandler(async (req, res) => {
 // @access
 // @required
 // @return
-const googleLogin = asyncHandler(async (req, res) => {
-  return res.json({
-    messages: {
-      body: "Authorized",
-    },
-  });
-});
+const googleCallback = (req, res) => {
+  const CLIENT_URL = process.env.CLIENT_URL;
+  console.log(`client url belike: `, CLIENT_URL);
+  console.log(`req.user belike: `, req.user);
 
-// @desc
-// @route
-// @access
-// @required
-// @return
-const googleSuccess = (req, res) => {
-  console.log(`can access req.user?`, req.user);
-
-  return res.status(200).json({
-    messages: {
-      body: "Authorized",
-    },
-  });
-};
-
-// @desc
-// @route
-// @access
-// @required
-// @return
-const googleFailure = (req, res) => {
-  console.log(`can access req.user?`, req.user);
-
-  return res.status(401).json({
-    messages: {
-      body: "Unauthorized",
-    },
-  });
+  // pass needed info to redirect url's query
+  return res.redirect(CLIENT_URL + "/login/success?token=something");
 };
 
 module.exports = {
   userLogin,
-  googleLogin,
-  googleSuccess,
-  googleFailure,
+  googleCallback,
 };
