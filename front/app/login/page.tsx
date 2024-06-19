@@ -112,9 +112,12 @@ export default function Page() {
           <p className="">or</p>
         </div>
 
-        <form onSubmit={handleLoginGoogle} className="">
+        {/*<form onSubmit={handleLoginGoogle} className="">
           <button type="submit">Login with Google</button>
-        </form>
+        </form>*/}
+        <a href="http://localhost:3000/api/auth/login/google" className="">
+          Login with Google
+        </a>
       </div>
     </>
   );
