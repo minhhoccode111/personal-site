@@ -14,8 +14,7 @@ const credentialSchema = new mongoose.Schema(
     },
 
     profileid: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Article",
+      type: String,
       required: true,
     },
   },

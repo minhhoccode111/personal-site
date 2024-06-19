@@ -12,6 +12,6 @@ profile fields belike:  {
     email: 'danghoangminh011@gmail.com',
   }
 }
-accessToken belike:  ya29.a0AXooCgvc01pOqwHw05tw6uhus-utxnRovbDErTLZuye1D-SKzOmF5uVtCkzeQm4UWidzgz73QU2lHbRg-tmUFkd-AiZUrnzJ0DHVzInpoW6L1-rvO-6K8THRcuHdBB9_9bSgoa2z8Dm6UeZi4wHebmxQUMpATdP16QLgaCgYKAbwSARESFQHGX2MiiwmT2tfEEW0A0L0qJ6Jdww0171
+accessToken belike:  ...
 refreshToken belike:  undefined
 ```

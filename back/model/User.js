@@ -48,8 +48,8 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
-    // not let user update their credential
-    // generate a password automatically for them
+    // user can't update their email and password
+    // because password and email are auto-generated
     isGoogleAuth: {
       type: Boolean,
       default: false,
