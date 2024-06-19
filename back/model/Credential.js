@@ -25,11 +25,7 @@ const credentialSchema = new mongoose.Schema(
   },
 );
 
-// TODO: uniqueness for provider and profileid
-
-// compound unique index for document uniqueness
+// compound index and uniqueness at the same time
 credentialSchema.index({ userid: 1, articleid: 1 }, { unique: true });
-
-// TODO: add indexes for needed fields
 
 module.exports = mongoose.model("Credential", credentialSchema);

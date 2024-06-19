@@ -1,6 +1,10 @@
 const express = require("express");
 const router = express.Router();
 
+const asyncHandler = require("express-async-handler");
+const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
+
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
@@ -27,6 +31,7 @@ passport.use(
       // the route handler is below
       callbackURL: "/api/auth/login/google/callback",
     },
+
     async function verify(accessToken, refreshToken, profile, done) {
       // profile fields belike:  {
       //   provider: 'google',
@@ -38,10 +43,58 @@ passport.use(
       //   }
       // }
 
-      // check if profile credential already existed
-      const credential = await Credential.findOne();
-      // TODO: handle database and credential here
-      done(null, profile);
+      try {
+        // get a credential with that profile
+        const credential = await Credential.findOne({
+          provider: profile.provider,
+          profileid: profile._json?.sub,
+        });
+        // if user haven't logged in before
+        if (!credential) {
+          // their auto-generate password will be their google profile'id
+          // TODO: send this back to their gmail with forgot password feature
+          const newUserPassword = await bcrypt.hash(profile._json?.sub, SALT);
+          const session = await mongoose.startSession();
+          session.startTransaction();
+          // TODO: work on this, move outside of try catch block
+
+          // create a user using that profile info, with 3 required fields
+          const newUser = new User({
+            username: profile._json?.name,
+            email: profile._json?.email,
+            password: newUserPassword,
+            image: profile._json?.picture,
+          });
+
+          // TODO: make this acid transaction, both must success or fail all if one fail
+          // in case username or email conflict
+          const [_, __] = await Promise.all([
+            newUser.save({ session }),
+            // create a credential associate with that user and save
+            new Credential({
+              userid: newUser._id,
+              provider: profile.provider,
+              profileid: profile._json?.sub, // this also their password...safe?
+            }).save({ session }),
+          ]);
+
+          await session.commitTransaction();
+
+          console.log(`transaction commited succesfully`);
+
+          // mark them success login
+          return;
+        }
+        // if user logged in before then find the user associate with the profile credential
+        // if profile credential exist but somehow can't find the user associate it
+        // then mark them failure login
+        // else mark them success login
+        done(null, profile);
+      } catch (err) {
+        // catch every error and pass to next
+        console.log(`error occurs during google auth process: `, err);
+        return done(err);
+      }
     },
   ),
 );

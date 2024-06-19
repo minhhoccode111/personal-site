@@ -7,11 +7,11 @@ const User = require("../model/User");
 // @access Public
 // @return User
 const getProfile = asyncHandler(async (req, res) => {
-  const { username } = req.params;
+  const { emailDomain } = req.params;
 
   // username must be unique
   // NOTE: slug instead of real username
-  const user = await User.findOne({ slug: username }).exec();
+  const user = await User.findOne({ emailDomain }).exec();
 
   if (!user) {
     return res.status(404).json({

@@ -2,22 +2,13 @@ const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 const jwt = require("jsonwebtoken");
 const Favorite = require("./Favorite");
-const slugify = require("slugify");
 
 const userSchema = new mongoose.Schema(
   {
-    slug: {
-      type: String,
-      unique: true,
-      lowercase: true,
-      index: true,
-    },
-
     username: {
       type: String,
       required: true,
       lowercase: true,
-      unique: true,
       maxLength: 100,
       trim: true,
     },
@@ -56,19 +47,19 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+
+    // not let user update their credential
+    // generate a password automatically for them
+    isGoogleAuth: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   {
     timestamps: true,
   },
 );
-
-// @desc
-// @required
-userSchema.pre("save", function (next) {
-  this.slug = slugify(this.username, { lower: true, replacement: "-" });
-  next();
-});
 
 // @desc
 // @required
@@ -113,6 +104,7 @@ userSchema.methods.toUserResponse = function () {
 userSchema.methods.toProfileJSON = function () {
   return {
     bio: this.bio,
+    email: this.email,
     image: this.image,
     username: this.username,
     isAuthor: this.isAuthor,
@@ -122,13 +114,7 @@ userSchema.methods.toProfileJSON = function () {
 // @desc
 // @required
 userSchema.methods.isFavorite = async function (articleid) {
-  const favorited = await Favorite.findOne(
-    {
-      userid: this._id,
-      articleid,
-    },
-    "_id",
-  )
+  const favorited = await Favorite.findOne({ userid: this._id, articleid })
     .lean()
     .exec();
 

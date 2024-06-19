@@ -14,8 +14,6 @@ const favoriteSchema = new mongoose.Schema({
   },
 });
 
-// NOTE: add plugin to handle uniqueness here?
-
 // compound unique index for document uniqueness
 favoriteSchema.index({ userid: 1, articleid: 1 }, { unique: true });
 
