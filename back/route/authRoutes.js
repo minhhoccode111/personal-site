@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const bcrypt = require("bcrypt");
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
@@ -26,8 +26,8 @@ passport.use(
     {
       clientID: ID,
       clientSecret: SECRET,
-      // this must match with the Google Credential Consent or mismatch error will be thrown
-      // the route handler is below
+      // this must match with the Google Credential Consent
+      // or mismatch error will be thrown the route handler is below
       callbackURL: "/api/auth/login/google/callback",
     },
 
@@ -35,68 +35,76 @@ passport.use(
       // profile fields belike:  {
       //   provider: 'google',
       //   _json: {
-      //     sub: '114192593333485248876',
-      //     name: 'Dân Dân',
+      //     sub: '918739817929182739182',
+      //     name: 'Example name',
       //     picture: 'https://lh3.googleusercontent.com/a/ACg8ocLYhb6TSQnhrCe7egFS5fZMeRkWUIwJ7wM8cWWZzHbcVGfj_A=s96-c',
-      //     email: 'danghoangminh011@gmail.com',
+      //     email: 'example@gmail.com',
       //   }
       // }
 
-      // TODO: use only 1 try...catch block
+      // // start transaction
+      // const session = await mongoose.startSession();
+      // session.startTransaction();
+
       try {
+        const profileIdString = String(profile._json.sub);
         // get a credential with that profile
         const credential = await Credential.findOne({
           provider: profile.provider,
-          profileid: profile._json?.sub,
+          profileid: profileIdString,
         }).exec();
+
+        // console.log(`found credential: `, credential);
+
         // if user haven't logged in before
         if (!credential) {
           // their auto-generate password will be their google profile'id
           // TODO: send this back to their gmail with forgot password feature
-          const newUserPassword = await bcrypt.hash(profile._json?.sub, SALT);
+          const SALT = Number(process.env.SALT || 13);
+          const newUserPassword = await bcrypt.hash(profileIdString, SALT);
 
-          const session = await mongoose.startSession();
-          session.startTransaction();
+          // create a user using that profile info, with 3 required fields
+          const newUser = new User({
+            username: profile._json?.name,
+            email: profile._json?.email,
+            password: newUserPassword,
+            image: profile._json?.picture,
+            isGoogleAuth: true,
+          });
 
-          try {
-            // create a user using that profile info, with 3 required fields
-            const newUser = new User({
-              username: profile._json?.name,
-              email: profile._json?.email,
-              password: newUserPassword,
-              image: profile._json?.picture,
-            });
+          // make this acid transaction, both must success or fail all if one fail
+          // in case username or email conflict
+          const [_, __] = await Promise.all([
+            newUser
+              .save
+              // { session }
+              (), // BUG: handle case newUser.username conflict
+            // create a credential associate with that user and save
+            new Credential({
+              userid: newUser._id,
+              provider: profile.provider,
+              profileid: profileIdString, // this also their password...safe?
+            })
+              .save
+              // { session }
+              (),
+          ]);
 
-            // make this acid transaction, both must success or fail all if one fail
-            // in case username or email conflict
-            const [_, __] = await Promise.all([
-              newUser.save({ session }),
-              // create a credential associate with that user and save
-              new Credential({
-                userid: newUser._id,
-                provider: profile.provider,
-                profileid: profile._json?.sub, // this also their password...safe?
-              }).save({ session }),
-            ]);
+          // await session.commitTransaction();
 
-            await session.commitTransaction();
+          // console.log(`newUser belike: `, newUser);
+          // console.log(`newCredential belike: `, __);
 
-            console.log(`transaction commited succesfully`);
+          // console.log(`create new user, transaction commited succesfully`);
 
-            // mark them success login
-            return done(null, newUser);
-          } catch (error) {
-            console.error("Error during transaction:", error);
-            await session.abortTransaction();
-            return done(error);
-          } finally {
-            session.endSession();
-          }
+          // mark them success login
+          return done(null, newUser.toUserResponse());
         }
         // user logged in before
         // find the user associate with the profile credential
         const credentialUser = await User.findOne({
-          id: credential.userid,
+          _id: credential.userid,
+          isGoogleAuth: true,
         }).exec();
 
         // if profile credential exist but somehow can't find the user associate it
@@ -104,12 +112,23 @@ passport.use(
           // then mark them failure login
           return done(null, false);
         }
+
+        // console.log(`credentialUser belike: `, credentialUser);
+
+        // console.log(`old user verify successfully`);
+
         // else mark them success login
-        return done(null, credentialUser);
+        return done(null, credentialUser.toUserResponse());
       } catch (err) {
         // catch every error and pass to next
-        console.log(``, err);
+        console.error("error occurs, transaction abort", err);
+
+        // await session.abortTransaction();
+
         return done(err);
+      } finally {
+        // NOTE: in JS the finally block will run even when the try block above call ``
+        // session.endSession();
       }
     },
   ),

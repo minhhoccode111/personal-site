@@ -14,7 +14,7 @@ const comments = [];
 
 // use env var
 const PASSWORD = "Bruh0!0!";
-const SALT = 10;
+const SALT = Number(process.env.SALT || 13);
 
 // manually created, not reliable
 function escapeHtml(str) {

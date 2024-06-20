@@ -13,7 +13,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   console.log(`user sign up belike: `, user);
 
-  const SALT = Number(process.env.SALT);
+  const SALT = Number(process.env.SALT || 13);
   const hashedPwd = await bcrypt.hash(user.password, SALT);
 
   const userObject = {
@@ -88,6 +88,8 @@ const updateUser = asyncHandler(async (req, res) => {
   const email = req.userEmail;
 
   const target = await User.findOne({ email }).exec();
+
+  // TODO: not allow Google Auth user to update email and password
 
   if (user.email) {
     target.email = user.email;

@@ -6,9 +6,11 @@ const Favorite = require("./Favorite");
 const userSchema = new mongoose.Schema(
   {
     username: {
+      index: true,
       type: String,
       required: true,
       lowercase: true,
+      unique: true,
       maxLength: 100,
       trim: true,
     },
@@ -104,7 +106,6 @@ userSchema.methods.toUserResponse = function () {
 userSchema.methods.toProfileJSON = function () {
   return {
     bio: this.bio,
-    email: this.email,
     image: this.image,
     username: this.username,
     isAuthor: this.isAuthor,
@@ -127,6 +128,7 @@ userSchema.methods.favorite = async function (articleid) {
   try {
     await new Favorite({ userid: this._id, articleid }).save();
   } catch (err) {
+    // mean conflict? other cases
     console.log(`Already favorited that article.`);
   }
 };

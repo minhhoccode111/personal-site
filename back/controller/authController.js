@@ -1,4 +1,5 @@
 const asyncHandler = require("express-async-handler");
+const querystring = require("node:querystring");
 const bcrypt = require("bcrypt");
 
 const User = require("../model/User");
@@ -36,12 +37,28 @@ const userLogin = asyncHandler(async (req, res) => {
 // @required
 // @return
 const googleCallback = (req, res) => {
-  const CLIENT_URL = process.env.CLIENT_URL;
-  console.log(`client url belike: `, CLIENT_URL);
-  console.log(`req.user belike: `, req.user);
+  const clientURL = process.env.CLIENT_URL;
+  let finalURL = clientURL + "/login"; // prefix URL
 
-  // pass needed info to redirect url's query
-  return res.redirect(CLIENT_URL + "/login/success?token=something");
+  // console.log(`client url belike: `, CLIENT_URL);
+  // console.log(`req.user belike: `, req.user);
+  // console.log(`req.authError belike: `, req.authError);
+
+  if (!req.user) {
+    finalURL += "/failure";
+    return res.redirect(finalURL);
+  }
+
+  const user = req.user; // extract logged in user
+
+  finalURL += "/success";
+  const subURL = querystring.encode(user);
+
+  finalURL += "?" + subURL;
+
+  console.log(`the finalURL belike: `, finalURL);
+
+  return res.redirect(finalURL);
 };
 
 module.exports = {

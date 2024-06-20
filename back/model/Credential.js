@@ -25,6 +25,6 @@ const credentialSchema = new mongoose.Schema(
 );
 
 // compound index and uniqueness at the same time
-credentialSchema.index({ userid: 1, articleid: 1 }, { unique: true });
+credentialSchema.index({ provider: 1, profileid: 1 }, { unique: true });
 
 module.exports = mongoose.model("Credential", credentialSchema);
