@@ -63,25 +63,6 @@ export default function Page() {
     }
   };
 
-  const handleLoginGoogle = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    console.log("log in with google");
-
-    try {
-      const res = await axios({
-        url: constants.ApiUrl + "/auth/login/google",
-        method: "get",
-      });
-
-      console.log(res);
-    } catch (err) {
-      console.log(`error login: `, err);
-    } finally {
-      //
-    }
-  };
-
   return (
     <>
       <RouteHeader>Login</RouteHeader>

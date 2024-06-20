@@ -9,7 +9,7 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 const { verifyInputUserLogin } = require("../middleware/verifyInput");
 
-const authController = require("../controller/authController");
+const authsController = require("../controller/authsController");
 const Credential = require("../model/Credential");
 const User = require("../model/User");
 
@@ -160,17 +160,19 @@ router.get(
   }),
   // handle both success and failure in this middleware
   // if success: req.user truthy if failure: !req.user falsy
-  authController.googleCallback,
+  authsController.googleCallback,
 );
 
 // handle login with google from front client
 router.get(
   "/login/google",
   passport.authenticate("google", {
+    // extract these two info from the profile
     scope: ["profile", "email"],
   }),
 );
 
-router.post("/login", verifyInputUserLogin, authController.userLogin);
+// normal login needs to be validated input fields
+router.post("/login", verifyInputUserLogin, authsController.userLogin);
 
 module.exports = router;
