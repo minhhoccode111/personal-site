@@ -59,13 +59,13 @@ app.use("/api/tags", require("../route/tagRoutes"));
 // for /profiles
 app.use("/api/profiles", require("../route/profileRoutes"));
 
-// // NOTE: implement this and only turn on when i have a faster server
-// // for /contacts
-// app.use("/api/contacts", require("../route/contactRoutes"));
-// // for /skills
-// app.use("/api/skills", require("../route/skillRoutes"));
-// // for /works
-// app.use("/api/works", require("../route/workRoutes"));
+// NOTE: implement this and only turn on when i have a faster server
+// for /contacts
+app.use("/api/contacts", require("../route/contactRoutes"));
+// for /skills
+app.use("/api/skills", require("../route/skillRoutes"));
+// for /works
+app.use("/api/works", require("../route/workRoutes"));
 
 // for /articles
 app.use("/api/articles", require("../route/articleRoutes"));

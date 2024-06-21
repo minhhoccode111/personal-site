@@ -13,10 +13,11 @@ const contactSchema = new mongoose.Schema(
       type: String,
       required: true,
       maxLength: 100,
+      minLength: 8,
       trim: true,
     },
 
-    message: {
+    body: {
       type: String,
       required: true,
       maxLength: 3000,
@@ -38,8 +39,8 @@ contactSchema.methods.toContactResponse = function () {
   return {
     id: this._id,
     name: this.name,
+    body: this.body,
     email: this.email,
-    message: this.message,
     createdAt: this.createdAt,
   };
 };

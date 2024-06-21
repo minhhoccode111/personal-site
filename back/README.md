@@ -71,4 +71,3 @@ npm run start
 
 - Add `projects` and `skills` route
 - Add testing
-- Add pagination for comments

@@ -199,6 +199,42 @@ const verifyInputCreateComment = [
   },
 ];
 
+const verifyInputCreateContact = [
+  body("contact", "Contact object is required").isObject(),
+
+  body("contact.name")
+    .trim()
+    .notEmpty()
+    .withMessage("Contact name is required")
+    .isLength({ max: 100 })
+    .withMessage("Contact name must be less than 100 characters")
+    .escape(),
+
+  body("contact.email")
+    .trim()
+    .isEmail()
+    .withMessage("Invalid email address")
+    .isLength({ min: 8, max: 100 })
+    .withMessage("Contact email must be between 8 and 100 characters")
+    .normalizeEmail(), // instead of escape
+
+  body("contact.body")
+    .trim()
+    .notEmpty()
+    .withMessage("Contact body is required")
+    .isLength({ max: 3000 })
+    .withMessage("Contact body must be less than 30000 characters")
+    .escape(),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  },
+];
+
 module.exports = {
   verifyInputRegisterUser,
   verifyInputUserLogin,
@@ -206,4 +242,5 @@ module.exports = {
   verifyInputCreateArticle,
   verifyInputUpdateArticle,
   verifyInputCreateComment,
+  verifyInputCreateContact,
 };
