@@ -1,0 +1,13 @@
+# log in
+POST {{url}}/auth/login
+Content-Type: application/json
+{
+  "user": {
+    "email":"asd1@gmail.com",
+    "password":"Bruh0!0!"
+  }
+}
+
+GET {{url}}/auth/login/google
+
+

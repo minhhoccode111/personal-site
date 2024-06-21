@@ -43,8 +43,8 @@ passport.use(
       // }
 
       // // start transaction
-      // const session = await mongoose.startSession();
-      // session.startTransaction();
+      const session = await mongoose.startSession();
+      session.startTransaction();
 
       try {
         const profileIdString = String(profile._json.sub);
@@ -75,22 +75,16 @@ passport.use(
           // make this acid transaction, both must success or fail all if one fail
           // in case username or email conflict
           const [_, __] = await Promise.all([
-            newUser
-              .save
-              // { session }
-              (), // BUG: handle case newUser.username conflict
+            newUser.save({ session }),
             // create a credential associate with that user and save
             new Credential({
               userid: newUser._id,
               provider: profile.provider,
               profileid: profileIdString, // this also their password...safe?
-            })
-              .save
-              // { session }
-              (),
+            }).save({ session }),
           ]);
 
-          // await session.commitTransaction();
+          await session.commitTransaction();
 
           // console.log(`newUser belike: `, newUser);
           // console.log(`newCredential belike: `, __);
@@ -123,12 +117,12 @@ passport.use(
         // catch every error and pass to next
         console.error("error occurs, transaction abort", err);
 
-        // await session.abortTransaction();
+        await session.abortTransaction();
 
         return done(err);
       } finally {
         // NOTE: in JS the finally block will run even when the try block above call ``
-        // session.endSession();
+        session.endSession();
       }
     },
   ),
