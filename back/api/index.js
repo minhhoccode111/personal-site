@@ -59,7 +59,6 @@ app.use("/api/tags", require("../route/tagRoutes"));
 // for /profiles
 app.use("/api/profiles", require("../route/profileRoutes"));
 
-// NOTE: implement this and only turn on when i have a faster server
 // for /contacts
 app.use("/api/contacts", require("../route/contactRoutes"));
 // for /skills

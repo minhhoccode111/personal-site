@@ -2,9 +2,8 @@ const asyncHandler = require("express-async-handler");
 const Contact = require("../model/Contact");
 const User = require("../model/User");
 
-const getContacts = asyncHandler(async (req, res, next) => {
+const getContacts = asyncHandler(async (req, res) => {
   // check if i am a real author
-  const authorid = req.userId;
   let offset = 20;
   let limit = 20;
 
@@ -16,8 +15,7 @@ const getContacts = asyncHandler(async (req, res, next) => {
     limit = req.query.limit;
   }
 
-  const [user, contacts, contactsCount] = await Promise.all([
-    User.findOne({ id: authorid }).exec(),
+  const [contacts, contactsCount] = await Promise.all([
     Contact.find()
       .limit(Number(limit))
       .skip(Number(offset))
@@ -26,21 +24,59 @@ const getContacts = asyncHandler(async (req, res, next) => {
     Contact.countDocuments({}).exec(),
   ]);
 
-  if (!user || !user.isAuthor) {
-    return res.status(403).json({ errors: { body: "Forbidden" } });
-  }
-
   return res.status(200).json({
     contacts,
     contactsCount,
   });
 });
 
-const updateContact = asyncHandler(async (req, res, next) => {});
+const createContact = asyncHandler(async (req, res) => {
+  const { name, email, body } = req.body.contact;
 
-const createContact = asyncHandler(async (req, res, next) => {});
+  const newContact = new Contact({
+    name,
+    email,
+    body,
+  });
 
-const deleteContact = asyncHandler(async (req, res, next) => {});
+  await newContact.save();
+
+  return res.json({
+    contact: newContact.toContactResponse(),
+  });
+});
+
+const updateContact = asyncHandler(async (req, res) => {
+  const { contactid } = req.params;
+  const { markAsRead } = req.body.contact;
+
+  const contact = await Contact.findById(contactid).exec();
+
+  if (!contact) {
+    return res.status(404).json({ errors: { body: "Contact Not Found" } });
+  }
+
+  contact.markAsRead = markAsRead;
+  await contact.save();
+
+  return res.json({
+    contact: contact.toContactResponse(),
+  });
+});
+
+const deleteContact = asyncHandler(async (req, res) => {
+  const { contactid } = req.params;
+
+  Contact.deleteOne({ id: contactid }, function (_, result) {
+    if (result.deleteCount === 0) {
+      return res.status(404).json({ errors: { body: "Contact Not Found" } });
+    }
+
+    return res
+      .status(200)
+      .json({ messages: { body: "Contact Delete Successfully" } });
+  });
+});
 
 module.exports = {
   getContacts,

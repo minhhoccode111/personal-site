@@ -24,7 +24,7 @@ const contactSchema = new mongoose.Schema(
       trim: true,
     },
 
-    isAlreadyRead: {
+    markAsRead: {
       type: Boolean,
       default: false,
     },
@@ -42,6 +42,7 @@ contactSchema.methods.toContactResponse = function () {
     body: this.body,
     email: this.email,
     createdAt: this.createdAt,
+    markAsRead: this.markAsRead,
   };
 };
 

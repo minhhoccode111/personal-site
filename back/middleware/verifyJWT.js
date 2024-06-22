@@ -15,6 +15,7 @@ const verifyJWT = (req, res, next) => {
       return res.status(403).json({ errors: { body: "Forbidden" } });
     }
 
+    // NOTE: not retrieve database to increase perf
     req.userId = decoded.user.id;
     req.userEmail = decoded.user.email;
     req.userHashedPwd = decoded.user.password;

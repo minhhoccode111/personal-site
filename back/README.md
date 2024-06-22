@@ -66,6 +66,7 @@ npm run start
 - Separate model Favorite with many-to-many relationship between User and Article (instead of an array of articles' id inside of user) for better scalability
 - Separate model Comment with many-to-many relationship between Comment and Article (instead of an array of comments' id inside of comment) for better scalability
 - Not setup a `debug` logger and use `console.log` (synchronous) which can impact performance in production
+- Trust the client's token and not retrieve database to authenticate, trade performance with security
 
 ## To-do
 

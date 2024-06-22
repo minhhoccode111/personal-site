@@ -235,6 +235,20 @@ const verifyInputCreateContact = [
   },
 ];
 
+const verifyInputUpdateContact = [
+  body("contact", "Contact object is required").isObject(),
+
+  body("contact.markAsRead").isBoolean(), // only true or false
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  },
+];
+
 module.exports = {
   verifyInputRegisterUser,
   verifyInputUserLogin,
@@ -243,4 +257,5 @@ module.exports = {
   verifyInputUpdateArticle,
   verifyInputCreateComment,
   verifyInputCreateContact,
+  verifyInputUpdateContact,
 };
