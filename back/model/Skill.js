@@ -26,7 +26,7 @@ const skillSchema = new mongoose.Schema(
 
     level: {
       type: Number,
-      min: 1,
+      min: 0,
       max: 5,
     },
   },

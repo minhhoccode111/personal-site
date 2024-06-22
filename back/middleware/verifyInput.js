@@ -265,6 +265,7 @@ const verifyInputCreateWork = [
     .notEmpty()
     .withMessage("Work image is required")
     .isLength({ max: 3000 })
+    .withMessage("Work image must be less than 3000 characters")
     .escape(),
 
   body("work.github")
@@ -272,6 +273,7 @@ const verifyInputCreateWork = [
     .notEmpty()
     .withMessage("Work github is required")
     .isLength({ max: 3000 })
+    .withMessage("Work github must be less than 3000 characters")
     .escape(),
 
   body("work.demo")
@@ -279,6 +281,7 @@ const verifyInputCreateWork = [
     .notEmpty()
     .withMessage("Work demo is required")
     .isLength({ max: 3000 })
+    .withMessage("Work demo must be less than 3000 characters")
     .escape(),
 
   body("work.difficulty")
@@ -318,6 +321,7 @@ const verifyInputUpdateWork = [
     .notEmpty()
     .withMessage("Work image is required")
     .isLength({ max: 3000 })
+    .withMessage("Work image must be less than 3000 characters")
     .escape(),
 
   body("work.github")
@@ -326,6 +330,7 @@ const verifyInputUpdateWork = [
     .notEmpty()
     .withMessage("Work github is required")
     .isLength({ max: 3000 })
+    .withMessage("Work github must be less than 3000 characters")
     .escape(),
 
   body("work.demo")
@@ -334,6 +339,7 @@ const verifyInputUpdateWork = [
     .notEmpty()
     .withMessage("Work demo is required")
     .isLength({ max: 3000 })
+    .withMessage("Work demo must be less than 3000 characters")
     .escape(),
 
   body("work.difficulty")
@@ -356,6 +362,85 @@ const verifyInputUpdateWork = [
   },
 ];
 
+const verifyInputCreateSkill = [
+  body("skill", "Skill object is required").isObject(),
+
+  body("skill.title")
+    .trim()
+    .notEmpty()
+    .withMessage("Skill title is required")
+    .isLength({ max: 100 })
+    .withMessage("Skill title must be less than 100 characters")
+    .escape(),
+
+  body("skill.image")
+    .trim()
+    .notEmpty()
+    .withMessage("Skill image is required")
+    .isLength({ max: 3000 })
+    .withMessage("Skill image must be less than 3000 characters")
+    .escape(),
+
+  body("skill.level")
+    .isNumeric()
+    .withMessage("Skill level must be numberic")
+    .custom((val) => {
+      if (val < 0 || val > 5)
+        throw new Error("Skill level must be between 0 and 5");
+      return true;
+    })
+    .withMessage("Skill level must be between 0 and 5"),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  },
+];
+
+const verifyInputUpdateSkill = [
+  body("skill", "Skill object is required").isObject(),
+
+  body("skill.title")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("Skill title is required")
+    .isLength({ max: 100 })
+    .withMessage("Skill title must be less than 100 characters")
+    .escape(),
+
+  body("skill.image")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("Skill image is required")
+    .isLength({ max: 3000 })
+    .withMessage("Skill image must be less than 3000 characters")
+    .escape(),
+
+  body("skill.level")
+    .optional()
+    .isNumeric()
+    .withMessage("Skill level must be numberic")
+    .custom((val) => {
+      if (val < 0 || val > 5)
+        throw new Error("Skill level must be between 0 and 5");
+      return true;
+    })
+    .withMessage("Skill level must be between 0 and 5"),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  },
+];
+
 module.exports = {
   verifyInputRegisterUser,
   verifyInputUserLogin,
@@ -367,4 +452,6 @@ module.exports = {
   verifyInputUpdateContact,
   verifyInputCreateWork,
   verifyInputUpdateWork,
+  verifyInputCreateSkill,
+  verifyInputUpdateSkill,
 };

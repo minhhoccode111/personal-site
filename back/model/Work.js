@@ -41,7 +41,7 @@ const workSchema = new mongoose.Schema(
     difficulty: {
       type: Number,
       max: 5,
-      min: 1,
+      min: 0,
     },
   },
 

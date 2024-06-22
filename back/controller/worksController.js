@@ -87,7 +87,7 @@ const updateWork = asyncHandler(async (req, res) => {
 
   updateWork.save(function (err) {
     if (err) {
-      console.log(`error created new work: `, err);
+      console.log(`error update work: `, err);
 
       return res
         .status(422)
