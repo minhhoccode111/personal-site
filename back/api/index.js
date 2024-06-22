@@ -69,8 +69,8 @@ app.use("/api/works", require("../route/workRoutes"));
 // for /articles
 app.use("/api/articles", require("../route/articleRoutes"));
 
-// for articles/:slug/comments
-app.use("/api/articles/:slug/comments", require("../route/commentRoutes"));
+// for articles/:slug/comments or articles/:articleid/comments
+app.use("/api/articles", require("../route/commentRoutes"));
 
 mongoose.connection.once("open", () => {
   app.listen(PORT, () => {

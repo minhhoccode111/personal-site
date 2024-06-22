@@ -11,14 +11,14 @@ const Comment = require("../model/Comment");
 // @required fields {body}
 // @return Comment
 const addCommentsToArticle = asyncHandler(async (req, res) => {
-  const id = req.userId;
+  const authorid = req.userId;
 
   const { body } = req.body.comment;
 
   const { slug } = req.params;
 
   const [author, article] = await Promise.all([
-    User.findById(id).exec(),
+    User.findById(authorid).exec(),
     Article.findOne({ slug }).exec(),
   ]);
 
@@ -30,8 +30,8 @@ const addCommentsToArticle = asyncHandler(async (req, res) => {
 
   const newComment = new Comment({
     body,
-    article,
-    author,
+    authorid: author,
+    articleid: article,
   });
 
   const [_, commentResponse] = await Promise.all([
@@ -88,36 +88,21 @@ const getCommentsFromArticle = asyncHandler(async (req, res) => {
 // @access Private
 // @return resule messages
 const deleteComment = asyncHandler(async (req, res) => {
-  const userId = req.userId;
+  const authorid = req.userId;
 
-  const { slug, commentid } = req.params;
+  const { articleid, commentid } = req.params;
 
-  const validId = mongoose.isValidObjectId(commentid);
+  const validId =
+    mongoose.isValidObjectId(commentid) && mongoose.isValidObjectId(articleid);
+
   if (!validId) {
     return res.status(401).json({
       errors: { body: "Comment Not Found" },
     });
   }
 
-  const [author, article] = await Promise.all([
-    User.findById(userId).exec(),
-    Article.findOne({ slug }).exec(),
-  ]);
-
-  if (!article) {
-    return res.status(401).json({
-      errors: { body: "Article Not Found" },
-    });
-  }
-
-  if (!author) {
-    return res.status(401).json({
-      errors: { body: "Author Not Found" },
-    });
-  }
-
   Comment.deleteOne(
-    { article, author, _id: commentid },
+    { articleid, authorid, _id: commentid },
     function (err, result) {
       if (err) {
         return res

@@ -10,12 +10,12 @@ const commentSchema = new mongoose.Schema(
       trim: true,
     },
 
-    author: {
+    authorid: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
 
-    article: {
+    articleid: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Article",
       index: true, // comments are usually found using this field
@@ -35,6 +35,7 @@ commentSchema.methods.toCommentResponse = async function (author) {
     updatedAt: this.updatedAt,
   };
 
+  // reduce database retrieve if pass the comment author to this method
   if (author) {
     result.author = author.toProfileJSON();
     return result;
