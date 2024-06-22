@@ -249,6 +249,113 @@ const verifyInputUpdateContact = [
   },
 ];
 
+const verifyInputCreateWork = [
+  body("work", "Work object is required").isObject(),
+
+  body("work.title")
+    .trim()
+    .notEmpty()
+    .withMessage("Work title is required")
+    .isLength({ max: 100 })
+    .withMessage("Work title must be less than 100 characters")
+    .escape(),
+
+  body("work.image")
+    .trim()
+    .notEmpty()
+    .withMessage("Work image is required")
+    .isLength({ max: 3000 })
+    .escape(),
+
+  body("work.github")
+    .trim()
+    .notEmpty()
+    .withMessage("Work github is required")
+    .isLength({ max: 3000 })
+    .escape(),
+
+  body("work.demo")
+    .trim()
+    .notEmpty()
+    .withMessage("Work demo is required")
+    .isLength({ max: 3000 })
+    .escape(),
+
+  body("work.difficulty")
+    .isNumeric()
+    .withMessage("Work difficulty must be numberic")
+    .custom((val) => {
+      if (val < 0 || val > 5)
+        throw new Error("Work difficulty must be between 0 and 5");
+      return true;
+    })
+    .withMessage("Work difficulty must be between 0 and 5"),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  },
+];
+
+const verifyInputUpdateWork = [
+  body("work", "Work object is required").isObject(),
+
+  body("work.title")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("Work title is required")
+    .isLength({ max: 100 })
+    .withMessage("Work title must be less than 100 characters")
+    .escape(),
+
+  body("work.image")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("Work image is required")
+    .isLength({ max: 3000 })
+    .escape(),
+
+  body("work.github")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("Work github is required")
+    .isLength({ max: 3000 })
+    .escape(),
+
+  body("work.demo")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("Work demo is required")
+    .isLength({ max: 3000 })
+    .escape(),
+
+  body("work.difficulty")
+    .optional()
+    .isNumeric()
+    .withMessage("Work difficulty must be numberic")
+    .custom((val) => {
+      if (val < 0 || val > 5)
+        throw new Error("Work difficulty must be between 0 and 5");
+      return true;
+    })
+    .withMessage("Work difficulty must be between 0 and 5"),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  },
+];
+
 module.exports = {
   verifyInputRegisterUser,
   verifyInputUserLogin,
@@ -258,4 +365,6 @@ module.exports = {
   verifyInputCreateComment,
   verifyInputCreateContact,
   verifyInputUpdateContact,
+  verifyInputCreateWork,
+  verifyInputUpdateWork,
 };

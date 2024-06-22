@@ -116,18 +116,26 @@ const deleteComment = asyncHandler(async (req, res) => {
     });
   }
 
-  Comment.deleteOne({ article, author, _id: commentid }, function (_, result) {
-    // NOTE: this new
-    if (result.deletedCount === 0) {
-      return res.status(401).json({
-        errors: { body: "Comment Not Found" },
-      });
-    }
+  Comment.deleteOne(
+    { article, author, _id: commentid },
+    function (err, result) {
+      if (err) {
+        return res
+          .status(422)
+          .json({ errors: { body: "Unable to delete comment" } });
+      }
 
-    return res
-      .status(200)
-      .json({ messages: { body: "Comment successfully deleted" } });
-  });
+      if (result.deletedCount === 0) {
+        return res.status(401).json({
+          errors: { body: "Comment Not Found" },
+        });
+      }
+
+      return res
+        .status(200)
+        .json({ messages: { body: "Comment successfully deleted" } });
+    },
+  );
 });
 
 module.exports = {

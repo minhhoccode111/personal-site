@@ -54,8 +54,13 @@ const deleteArticle = asyncHandler(async (req, res) => {
 
   const { slug } = req.params;
 
-  Article.deleteOne({ slug, author: authorid }, function (_, result) {
-    // NOTE: this new
+  Article.deleteOne({ slug, author: authorid }, function (err, result) {
+    if (err) {
+      return res
+        .status(422)
+        .json({ errors: { body: "Unable to delete article" } });
+    }
+
     if (result.deletedCount === 0) {
       return res.status(401).json({
         errors: { body: "Article Not Found" },

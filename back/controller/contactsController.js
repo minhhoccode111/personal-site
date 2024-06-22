@@ -1,6 +1,5 @@
 const asyncHandler = require("express-async-handler");
 const Contact = require("../model/Contact");
-const User = require("../model/User");
 
 const getContacts = asyncHandler(async (req, res) => {
   // check if i am a real author
@@ -25,7 +24,7 @@ const getContacts = asyncHandler(async (req, res) => {
   ]);
 
   return res.status(200).json({
-    contacts,
+    contacts: contacts.map((contact) => contact.toContactResponse()),
     contactsCount,
   });
 });
@@ -67,7 +66,13 @@ const updateContact = asyncHandler(async (req, res) => {
 const deleteContact = asyncHandler(async (req, res) => {
   const { contactid } = req.params;
 
-  Contact.deleteOne({ id: contactid }, function (_, result) {
+  Contact.deleteOne({ id: contactid }, function (err, result) {
+    if (err) {
+      return res
+        .status(422)
+        .json({ errors: { body: "Unable to delete that contact" } });
+    }
+
     if (result.deleteCount === 0) {
       return res.status(404).json({ errors: { body: "Contact Not Found" } });
     }

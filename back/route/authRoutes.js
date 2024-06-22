@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const bcrypt = require("bcrypt");
-// const mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
