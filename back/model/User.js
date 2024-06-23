@@ -97,6 +97,7 @@ userSchema.methods.toUserResponse = function () {
     image: this.image,
     username: this.username,
     isAuthor: this.isAuthor,
+    isGoogleAuth: this.isGoogleAuth,
     token: this.generateAccessToken(),
   };
 };

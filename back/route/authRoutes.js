@@ -60,7 +60,9 @@ passport.use(
         if (!credential) {
           // their auto-generate password will be their google profile'id
           // TODO: send this back to their gmail with forgot password feature
-          const SALT = Number(process.env.SALT || 13);
+          const SALT = isNaN(Number(process.env.SALT))
+            ? 13
+            : Number(process.env.SALT);
           const newUserPassword = await bcrypt.hash(profileIdString, SALT);
 
           // create a user using that profile info, with 3 required fields

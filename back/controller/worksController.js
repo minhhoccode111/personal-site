@@ -2,23 +2,12 @@ const asyncHandler = require("express-async-handler");
 const Work = require("../model/Work");
 
 const getWorks = asyncHandler(async (req, res) => {
-  let limit = 20;
-  let offset = 20;
-
-  if (req.query.limit) {
-    limit = req.query.limit;
-  }
-
-  if (req.query.offset) {
-    offset = req.query.offset;
-  }
+  const query = req.query;
+  const limit = isNaN(Number(query.limit)) ? 20 : Number(query.limit);
+  const offset = isNaN(Number(query.offset)) ? 0 : Number(query.offset);
 
   const [works, worksCount] = await Promise.all([
-    Work.find({})
-      .limit(Number(limit))
-      .skip(Number(offset))
-      .sort({ createdAt: -1 })
-      .exec(),
+    Work.find({}).limit(limit).skip(offset).sort({ createdAt: -1 }).exec(),
 
     Work.countDocuments({}).exec(),
   ]);
@@ -66,23 +55,23 @@ const updateWork = asyncHandler(async (req, res) => {
   }
 
   if (work.title) {
-    work.title = work.title;
+    updateWork.title = work.title;
   }
 
   if (work.image) {
-    work.image = work.image;
+    updateWork.image = work.image;
   }
 
   if (work.demo) {
-    work.demo = work.demo;
+    updateWork.demo = work.demo;
   }
 
   if (work.github) {
-    work.github = work.github;
+    updateWork.github = work.github;
   }
 
   if (work.difficulty) {
-    work.difficulty = work.difficulty;
+    updateWork.difficulty = work.difficulty;
   }
 
   updateWork.save(function (err) {

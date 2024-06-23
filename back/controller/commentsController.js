@@ -48,17 +48,9 @@ const addCommentsToArticle = asyncHandler(async (req, res) => {
 // @return Comments
 const getCommentsFromArticle = asyncHandler(async (req, res) => {
   const { slug } = req.params;
-
-  let limit = 10;
-  let offset = 10;
-
-  if (req.query.limit) {
-    limit = req.query.limit;
-  }
-
-  if (req.query.offset) {
-    offset = req.query.offset;
-  }
+  const query = req.query;
+  const limit = isNaN(Number(query.limit)) ? 20 : Number(query.limit);
+  const offset = isNaN(Number(query.offset)) ? 0 : Number(query.offset);
 
   const article = await Article.findOne({ slug }).exec();
 
@@ -71,8 +63,8 @@ const getCommentsFromArticle = asyncHandler(async (req, res) => {
   const comments = await Comment.find({
     article,
   })
-    .limit(Number(limit))
-    .skip(Number(offset))
+    .limit(limit)
+    .skip(offset)
     .sort({ createdAt: -1 })
     .exec();
 

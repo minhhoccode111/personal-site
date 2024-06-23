@@ -219,25 +219,18 @@ const updateArticle = asyncHandler(async (req, res) => {
 // @access Public
 // @return Articles
 const listArticles = asyncHandler(async (req, res) => {
-  let limit = 20;
-  let offset = 0;
-  let query = {};
+  const query = req.query;
+  const limit = isNaN(Number(query.limit)) ? 20 : Number(query.limit);
+  const offset = isNaN(Number(query.offset)) ? 0 : Number(query.offset);
+  const finalQuery = {};
 
-  if (req.query.limit) {
-    limit = req.query.limit;
+  if (query.tag) {
+    finalQuery.tagList = { $in: [query.tag] };
   }
 
-  if (req.query.offset) {
-    offset = req.query.offset;
-  }
-
-  if (req.query.tag) {
-    query.tagList = { $in: [req.query.tag] };
-  }
-
-  if (req.query.favorited) {
+  if (query.favorited) {
     const favoriter = await User.findOne({
-      username: req.query.favorited,
+      username: query.favorited,
     }).exec();
 
     if (favoriter) {
@@ -249,18 +242,18 @@ const listArticles = asyncHandler(async (req, res) => {
         (ref) => ref.articleid,
       );
 
-      query._id = { $in: favoritedArticlesArr };
+      finalQuery._id = { $in: favoritedArticlesArr };
     }
   }
 
   const [filteredArticles, articlesCount] = await Promise.all([
-    Article.find(query)
-      .limit(Number(limit))
-      .skip(Number(offset))
+    Article.find(finalQuery)
+      .limit(limit)
+      .skip(offset)
       .sort({ createdAt: "desc" })
       .exec(),
 
-    Article.countDocuments(query).exec(), // count all not limit or skip
+    Article.countDocuments(finalQuery).exec(), // count all not limit or skip
   ]);
 
   if (req.loggedin) {

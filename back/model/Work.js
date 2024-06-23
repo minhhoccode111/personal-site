@@ -6,7 +6,6 @@ const workSchema = new mongoose.Schema(
   {
     slug: {
       type: String,
-      required: true,
       trim: true,
     },
 
@@ -15,6 +14,7 @@ const workSchema = new mongoose.Schema(
       maxLength: 100,
       required: true,
       trim: true,
+      unique: true,
     },
 
     image: {

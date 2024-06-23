@@ -8,8 +8,11 @@ const mongoose = require("mongoose");
 const passport = require("passport");
 const express = require("express");
 const helmet = require("helmet");
+const logger = require("morgan");
 const path = require("path");
 const cors = require("cors");
+
+const debug = require("../constants/debug");
 
 const app = express();
 
@@ -18,7 +21,7 @@ const connectDB = require("../config/dbConnect");
 
 // console.log(`corsOptions belike: `, corsOptions);
 
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 3000;
 const SECRET = process.env.JWT_SECRET || "SomeSuperSecretSecrets";
 
 // for google authentication session
@@ -31,6 +34,7 @@ connectDB(); // connect to database
 const limiter = RateLimit({ windowMs: 1 * 60 * 1000, max: 60 }); // max res/min
 app.use(limiter); // rate limit
 app.use(helmet()); // security HTTP header
+app.use(logger("dev")); // better log
 app.use(compression()); // compress responses performant
 app.use(express.json()); // middleware to parse json
 app.use(cookieParser()); // middleware to parse cookie
@@ -74,10 +78,10 @@ app.use("/api/articles", require("../route/commentRoutes"));
 
 mongoose.connection.once("open", () => {
   app.listen(PORT, () => {
-    console.log(`Server running on port: `, PORT);
+    debug(`Server running on port: `, PORT);
   });
 });
 
-mongoose.connection.on("error", (err) => console.error(`db error: `, err));
+mongoose.connection.on("error", (err) => debug(`db error: `, err));
 
 module.exports = app;

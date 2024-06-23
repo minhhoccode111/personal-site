@@ -13,7 +13,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   console.log(`user sign up belike: `, user);
 
-  const SALT = Number(process.env.SALT || 13);
+  const SALT = isNaN(Number(process.env.SALT)) ? 13 : Number(process.env.SALT);
   const hashedPwd = await bcrypt.hash(user.password, SALT);
 
   const userObject = {

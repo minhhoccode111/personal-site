@@ -2,23 +2,12 @@ const asyncHandler = require("express-async-handler");
 const Skill = require("../model/Skill");
 
 const getSkills = asyncHandler(async (req, res) => {
-  let limit = 20;
-  let offset = 20;
-
-  if (req.query.limit) {
-    limit = req.query.limit;
-  }
-
-  if (req.query.offset) {
-    offset = req.query.offset;
-  }
+  const query = req.query;
+  const limit = isNaN(Number(query.limit)) ? 20 : Number(query.limit);
+  const offset = isNaN(Number(query.offset)) ? 0 : Number(query.offset);
 
   const [skills, skillsCount] = await Promise.all([
-    Skill.find({})
-      .limit(Number(limit))
-      .skip(Number(offset))
-      .sort({ createdAt: -1 })
-      .exec(),
+    Skill.find({}).limit(limit).skip(offset).sort({ createdAt: -1 }).exec(),
 
     Skill.countDocuments({}).exec(),
   ]);
@@ -64,15 +53,15 @@ const updateSkill = asyncHandler(async (req, res) => {
   }
 
   if (skill.title) {
-    skill.title = skill.title;
+    updateSkill.title = skill.title;
   }
 
   if (skill.image) {
-    skill.image = skill.image;
+    updateSkill.image = skill.image;
   }
 
   if (skill.level) {
-    skill.level = skill.level;
+    updateSkill.level = skill.level;
   }
 
   updateSkill.save(function (err) {

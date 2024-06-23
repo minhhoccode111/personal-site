@@ -3,23 +3,12 @@ const Contact = require("../model/Contact");
 
 const getContacts = asyncHandler(async (req, res) => {
   // check if i am a real author
-  let offset = 20;
-  let limit = 20;
-
-  if (req.query.offset) {
-    offset = req.query.offset;
-  }
-
-  if (req.query.limit) {
-    limit = req.query.limit;
-  }
+  const query = req.query;
+  const limit = isNaN(Number(query.limit)) ? 20 : Number(query.limit);
+  const offset = isNaN(Number(query.offset)) ? 0 : Number(query.offset);
 
   const [contacts, contactsCount] = await Promise.all([
-    Contact.find()
-      .limit(Number(limit))
-      .skip(Number(offset))
-      .sort({ createdAt: 1 })
-      .exec(),
+    Contact.find().limit(limit).skip(offset).sort({ createdAt: 1 }).exec(),
     Contact.countDocuments({}).exec(),
   ]);
 
