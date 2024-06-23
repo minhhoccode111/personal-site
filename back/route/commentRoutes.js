@@ -5,20 +5,17 @@ const commentController = require("../controller/commentsController");
 
 const { verifyInputCreateComment } = require("../middleware/verifyInput");
 
-// @desc add comment to an article
-// @required fields {body}
 router.post(
-  "/:slug/comments",
+  "/:articleid/comments",
   verifyJWT,
   verifyInputCreateComment,
   commentController.addCommentsToArticle,
 );
 
-router.get("/:slug/comment", commentController.getCommentsFromArticle);
+router.get("/:articleid/comments", commentController.getCommentsFromArticle);
 
-// WARN: use :article not :slug because no need to check article existence
 router.delete(
-  "/:articleid:/comments/:commentid",
+  "/:articleid/comments/:commentid",
   verifyJWT,
   commentController.deleteComment,
 );

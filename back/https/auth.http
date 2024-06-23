@@ -3,11 +3,12 @@ POST {{url}}/auth/login
 Content-Type: application/json
 {
   "user": {
-    "email":"asd1@gmail.com",
+    "email":"minhhoccode111@gmail.com",
     "password":"Bruh0!0!"
   }
 }
 
+# user click a link to this route
+# redirect to https://accounts.google.com/...
 GET {{url}}/auth/login/google
-
 

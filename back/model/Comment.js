@@ -31,6 +31,7 @@ commentSchema.methods.toCommentResponse = async function (author) {
   const result = {
     id: this._id,
     body: this.body,
+    articleid: this.articleid,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
   };
@@ -40,7 +41,7 @@ commentSchema.methods.toCommentResponse = async function (author) {
     result.author = author.toProfileJSON();
     return result;
   } else {
-    const commentAuthor = await User.findById(this.author).exec();
+    const commentAuthor = await User.findById(this.authorid).exec();
     result.author = commentAuthor.toProfileJSON();
     return result;
   }

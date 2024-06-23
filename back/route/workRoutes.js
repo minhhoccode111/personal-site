@@ -19,13 +19,14 @@ router.post(
   worksController.createWork,
 );
 
+// user :slug for readability in the frontend
 router.put(
-  "/:workid",
+  "/:slug",
   verifyJWTAuthor,
   verifyInputUpdateWork,
   worksController.updateWork,
 );
 
-router.delete("/:workid", verifyJWTAuthor, worksController.deleteWork);
+router.delete("/:slug", verifyJWTAuthor, worksController.deleteWork);
 
 module.exports = router;

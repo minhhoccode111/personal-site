@@ -15,11 +15,11 @@ const addCommentsToArticle = asyncHandler(async (req, res) => {
 
   const { body } = req.body.comment;
 
-  const { slug } = req.params;
+  const { articleid } = req.params;
 
   const [author, article] = await Promise.all([
     User.findById(authorid).exec(),
-    Article.findOne({ slug }).exec(),
+    Article.findById(articleid).exec(),
   ]);
 
   if (!author || !article) {
@@ -31,7 +31,7 @@ const addCommentsToArticle = asyncHandler(async (req, res) => {
   const newComment = new Comment({
     body,
     authorid: author,
-    articleid: article,
+    articleid: article._id,
   });
 
   const [_, commentResponse] = await Promise.all([
@@ -47,31 +47,30 @@ const addCommentsToArticle = asyncHandler(async (req, res) => {
 // @access Public
 // @return Comments
 const getCommentsFromArticle = asyncHandler(async (req, res) => {
-  const { slug } = req.params;
+  const { articleid } = req.params;
+
   const query = req.query;
   const limit = isNaN(Number(query.limit)) ? 20 : Number(query.limit);
   const offset = isNaN(Number(query.offset)) ? 0 : Number(query.offset);
 
-  const article = await Article.findOne({ slug }).exec();
+  const [comments, commentsCount] = await Promise.all([
+    Comment.find({
+      articleid,
+    })
+      .limit(limit)
+      .skip(offset)
+      .sort({ createdAt: -1 })
+      .exec(),
 
-  if (!article) {
-    return res.status(401).json({
-      errors: { body: "Article Not Found" },
-    });
-  }
-
-  const comments = await Comment.find({
-    article,
-  })
-    .limit(limit)
-    .skip(offset)
-    .sort({ createdAt: -1 })
-    .exec();
+    Comment.countDocuments({ articleid }).exec(),
+  ]);
 
   res.status(200).json({
     comments: await Promise.all(
       comments.map(async (comment) => await comment.toCommentResponse()),
     ),
+
+    commentsCount,
   });
 });
 
@@ -83,15 +82,6 @@ const deleteComment = asyncHandler(async (req, res) => {
   const authorid = req.userId;
 
   const { articleid, commentid } = req.params;
-
-  const validId =
-    mongoose.isValidObjectId(commentid) && mongoose.isValidObjectId(articleid);
-
-  if (!validId) {
-    return res.status(401).json({
-      errors: { body: "Comment Not Found" },
-    });
-  }
 
   Comment.deleteOne(
     { articleid, authorid, _id: commentid },

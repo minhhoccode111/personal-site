@@ -4,9 +4,9 @@ Authorization: {{token0}}
 Content-Type: application/json
 {
   "article": {
-    "title": "short", 
-    "description": "this is a description", 
-    "body": "this is a body", 
+    "title": "short",
+    "description": "this is a description",
+    "body": "this is a body",
     "tagList": ["some", "random", "tags"]
   }
 }
@@ -33,9 +33,9 @@ Authorization: {{token0}}
 Content-Type: application/json
 {
   "article": {
-    "title": "short", 
-    "description": "short updated", 
-    "body": "short updated", 
+    "title": "short",
+    "description": "short updated",
+    "body": "short updated",
     "tagList": ["bruh"]
   }
 }
@@ -44,14 +44,18 @@ Content-Type: application/json
 GET {{url}}/articles
 # Authorization: {{token0}}
 
-GET {{url}}/articles?offset=5 # offset
+# offset
+GET {{url}}/articles?offset=5
 Authorization: {{token0}}
 
-GET {{url}}/articles?limit=5& # limit
+# limit
+GET {{url}}/articles?limit=5
 Authorization: {{token0}}
 
-GET {{url}}/articles?tag=ad # tag
+# tag
+GET {{url}}/articles?tag=addo
 Authorization: {{token0}}
 
-GET {{url}}/articles?favorited=minhhoccode111 # favoriter
+# favoriter
+GET {{url}}/articles?favorited=minhhoccode111
 Authorization: {{token0}}

@@ -45,10 +45,10 @@ const createWork = asyncHandler(async (req, res) => {
 });
 
 const updateWork = asyncHandler(async (req, res) => {
-  const { workid } = req.params;
+  const { slug } = req.params;
   const { work } = req.body;
 
-  const updateWork = await Work.findById(workid).exec();
+  const updateWork = await Work.findOne({ slug }).exec();
 
   if (!updateWork) {
     return res.status(404).json({ errors: { body: "Work Not Found" } });
@@ -90,16 +90,16 @@ const updateWork = asyncHandler(async (req, res) => {
 });
 
 const deleteWork = asyncHandler(async (req, res) => {
-  const { workid } = req.params;
+  const { slug } = req.params;
 
-  Work.deleteOne({ id: workid }, function (err, result) {
+  Work.deleteOne({ slug }, function (err, result) {
     if (err) {
       return res
         .status(422)
         .json({ errors: { body: "Unable to delete that work" } });
     }
 
-    if (result.deleteCount === 0) {
+    if (result.deletedCount === 0) {
       return res.status(404).json({ errors: { body: "Work Not Found" } });
     }
 

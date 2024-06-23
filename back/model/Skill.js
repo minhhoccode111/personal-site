@@ -6,7 +6,6 @@ const skillSchema = new mongoose.Schema(
   {
     slug: {
       type: String,
-      requried: true,
       trim: true,
     },
 
@@ -14,6 +13,7 @@ const skillSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      unique: true,
       maxLength: 100,
     },
 

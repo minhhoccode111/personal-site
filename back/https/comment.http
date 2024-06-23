@@ -1,5 +1,5 @@
 # addCommentsToArticle,
-POST {{url}}/articles/short/comments
+POST {{url}}/articles/6678140ec7708a924cb2e562/comments
 Authorization: {{token0}}
 Content-Type: application/json
 {
@@ -8,9 +8,11 @@ Content-Type: application/json
   }
 }
 
+6678140ec7708a924cb2e562
+
 # getCommentsFromArticle,
-GET {{url}}/articles/swan-prattle-now-steep-where/comments
+GET {{url}}/articles/6678140ec7708a924cb2e562/comments
 
 # deleteComment,
-DELETE {{url}}/articles/short/comments/666bc73e0468773871939b84
+DELETE {{url}}/articles/6678140ec7708a924cb2e562/comments/667836141809e970d47c4da5
 Authorization: {{token0}}

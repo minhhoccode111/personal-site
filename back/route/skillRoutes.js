@@ -20,12 +20,12 @@ router.post(
 );
 
 router.put(
-  "/:skillid",
+  "/:slug",
   verifyJWTAuthor,
   verifyInputUpdateSkill,
   skillsController.updateSkill,
 );
 
-router.delete("/:skillid", verifyJWTAuthor, skillsController.deleteSkill);
+router.delete("/:slug", verifyJWTAuthor, skillsController.deleteSkill);
 
 module.exports = router;

@@ -43,10 +43,10 @@ const createSkill = asyncHandler(async (req, res) => {
 });
 
 const updateSkill = asyncHandler(async (req, res) => {
-  const { skillid } = req.params;
+  const { slug } = req.params;
   const { skill } = req.body;
 
-  const updateSkill = await Skill.findById(skillid).exec();
+  const updateSkill = await Skill.findOne({ slug }).exec();
 
   if (!updateSkill) {
     return res.status(404).json({ errors: { body: "Skill Not Found" } });
@@ -80,16 +80,16 @@ const updateSkill = asyncHandler(async (req, res) => {
 });
 
 const deleteSkill = asyncHandler(async (req, res) => {
-  const { skillid } = req.params;
+  const { slug } = req.params;
 
-  Skill.deleteOne({ id: skillid }, function (err, result) {
+  Skill.deleteOne({ slug }, function (err, result) {
     if (err) {
       return res
         .status(422)
         .json({ errors: { body: "Unable to delete that skill" } });
     }
 
-    if (result.deleteCount === 0) {
+    if (result.deletedCount === 0) {
       return res.status(404).json({ errors: { body: "Skill Not Found" } });
     }
 

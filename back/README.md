@@ -65,8 +65,8 @@ npm run start
 - Choose a denormalized data model for the tags array within the Article model because the likelihood of an article having an infinite number of tags is low
 - Separate model Favorite with many-to-many relationship between User and Article (instead of an array of articles' id inside of user) for better scalability
 - Separate model Comment with many-to-many relationship between Comment and Article (instead of an array of comments' id inside of comment) for better scalability
-- Not setup a `debug` logger and use `console.log` (synchronous) which can impact performance in production
-- Trust the client's token and not retrieve database to authenticate, trade performance with security
+- Trust the client's JWT and not retrieve database for better performance
+- Use `:articleid` instead of `:slug` in comment routes to immediately delete a comment using `:articleid` without retrieve the article with `:slug` to get the article'id for better performance but harder to test
 
 ## To-do
 

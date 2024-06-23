@@ -1,0 +1,31 @@
+# get all my skills
+GET {{url}}/skills
+
+# create a new skill
+POST {{url}}/skills
+Authorization: {{token0}}
+Content-Type: application/json
+{
+  "skill": {
+    "title":"ExpressJS",
+    "image":"https://express.org/express.png",
+    "level": 5
+  }
+}
+
+# create a new skill
+PUT {{url}}/skills/expressjs
+Authorization: {{token0}}
+Content-Type: application/json
+{
+  "skill": {
+    "title":"nestjs",
+    "image":"https://nestjs.org/nestjs.png",
+    "level": 5
+  }
+}
+
+# delete a skill
+DELETE {{url}}/skills/nestjs
+Authorization: {{token0}}
+

@@ -1,0 +1,34 @@
+# get all my works
+GET {{url}}/works
+
+# create a new works
+POST {{url}}/works
+Authorization: {{token0}}
+Content-Type: application/json
+{
+  "work": {
+    "title":"Personal Site 2",
+    "image":"https://github.com/minhhoccode111/personal-site/blob/main/public/personal-site-home.png",
+    "demo":"https://minhhoccode111.vercel.app",
+    "github":"https://github.com/minhhoccode111/personal-site",
+    "difficulty": 3
+  }
+}
+
+# update a work
+PUT {{url}}/works/personal-site-2
+Authorization: {{token0}}
+Content-Type: application/json
+{
+  "work": {
+    "title":"Personal Site Update 2",
+    "image":"https://github.com/minhhoccode111/personal-site/blob/main/public/personal-site-home.png",
+    "demo":"https://minhhoccode111.vercel.app",
+    "github":"https://github.com/minhhoccode111/personal-site",
+    "difficulty": 3
+  }
+}
+
+# delete a work
+DELETE {{url}}/works/personal-site-update-2
+Authorization: {{token0}}

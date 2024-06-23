@@ -74,6 +74,7 @@ articleSchema.methods.toArticleResponse = async function (user) {
   ]);
 
   return {
+    id: this._id,
     slug: this.slug,
     body: this.body,
     title: this.title,

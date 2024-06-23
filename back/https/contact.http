@@ -1,0 +1,29 @@
+# get all my contacts
+GET {{url}}/contacts
+Authorization: {{token0}}
+
+# create a new contact
+POST {{url}}/contacts
+Content-Type: application/json
+{
+  "contact": {
+    "name":"Minh Hoc Code 111",
+    "email":"minhoccode111@gmail.com",
+    "body":"Hey, can we collaborate?",
+    "markAsRead": false
+  }
+}
+
+# update contact
+PUT {{url}}/contacts/66783f932fac328833f10449
+Authorization: {{token0}}
+Content-Type: application/json
+{
+  "contact": {
+    "markAsRead": true
+  }
+}
+
+# delete a contact
+DELETE {{url}}/contacts/66783f932fac328833f10449
+Authorization: {{token0}}

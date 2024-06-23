@@ -22,9 +22,9 @@ Authorization: {{token1}}
 Content-Type: application/json
 {
   "user": {
-    "email": "asd1@gmail.com", 
-    "username": "1234", 
-    "password": "Bruh0!0!", 
+    "email": "asd1@gmail.com",
+    "username": "1234",
+    "password": "Bruh0!0!",
     "image": "https://avatars.githubusercontent.com/u/39550308",
     "bio": "I write code (sometimes)"
   }

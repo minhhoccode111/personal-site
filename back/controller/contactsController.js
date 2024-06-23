@@ -55,14 +55,14 @@ const updateContact = asyncHandler(async (req, res) => {
 const deleteContact = asyncHandler(async (req, res) => {
   const { contactid } = req.params;
 
-  Contact.deleteOne({ id: contactid }, function (err, result) {
+  Contact.deleteOne({ _id: contactid }, function (err, result) {
     if (err) {
       return res
         .status(422)
         .json({ errors: { body: "Unable to delete that contact" } });
     }
 
-    if (result.deleteCount === 0) {
+    if (result.deletedCount === 0) {
       return res.status(404).json({ errors: { body: "Contact Not Found" } });
     }
 

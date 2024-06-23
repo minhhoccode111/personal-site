@@ -65,15 +65,17 @@ app.use("/api/profiles", require("../route/profileRoutes"));
 
 // for /contacts
 app.use("/api/contacts", require("../route/contactRoutes"));
+
 // for /skills
 app.use("/api/skills", require("../route/skillRoutes"));
+
 // for /works
 app.use("/api/works", require("../route/workRoutes"));
 
 // for /articles
 app.use("/api/articles", require("../route/articleRoutes"));
 
-// for articles/:slug/comments or articles/:articleid/comments
+// for articles/:articleid/comments
 app.use("/api/articles", require("../route/commentRoutes"));
 
 mongoose.connection.once("open", () => {
