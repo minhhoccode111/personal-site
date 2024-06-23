@@ -13,7 +13,7 @@
 - bio
 - image
 - isAuthor
-- { timestamp: true }
+- isGoogleAuth
 - generateAccessToken() return
   - accessToken
 - toUserResponse() return
@@ -44,7 +44,6 @@
 - body
 - tagList
 - author
-- { timestamp: true }
 - toArticleResponse(user) return
   - slug
   - body
@@ -60,12 +59,12 @@
 ## Comment
 
 - body
-- author
-- article
-- { timestamp: true }
+- authorid
+- articleid
 - toCommentResponse() return
   - id
   - body
+  - articleid
   - createdAt
   - updatedAt
   - author.toProfileJSON()
@@ -74,3 +73,21 @@
 
 - userid
 - articleid
+
+## Contact
+
+-
+-
+-
+
+## Skill
+
+-
+-
+-
+
+## Work
+
+-
+-
+-

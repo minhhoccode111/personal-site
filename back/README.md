@@ -19,7 +19,7 @@ cd personal-site
 
 ```
 
-Use the required Node engine
+Use needed Node engine (Glitch required)
 
 ```bash
 
@@ -70,5 +70,4 @@ npm run start
 
 ## To-do
 
-- Add `projects` and `skills` route
 - Add testing

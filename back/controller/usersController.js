@@ -89,7 +89,17 @@ const updateUser = asyncHandler(async (req, res) => {
 
   const target = await User.findOne({ email }).exec();
 
-  // TODO: not allow Google Auth user to update email and password
+  if (target.isGoogleAuth) {
+    if (user.email || user.password) {
+      return res
+        .status(422)
+        .json({
+          errors: {
+            body: "Google Auth users are now allowed to update email and password",
+          },
+        });
+    }
+  }
 
   if (user.email) {
     target.email = user.email;

@@ -7,7 +7,7 @@ profile fields belike:  {
   provider: 'google',
   _json: {
     sub: '114192593333485248876',
-    name: 'Dân Dân',
+    name: 'Dan Dan',
     picture: 'https://lh3.googleusercontent.com/a/ACg8ocLYhb6TSQnhrCe7egFS5fZMeRkWUIwJ7wM8cWWZzHbcVGfj_A=s96-c',
     email: 'danghoangminh011@gmail.com',
   }
