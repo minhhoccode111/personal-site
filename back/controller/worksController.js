@@ -1,5 +1,7 @@
 const asyncHandler = require("express-async-handler");
+
 const Work = require("../model/Work");
+const debug = require("../constants/debug");
 
 const getWorks = asyncHandler(async (req, res) => {
   const query = req.query;
@@ -31,7 +33,7 @@ const createWork = asyncHandler(async (req, res) => {
 
   newWork.save(function (err) {
     if (err) {
-      console.log(`error created new work: `, err);
+      debug(`error created new work: `, err);
 
       return res
         .status(422)
@@ -76,7 +78,7 @@ const updateWork = asyncHandler(async (req, res) => {
 
   updateWork.save(function (err) {
     if (err) {
-      console.log(`error update work: `, err);
+      debug(`error update work: `, err);
 
       return res
         .status(422)

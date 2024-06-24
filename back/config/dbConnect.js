@@ -2,6 +2,8 @@ require("dotenv").config();
 
 const mongoose = require("mongoose");
 
+const debug = require("../constants/debug");
+
 // if uri string is provided in cli
 const last = process.argv[process.argv.length - 1];
 const isURI = last.startsWith("mongodb");
@@ -14,24 +16,24 @@ async function connectDB(callback) {
   try {
     mongoose.set("strictQuery", false);
 
-    console.log(`about to connet db\nstring: `, URI);
+    debug(`about to connet db\nstring: `, URI);
 
     mongoose.connect(URI);
 
     // executing scripts, need close connection after
     if (callback !== undefined) {
-      console.log(`about to execute callback`);
+      debug(`about to execute callback`);
 
       await callback();
 
-      console.log(`callback executed`);
+      debug(`callback executed`);
 
-      console.log(`about to disconnect db`);
+      debug(`about to disconnect db`);
 
       await mongoose.connection.close();
     }
   } catch (err) {
-    console.log(err);
+    debug(`Connect to database error: `, err);
   }
 }
 

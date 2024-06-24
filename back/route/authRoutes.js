@@ -13,13 +13,15 @@ const authsController = require("../controller/authsController");
 const Credential = require("../model/Credential");
 const User = require("../model/User");
 
+const debug = require("../constants/debug");
+
 require("dotenv").config({ path: "google.env" });
 
 const ID = process.env.GOOGLE_CLIENT_ID;
 const SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
-// console.log(`ID: `, ID);
-// console.log(`SECRET: `, SECRET);
+// debug(`ID: `, ID);
+// debug(`SECRET: `, SECRET);
 
 passport.use(
   new GoogleStrategy(
@@ -42,90 +44,88 @@ passport.use(
       //   }
       // }
 
-      // // start transaction
-      const session = await mongoose.startSession();
-      session.startTransaction();
+      const profileIdString = String(profile._json.sub);
+      const username = profile._json?.name;
+      const email = profile._json?.email;
+      const image = profile._json?.image;
 
-      try {
-        const profileIdString = String(profile._json.sub);
-        // get a credential with that profile
-        const credential = await Credential.findOne({
+      // find credential match that Google profile and user with that email
+      const [credential, user] = await Promise.all([
+        Credential.findOne({
           provider: profile.provider,
           profileid: profileIdString,
-        }).exec();
+        }).exec(),
 
-        // console.log(`found credential: `, credential);
+        User.findOne({ email }).exec(),
+      ]);
 
-        // if user haven't logged in before
-        if (!credential) {
-          // their auto-generate password will be their google profile'id
-          // TODO: send this back to their gmail with forgot password feature
-          const SALT = isNaN(Number(process.env.SALT))
-            ? 13
-            : Number(process.env.SALT);
-          const newUserPassword = await bcrypt.hash(profileIdString, SALT);
-
-          // create a user using that profile info, with 3 required fields
-          const newUser = new User({
-            username: profile._json?.name,
-            email: profile._json?.email,
-            password: newUserPassword,
-            image: profile._json?.picture,
-            isGoogleAuth: true,
-          });
-
-          // make this acid transaction, both must success or fail all if one fail
-          // in case username or email conflict
-          const [_, __] = await Promise.all([
-            newUser.save({ session }),
-            // create a credential associate with that user and save
-            new Credential({
-              userid: newUser._id,
-              provider: profile.provider,
-              profileid: profileIdString, // this also their password...safe?
-            }).save({ session }),
-          ]);
-
-          await session.commitTransaction();
-
-          // console.log(`newUser belike: `, newUser);
-          // console.log(`newCredential belike: `, __);
-
-          // console.log(`create new user, transaction commited succesfully`);
-
-          // mark them success login
-          return done(null, newUser.toUserResponse());
-        }
-        // user logged in before
-        // find the user associate with the profile credential
-        const credentialUser = await User.findOne({
-          _id: credential.userid,
-          isGoogleAuth: true,
-        }).exec();
-
-        // if profile credential exist but somehow can't find the user associate it
-        if (!credentialUser) {
-          // then mark them failure login
-          return done(null, false);
-        }
-
-        // console.log(`credentialUser belike: `, credentialUser);
-
-        // console.log(`old user verify successfully`);
-
+      // if used Google auth before
+      if (credential && user) {
         // else mark them success login
-        return done(null, credentialUser.toUserResponse());
-      } catch (err) {
-        // catch every error and pass to next
-        console.error("error occurs, transaction abort", err);
-
-        await session.abortTransaction();
-
-        return done(err);
-      } finally {
-        // NOTE: in JS the finally block will run even when the try block above call ``
-        session.endSession();
+        return done(null, user.toUserResponse());
       }
+
+      // if email logged in before but first use Google Auth
+      if (!credential && user) {
+        // make Google auth connect with that user
+        user.isGoogleAuth = true;
+
+        const newCredential = new Credential({
+          userid: user._id, // old user
+          provider: profile.provider,
+          profileid: profileIdString,
+        });
+
+        await Promise.all([user.save(), newCredential.save()]);
+        return done(null, user.toUserResponse());
+      }
+
+      // if email not logged in before and first use Google auth
+      if (!credential && !user) {
+        // create both Google auth and user
+        const SALT = isNaN(Number(process.env.SALT))
+          ? 13
+          : Number(process.env.SALT);
+
+        // auto-generate a password
+        const newUserPassword = await bcrypt.hash(profileIdString, SALT);
+
+        // create new user with that Google profile
+        const newUser = new User({
+          email,
+          image,
+          username,
+          isGoogleAuth: true,
+          password: newUserPassword,
+        });
+
+        newUser.save((err) => {
+          // if err occurs, most likely a username or email conflict
+          if (err) {
+            // TODO: add auto handle for user
+            return done(err);
+          }
+        });
+
+        // create new credential with that new user with that Google profile
+        const newCredential = new Credential({
+          userid: newUser._id,
+          provider: profile.provider,
+          profileid: profileIdString,
+        });
+
+        newCredential.save((err) => {
+          if (err) {
+            return done(err);
+          }
+        });
+
+        // mark them success login
+        return done(null, newUser.toUserResponse());
+      }
+
+      // else
+      return done(null, false);
     },
   ),
 );

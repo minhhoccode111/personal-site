@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 
 const User = require("../model/User");
+const debug = require("../constants/debug");
 
 // @desc registration for a user
 // @route POST /api/users
@@ -11,7 +12,7 @@ const User = require("../model/User");
 const registerUser = asyncHandler(async (req, res) => {
   const { user } = req.body;
 
-  console.log(`user sign up belike: `, user);
+  debug(`user sign up belike: `, user);
 
   const SALT = isNaN(Number(process.env.SALT)) ? 13 : Number(process.env.SALT);
   const hashedPwd = await bcrypt.hash(user.password, SALT);
@@ -62,7 +63,7 @@ const userLogin = asyncHandler(async (req, res) => {
 
   const loginUser = await User.findOne({ email: user.email }).exec();
 
-  console.log(loginUser);
+  debug(loginUser);
 
   if (!loginUser)
     return res.status(404).json({ errors: { body: "User Not Found" } });
@@ -89,16 +90,19 @@ const updateUser = asyncHandler(async (req, res) => {
 
   const target = await User.findOne({ email }).exec();
 
-  if (target.isGoogleAuth) {
-    if (user.email || user.password) {
-      return res
-        .status(422)
-        .json({
-          errors: {
-            body: "Google Auth users are now allowed to update email and password",
-          },
-        });
-    }
+  if (target.isGoogleAuth && user.email) {
+    return res.status(422).json({
+      errors: {
+        body: "Google Auth users are now allowed to update email",
+      },
+    });
+  }
+
+  if (user.password) {
+    const processSalt = process.env.SALT;
+    const SALT = isNaN(Number(processSalt)) ? 13 : Number(processSalt);
+    const newPassword = await bcrypt.hash(user.password, SALT);
+    target.password = newPassword;
   }
 
   if (user.email) {

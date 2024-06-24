@@ -4,7 +4,7 @@ import ThemeToggler from "./theme-toggler";
 export default function SiteHeader() {
   const links = [
     { href: "/", text: "Home" },
-    // { href: "/contact", text: "Contact" },
+    { href: "/contact", text: "Contact" },
     { href: "/about", text: "About" },
     // { href: "/dummy", text: "Dummy" },
     { href: "/blog", text: "Blog" },

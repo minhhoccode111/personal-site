@@ -19,7 +19,7 @@ const app = express();
 const corsOptions = require("../config/corsOptions");
 const connectDB = require("../config/dbConnect");
 
-// console.log(`corsOptions belike: `, corsOptions);
+// debug(`corsOptions belike: `, corsOptions);
 
 const PORT = Number(process.env.PORT) || 3000;
 const SECRET = process.env.JWT_SECRET || "SomeSuperSecretSecrets";

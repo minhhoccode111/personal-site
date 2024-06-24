@@ -67,7 +67,6 @@ npm run start
 - Separate model Comment with many-to-many relationship between Comment and Article (instead of an array of comments' id inside of comment) for better scalability
 - Trust the client's JWT and not retrieve database for better performance
 - Use `:articleid` instead of `:slug` in comment routes to immediately delete a comment using `:articleid` without retrieve the article with `:slug` to get the article'id for better performance but harder to test
+- Login with Google Auth can ignore password, but not vice versa
 
 ## To-do
-
-- Add testing

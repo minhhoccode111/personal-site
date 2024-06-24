@@ -1,8 +1,10 @@
-const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
+const mongoose = require("mongoose");
 const slugify = require("slugify");
+
 const User = require("./User");
 const Favorite = require("./Favorite");
+const debug = require("../constants/debug");
 
 const articleSchema = new mongoose.Schema(
   {
@@ -65,7 +67,7 @@ articleSchema.pre("save", function (next) {
 // @desc
 // @required
 articleSchema.methods.toArticleResponse = async function (user) {
-  // console.log(`user in toArticleResponse belike: `, user);
+  debug(`user in toArticleResponse belike: `, user);
 
   const [authorObj, favoritesCount, favorited] = await Promise.all([
     User.findById(this.author).exec(),

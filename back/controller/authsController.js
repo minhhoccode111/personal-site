@@ -3,6 +3,7 @@ const querystring = require("node:querystring");
 const bcrypt = require("bcrypt");
 
 const User = require("../model/User");
+const debug = require("../constants/debug");
 
 // @desc login for a user
 // @route POST /api/users/login
@@ -14,7 +15,7 @@ const userLogin = asyncHandler(async (req, res) => {
 
   const loginUser = await User.findOne({ email: user.email }).exec();
 
-  console.log(`login user belike: `, loginUser);
+  debug(`login user belike: `, loginUser);
 
   if (!loginUser)
     return res
@@ -40,9 +41,9 @@ const googleCallback = (req, res) => {
   const clientURL = process.env.CLIENT_URL;
   let finalURL = clientURL + "/login"; // prefix URL
 
-  // console.log(`client url belike: `, CLIENT_URL);
-  // console.log(`req.user belike: `, req.user);
-  // console.log(`req.authError belike: `, req.authError);
+  // debug(`client url belike: `, CLIENT_URL);
+  // debug(`req.user belike: `, req.user);
+  // debug(`req.authError belike: `, req.authError);
 
   if (!req.user) {
     finalURL += "/failure";
@@ -56,7 +57,7 @@ const googleCallback = (req, res) => {
 
   finalURL += "?" + subURL;
 
-  console.log(`the finalURL belike: `, finalURL);
+  debug(`the finalURL belike: `, finalURL);
 
   return res.redirect(finalURL);
 };

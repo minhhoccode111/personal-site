@@ -155,9 +155,9 @@ async function createComments(number) {
 
 const main = async () => {
   await createMe();
-  await createArticles(30);
-  await createUsers(25);
-  await createComments(400);
+  await createArticles(10);
+  await createUsers(5);
+  await createComments(40);
 };
 
 connect(main);

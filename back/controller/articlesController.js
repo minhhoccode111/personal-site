@@ -4,6 +4,8 @@ const Article = require("../model/Article");
 const User = require("../model/User");
 const Favorite = require("../model/Favorite");
 
+const debug = require("../constants/debug");
+
 // @desc current user create a article
 // @route POST /api/articles
 // @access Private
@@ -30,7 +32,7 @@ const createArticle = asyncHandler(async (req, res) => {
     article.tagList = tagList;
   }
 
-  console.log(`created article belike: `, article);
+  debug(`created article belike: `, article);
 
   article.save(async function (err) {
     if (err) {
@@ -99,7 +101,7 @@ const favoriteArticle = asyncHandler(async (req, res) => {
     });
   }
 
-  // console.log(`article info belike: `, article);
+  // debug(`article info belike: `, article);
 
   await loginUser.favorite(article._id);
 

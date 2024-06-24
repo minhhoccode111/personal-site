@@ -1,5 +1,7 @@
 const asyncHandler = require("express-async-handler");
+
 const Skill = require("../model/Skill");
+const debug = require("../constants/debug");
 
 const getSkills = asyncHandler(async (req, res) => {
   const query = req.query;
@@ -29,7 +31,7 @@ const createSkill = asyncHandler(async (req, res) => {
 
   newSkill.save(function (err) {
     if (err) {
-      console.log(`error created new skill: `, err);
+      debug(`error created new skill: `, err);
 
       return res
         .status(422)
@@ -66,7 +68,7 @@ const updateSkill = asyncHandler(async (req, res) => {
 
   updateSkill.save(function (err) {
     if (err) {
-      console.log(`error update skill: `, err);
+      debug(`error update skill: `, err);
 
       return res
         .status(422)

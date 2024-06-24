@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 // const Work = require("../model/Work");
+const debug = require("../constants/debug");
 
 const asyncHandler = require("express-async-handler");
 
@@ -9,7 +10,7 @@ const asyncHandler = require("express-async-handler");
 router.get(
   "/",
   asyncHandler(async (_, res) => {
-    console.log("successful!");
+    debug("successful!");
     // await Work.deleteMany();
     res.status(200).json({ messages: { body: "successful" } });
   }),

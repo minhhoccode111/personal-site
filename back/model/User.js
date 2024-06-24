@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 const jwt = require("jsonwebtoken");
 const Favorite = require("./Favorite");
+const debug = require("../constants/debug");
 
 const userSchema = new mongoose.Schema(
   {
@@ -130,7 +131,7 @@ userSchema.methods.favorite = async function (articleid) {
     await new Favorite({ userid: this._id, articleid }).save();
   } catch (err) {
     // mean conflict? other cases
-    console.log(`Already favorited that article.`);
+    debug(`Already favorited that article.`);
   }
 };
 
@@ -139,7 +140,8 @@ userSchema.methods.favorite = async function (articleid) {
 userSchema.methods.unfavorite = async function (articleid) {
   const result = await Favorite.deleteOne({ userid: this._id, articleid });
 
-  if (result.deletedCount === 0) console.log(`Already deleted that favorite`);
+  if (result.deletedCount === 0) debug(`Already unfavorite that article`);
+  else debug(`Successfully unfavorite that article`);
 };
 
 module.exports = mongoose.model("User", userSchema);
