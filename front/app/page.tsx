@@ -1,22 +1,6 @@
-import Image from "next/image";
+import { redirect } from "next/navigation";
 
-import RouteHeader from "@/components/route-header";
-
+// redirect to /about by default
 export default function Home() {
-  return (
-    <>
-      <RouteHeader>
-        <div className="">
-          {/* <Image
-            src="/vercel.svg"
-            alt="Vercel Logo"
-            className="dark:invert block w-full"
-            width={100}
-            height={24}
-            priority
-          /> */}
-        </div>
-      </RouteHeader>
-    </>
-  );
+  redirect("/about");
 }

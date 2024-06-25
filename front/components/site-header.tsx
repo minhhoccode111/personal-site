@@ -1,22 +1,30 @@
 import Link from "next/link";
+
 import ThemeToggler from "./theme-toggler";
 
+import useAuthStore from "@/stores/auth";
+
 export default function SiteHeader() {
+  const authData = useAuthStore((state) => state.authData);
+
   const links = [
-    { href: "/", text: "Home" },
-    { href: "/contact", text: "Contact" },
+    // { href: "/", text: "Home" },
     { href: "/about", text: "About" },
-    // { href: "/dummy", text: "Dummy" },
     { href: "/blog", text: "Blog" },
+    { href: "/contact", text: "Contact" },
+    { href: "/work", text: "Work" },
     { href: "/login", text: "Login" },
     { href: "/signup", text: "Signup" },
     { href: "/logout", text: "Logout" },
+    // { href: "/dummy", text: "Dummy" },
   ];
 
   return (
     <header className="flex items-center justify-between p-8">
       <div className="">
-        <h1 className="text-2xl">mhc111</h1>
+        <h1 className="text-2xl">
+          <Link href={"/about"}>mhc111</Link>
+        </h1>
       </div>
 
       <nav className="">

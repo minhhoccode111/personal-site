@@ -1,16 +1,20 @@
-import RouteHeader from "@/components/route-header";
-import Link from "next/link";
+import useAuthStore from "@/stores/auth";
+import { useSearchParams, redirect } from "next/navigation";
 
+type UrlObject = {
+  [key: string]: string;
+};
+
+// extract the URL query then redirect to /about
 export default function Page() {
-  // TODO: extract query and store in authData
+  const setAuthData = useAuthStore((state) => state.setAuthData);
 
-  return (
-    <>
-      <RouteHeader>Login success</RouteHeader>
+  const user: UrlObject = {};
+  useSearchParams().forEach((value, key) => {
+    user[key] = value;
+  });
 
-      <div className="">
-        <Link href={"/"}>Home</Link>
-      </div>
-    </>
-  );
+  setAuthData(user);
+
+  redirect("/about");
 }

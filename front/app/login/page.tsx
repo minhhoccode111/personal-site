@@ -3,9 +3,10 @@
 import { redirect } from "next/navigation";
 import axios from "axios";
 // import swr from 'swr'
-import * as constants from "@/shared/constants";
 
 import RouteHeader from "@/components/route-header";
+import * as constants from "@/shared/constants";
+import useAuthStore from "@/stores/auth";
 
 export default function Page() {
   //
@@ -73,14 +74,19 @@ export default function Page() {
             username
           </label>
           <input type="text" className="" />
+
           <label htmlFor="" className="">
             password
           </label>
           <input type="text" className="" />
+
+          <button type="submit" className="">
+            Login
+          </button>
         </form>
 
         <div className="">
-          <p className="">or</p>
+          <p className="">Or</p>
         </div>
 
         <form onSubmit={handleLoginGuest} className="">
@@ -90,7 +96,7 @@ export default function Page() {
         </form>
 
         <div className="">
-          <p className="">or</p>
+          <p className="">Or</p>
         </div>
 
         {/*<form onSubmit={handleLoginGoogle} className="">
