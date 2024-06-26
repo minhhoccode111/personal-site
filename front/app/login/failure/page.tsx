@@ -7,7 +7,7 @@ export default function Page() {
       <RouteHeader>Login with Google failed</RouteHeader>
 
       <div className="">
-        <Link href={"/login"}>Click here to try again</Link>
+        <Link href={"/login"}>Click here to try login again</Link>
       </div>
     </div>
   );

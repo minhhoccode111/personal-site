@@ -9,8 +9,6 @@ import * as constants from "@/shared/constants";
 import useAuthStore from "@/stores/auth";
 
 export default function Page() {
-  //
-
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
