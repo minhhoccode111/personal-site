@@ -7,7 +7,7 @@ import RouteHeader from "@/components/route-header";
 export default function Page() {
   return (
     <div className="">
-      <RouteHeader>Contact</RouteHeader>
+      <RouteHeader>Work</RouteHeader>
     </div>
   );
 }

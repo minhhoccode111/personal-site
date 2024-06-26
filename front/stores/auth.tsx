@@ -7,23 +7,18 @@ import { create } from "zustand";
 
 import { AuthStoreName } from "@/shared/constants";
 
+import { UserResponse } from "@/shared/types";
+
+type AuthData = {
+  user?: UserResponse;
+};
+
 type StateAuthStore = {
   authData: AuthData;
 };
 
 type ActionAuthStore = {
   setAuthData: (data: AuthData) => void;
-};
-
-type AuthData = {
-  user?: {
-    bio: string;
-    email: string;
-    image: string;
-    username: string;
-    isAuthor: boolean;
-    token: string;
-  };
 };
 
 const useAuthStore = create<StateAuthStore & ActionAuthStore>((set) => {

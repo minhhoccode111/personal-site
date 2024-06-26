@@ -1,9 +1,17 @@
 // NOTE: split to multiple files when things bloat
 
-export type User = {
-  id: string;
+export type UserResponse = {
   bio: string;
-  username: string;
-  image: string;
   email: string;
+  image: string;
+  username: string;
+  isAuthor: boolean;
+  isGoogleAuth: boolean;
+  token: string;
+
+  [key: string]: string | boolean | undefined;
+};
+
+export type UserJSON = {
+  //
 };

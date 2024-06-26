@@ -1,3 +1,6 @@
+"use client";
+
+import { useMemo } from "react";
 import Link from "next/link";
 
 import ThemeToggler from "./theme-toggler";
@@ -7,17 +10,20 @@ import useAuthStore from "@/stores/auth";
 export default function SiteHeader() {
   const authData = useAuthStore((state) => state.authData);
 
-  const links = [
-    // { href: "/", text: "Home" },
-    { href: "/about", text: "About" },
-    { href: "/blog", text: "Blog" },
-    { href: "/contact", text: "Contact" },
-    { href: "/work", text: "Work" },
-    { href: "/login", text: "Login" },
-    { href: "/signup", text: "Signup" },
-    { href: "/logout", text: "Logout" },
-    // { href: "/dummy", text: "Dummy" },
-  ];
+  // remember links
+  const links = useMemo(
+    () => [
+      { href: "/about", text: "about" },
+      { href: "/blog", text: "blog" },
+      { href: "/contact", text: "contact" },
+      { href: "/work", text: "work" },
+      { href: "/login", text: "login" },
+      { href: "/signup", text: "signup" },
+      { href: "/logout", text: "logout" },
+      // { href: "/dummy", text: "dummy" },
+    ],
+    [],
+  );
 
   return (
     <header className="flex items-center justify-between p-8">
@@ -29,11 +35,26 @@ export default function SiteHeader() {
 
       <nav className="">
         <ul className="flex gap-2">
-          {links.map((item) => (
-            <li key={item.text} className="">
-              <Link href={item.href}>{item.text}</Link>
-            </li>
-          ))}
+          {links.reduce((total: React.ReactNode[], item) => {
+            const text = item.text;
+
+            // if user not login and text is logout then skip
+            if (text === "logout" && !authData.user) return total;
+
+            // if user logged in and text is login or sign up then skip
+            if ((text === "login" || text === "signup") && authData.user) {
+              return total;
+            }
+
+            // else display link in the array
+            const current = (
+              <li key={item.text} className="">
+                <Link href={item.href}>{item.text}</Link>
+              </li>
+            );
+
+            return [...total, current];
+          }, [])}
         </ul>
       </nav>
 

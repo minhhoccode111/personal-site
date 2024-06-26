@@ -70,19 +70,26 @@ export default function Page() {
 
       <div className="">
         <form onSubmit={handleLogin} className="">
-          <label htmlFor="" className="">
-            username
-          </label>
-          <input type="text" className="" />
+          <div className="">
+            <label htmlFor="" className="">
+              username
+            </label>
 
-          <label htmlFor="" className="">
-            password
-          </label>
-          <input type="text" className="" />
+            <input type="text" className="" />
+          </div>
 
-          <button type="submit" className="">
-            Login
-          </button>
+          <div className="">
+            <label htmlFor="" className="">
+              password
+            </label>
+            <input type="text" className="" />
+          </div>
+
+          <div className="">
+            <button type="submit" className="">
+              Login
+            </button>
+          </div>
         </form>
 
         <div className="">
