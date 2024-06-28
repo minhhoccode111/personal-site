@@ -154,9 +154,11 @@ async function createComments(number) {
 }
 
 const main = async () => {
+  const numberRandomUsers = Number(process.env.NUMBER_RANDOM_USERS) || 25;
+
   await createMe();
   await createArticles(10);
-  await createUsers(5);
+  await createUsers(numberRandomUsers);
   await createComments(40);
 };
 

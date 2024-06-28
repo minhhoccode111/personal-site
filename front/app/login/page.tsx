@@ -8,21 +8,34 @@ import RouteHeader from "@/components/route-header";
 import * as constants from "@/shared/constants";
 import useAuthStore from "@/stores/auth";
 
+import { useForm } from "react-hook-form";
+
 export default function Page() {
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const {
+    reset,
+    control,
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      user: {
+        email: "",
+        password: "",
+      },
+    },
+  });
+
+  const handleLogin = async (data: {
+    user: { email: string; password: string };
+  }) => {
     try {
       const res = await axios({
         url: constants.ApiUrl + "/auth/login",
         method: "post",
-        data: {
-          // WARN: note that data must be structure like this
-          // user: {
-          // username,
-          // password,
-          // }
-        },
+        data,
       });
+
       console.log(res);
     } catch (err) {
       console.log(`error login: `, err);
@@ -31,6 +44,7 @@ export default function Page() {
     }
   };
 
+  // handle login like normal, no need for validate
   const handleLoginGuest = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -40,15 +54,15 @@ export default function Page() {
       const email = randomNumber + constants.GuestUsersEmailPrefix;
       const password = constants.GuestUsersPassword;
 
-      console.log(`email belike: `, email);
-      console.log(`password belike: `, password);
+      // console.log(`email belike: `, email);
+      // console.log(`password belike: `, password);
 
       const res = await axios({
         url: constants.ApiUrl + "/auth/login",
         method: "post",
         data: {
-          // WARN: note that data must be structure like this
           user: {
+            // NOTE: data structure like this
             email,
             password,
           },
@@ -66,21 +80,54 @@ export default function Page() {
     <>
       <RouteHeader>Login</RouteHeader>
 
-      <div className="">
-        <form onSubmit={handleLogin} className="">
+      <div className="flex flex-col gap-12">
+        {/* Normal Login */}
+        <form onSubmit={handleSubmit(handleLogin)} className="">
           <div className="">
-            <label htmlFor="" className="">
-              username
+            <label htmlFor="email" className="">
+              email
             </label>
 
-            <input type="text" className="" />
+            <input
+              type="email"
+              id="email"
+              placeholder=""
+              className=""
+              {...register("user.email", {
+                required: "Email is required",
+                minLength: {
+                  value: 8,
+                  message: "Email must be at least 8 characters long",
+                },
+                maxLength: {
+                  value: 100,
+                  message: "Email must be at max 100 characters long",
+                },
+              })}
+            />
           </div>
 
           <div className="">
-            <label htmlFor="" className="">
+            <label htmlFor="password" className="">
               password
             </label>
-            <input type="text" className="" />
+            <input
+              type="password"
+              id="password"
+              placeholder=""
+              className=""
+              {...register("user.password", {
+                required: "Password is required",
+                minLength: {
+                  value: 8,
+                  message: "Password must be at least 8 characters long",
+                },
+                maxLength: {
+                  value: 32,
+                  message: "Password must be at max 32 characters long",
+                },
+              })}
+            />
           </div>
 
           <div className="">
@@ -94,6 +141,7 @@ export default function Page() {
           <p className="">Or</p>
         </div>
 
+        {/* Random Login */}
         <form onSubmit={handleLoginGuest} className="">
           <button type="submit" className="">
             Login as guest
@@ -104,9 +152,7 @@ export default function Page() {
           <p className="">Or</p>
         </div>
 
-        {/*<form onSubmit={handleLoginGoogle} className="">
-          <button type="submit">Login with Google</button>
-        </form>*/}
+        {/* Google Auth */}
         <a href="http://localhost:3000/api/auth/login/google" className="">
           Login with Google
         </a>

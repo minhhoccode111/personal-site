@@ -3,6 +3,8 @@
  * after logged in or retrieve localStorage
  */
 
+"use client";
+
 import { create } from "zustand";
 
 import { AuthStoreName } from "@/shared/constants";
