@@ -1,15 +1,18 @@
 "use client";
 
-import { useSearchParams, redirect } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
 import useAuthStore from "@/stores/auth";
 
 import { UserResponse } from "@/shared/types";
+import { useEffect, useState } from "react";
 
 // extract the URL query then redirect to /about
 export default function Page() {
   const setAuthData = useAuthStore((state) => state.setAuthData);
   const params = useSearchParams();
+  const router = useRouter();
+  const [isNotValid, setIsNotValid] = useState(false);
 
   const user: UserResponse = {
     bio: "",
@@ -25,11 +28,23 @@ export default function Page() {
     const value = params.get(key);
 
     // immediately go to /login if any field is missing
-    if (!value) return redirect("/blog/login");
+    if (!value) {
+      setIsNotValid(true);
+
+      break;
+    }
 
     user[key] = value;
   }
 
   setAuthData({ user });
-  redirect("/blog");
+
+  // trigger the redirect inside a useEffect hook so that it happens after the
+  // component has mounted, rather than during the render
+  useEffect(() => {
+    if (isNotValid) router.push("/blog/login");
+    else router.push("/blog");
+  }, [router, isNotValid]);
+
+  return null;
 }

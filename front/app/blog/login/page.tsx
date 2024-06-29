@@ -118,7 +118,7 @@ export default function Page() {
       <SectionHeader>login</SectionHeader>
 
       <div className="flex flex-col gap-2">
-        {/* Normal Login */}
+        {/* normal login */}
 
         <div className="">
           <Form {...form}>
@@ -202,9 +202,7 @@ export default function Page() {
         {/* Google Auth */}
         <div className="">
           <a
-            href={
-              isLoading ? "#" : "http://localhost:3000/api/auth/login/google"
-            }
+            href={isLoading ? "#" : constants.ApiUrl + "/auth/login/google"}
             className=""
           >
             Login with Google
