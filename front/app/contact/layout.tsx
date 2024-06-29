@@ -9,7 +9,7 @@ export default function Layout({
 }>) {
   return (
     <div className="">
-      <RouteHeader>Contact</RouteHeader>
+      <RouteHeader>contact</RouteHeader>
       {children};
     </div>
   );

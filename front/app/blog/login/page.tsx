@@ -7,18 +7,26 @@ import { useState } from "react";
 import axios from "axios";
 import { z } from "zod";
 
-import RouteHeader from "@/components/route-header";
+import SectionHeader from "@/components/section-header";
 import * as constants from "@/shared/constants";
 import useAuthStore from "@/stores/auth";
+import { LoginFormSchema } from "@/shared/schema";
+
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 export default function Page() {
-  const {
-    reset,
-    control,
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
+  const form = useForm<z.infer<typeof LoginFormSchema>>({
+    resolver: zodResolver(LoginFormSchema),
     defaultValues: {
       user: {
         email: "",
@@ -29,9 +37,7 @@ export default function Page() {
 
   const [responseMessage, setResponseMessage] = useState("");
 
-  const handleLogin = async (data: {
-    user: { email: string; password: string };
-  }) => {
+  const handleLogin = async (data: z.infer<typeof LoginFormSchema>) => {
     try {
       const res = await axios({
         url: constants.ApiUrl + "/auth/login",
@@ -40,8 +46,11 @@ export default function Page() {
       });
 
       console.log(res);
-    } catch (err) {
+    } catch (err: any) {
       console.log(`error login: `, err);
+
+      const message = err.data?.errors.body;
+      setResponseMessage(message);
     } finally {
       //
     }
@@ -72,7 +81,7 @@ export default function Page() {
         },
       });
       console.log(res);
-    } catch (err) {
+    } catch (err: any) {
       console.log(`error login: `, err);
     } finally {
       //
@@ -81,24 +90,18 @@ export default function Page() {
 
   return (
     <div className="">
-      <header className="">
-        <h3 className="">Login</h3>
-      </header>
+      <SectionHeader>login</SectionHeader>
 
-      <div className="flex flex-col gap-12">
+      <div className="flex flex-col gap-2">
         {/* Normal Login */}
-        <form onSubmit={handleSubmit(handleLogin)} className="">
-          <div className="">
-            <label htmlFor="email" className="">
-              email
-            </label>
 
-            <input
-              type="email"
-              id="email"
-              placeholder=""
-              className=""
-              {...register("user.email", {
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-8">
+            <FormField
+              control={form.control}
+              name="user.email"
+              // same as using register
+              rules={{
                 required: "Email is required",
                 minLength: {
                   value: 8,
@@ -108,20 +111,34 @@ export default function Page() {
                   value: 100,
                   message: "Email must be at max 100 characters long",
                 },
-              })}
-            />
-          </div>
+              }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>email</FormLabel>
 
-          <div className="">
-            <label htmlFor="password" className="">
-              password
-            </label>
-            <input
-              type="password"
-              id="password"
-              placeholder=""
-              className=""
-              {...register("user.password", {
+                  <FormControl>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder=""
+                      minLength={8}
+                      maxLength={100}
+                      {...field}
+                    />
+                  </FormControl>
+
+                  <FormDescription>input your email to login.</FormDescription>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="user.password"
+              // same as using register
+              rules={{
                 required: "Password is required",
                 minLength: {
                   value: 8,
@@ -131,16 +148,44 @@ export default function Page() {
                   value: 32,
                   message: "Password must be at max 32 characters long",
                 },
-              })}
-            />
-          </div>
+              }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>password</FormLabel>
 
-          <div className="">
-            <button type="submit" className="">
-              Login
-            </button>
-          </div>
-        </form>
+                  <FormControl>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder=""
+                      minLength={8}
+                      maxLength={32}
+                      {...field}
+                    />
+                  </FormControl>
+
+                  <FormDescription>
+                    input your password to login.
+                  </FormDescription>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex gap-2 items-center justify-end">
+              <Button
+                type="button"
+                variant={"destructive"}
+                onClick={() => form.reset()}
+              >
+                Clear
+              </Button>
+
+              <Button type="submit">Submit</Button>
+            </div>
+          </form>
+        </Form>
 
         <div className="">
           <p className="">Or</p>

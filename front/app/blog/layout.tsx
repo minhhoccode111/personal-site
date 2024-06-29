@@ -2,7 +2,7 @@
 
 import RouteHeader from "@/components/route-header";
 import useAuthStore from "@/stores/auth";
-import Link from "next/link";
+import NavLink from "@/components/nav-link";
 import { useMemo } from "react";
 
 export default function Layout({
@@ -30,7 +30,9 @@ export default function Layout({
           // else display links
           const current = (
             <li key={item} className="">
-              <Link href={"/blog/" + item}>{item}</Link>
+              <NavLink className="" href={"/blog/" + item}>
+                {item}
+              </NavLink>
             </li>
           );
 
@@ -43,7 +45,7 @@ export default function Layout({
   return (
     <div className="">
       {/* have nav to navigate to login, signup to comment on posts */}
-      <RouteHeader nav={nav}>Blog</RouteHeader>
+      <RouteHeader nav={nav}>blog</RouteHeader>
 
       {children}
     </div>

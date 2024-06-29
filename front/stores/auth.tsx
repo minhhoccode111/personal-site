@@ -1,8 +1,3 @@
-/*
- * This store is used to store user's credential
- * after logged in or retrieve localStorage
- */
-
 "use client";
 
 import { create } from "zustand";
@@ -32,7 +27,7 @@ const useAuthStore = create<StateAuthStore & ActionAuthStore>((set) => {
   return {
     authData,
     setAuthData: (data) => {
-      console.log(`the authData is: `, data); // TODO: turn off
+      // console.log(`the authData is: `, data); // TODO: turn off
       localStorage.setItem(AuthStoreName, JSON.stringify(data));
       set(() => ({ authData: data }));
     },

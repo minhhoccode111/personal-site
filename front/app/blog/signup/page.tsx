@@ -1,11 +1,9 @@
-import RouteHeader from "@/components/route-header";
+import SectionHeader from "@/components/section-header";
 
 export default function Page() {
   return (
     <div className="">
-      <header className="">
-        <h3 className="">Signup</h3>
-      </header>
+      <SectionHeader>signup</SectionHeader>
 
       <div className="">
         <form className=""></form>

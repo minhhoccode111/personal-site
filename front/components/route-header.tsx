@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export default function RouteHeader({
   children,
@@ -11,7 +12,7 @@ export default function RouteHeader({
   const headerClasses = nav ? "flex gap-4 items-center justify-between" : "";
 
   return (
-    <header className={headerClasses}>
+    <header className={cn("my-8", headerClasses)}>
       <h2 className="font-extrabold text-xl">
         <Link href={"/" + children}>{children}</Link>
       </h2>

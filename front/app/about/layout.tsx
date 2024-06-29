@@ -12,8 +12,9 @@ export default function Layout({
 }>) {
   return (
     <div className="">
-      <RouteHeader>About</RouteHeader>
-      {children};
+      <RouteHeader>about</RouteHeader>
+
+      {children}
     </div>
   );
 }

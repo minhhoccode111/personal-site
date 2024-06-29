@@ -25,11 +25,11 @@ export default function Page() {
     const value = params.get(key);
 
     // immediately go to /login if any field is missing
-    if (!value) return redirect("/login");
+    if (!value) return redirect("/blog/login");
 
     user[key] = value;
   }
 
   setAuthData({ user });
-  redirect("/about");
+  redirect("/blog");
 }

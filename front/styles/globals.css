@@ -17,6 +17,9 @@
   .center {
     @apply grid place-items-center;
   }
+  .active {
+    @apply underline underline-offset-2 decoration-dark dark:decoration-light;
+  }
 }
 
 @layer utilities {

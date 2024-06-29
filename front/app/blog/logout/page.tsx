@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 import useAuthStore from "@/stores/auth";
 
-// extract the URL query then redirect to /about
+// extract the URL query then redirect to /blog
 export default function Page() {
   const { authData, setAuthData } = useAuthStore();
 
@@ -20,7 +20,7 @@ export default function Page() {
    * component (`SiteHeader`) while rendering a different component (`Page`).
    * */
   useEffect(() => {
-    redirect("/about");
+    redirect("/blog");
   }, [authData]);
 
   return null;

@@ -2,17 +2,31 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
+import NavLink from "./nav-link";
 
 import ThemeToggler from "./theme-toggler";
 
 export default function SiteHeader() {
   // remember links
-  const links = useMemo(() => ["about", "blog", "contact"], []);
+  const links = useMemo(
+    () => [
+      "about",
+      "blog",
+      "contact",
+
+      // easy development
+      "blog/login",
+      "blog/signup",
+      "blog/logout",
+      // delete in production
+    ],
+    [],
+  );
 
   return (
-    <header className="flex items-center justify-between p-8">
+    <header className="flex items-center justify-between p-2">
       <div className="">
-        <h1 className="text-2xl">
+        <h1 className="text-2xl font-extralight">
           <Link href={"/about"}>mhc111</Link>
         </h1>
       </div>
@@ -21,7 +35,9 @@ export default function SiteHeader() {
         <ul className="flex gap-2">
           {links.map((item) => (
             <li key={item} className="">
-              <Link href={"/" + item}>{item}</Link>
+              <NavLink className="" href={"/" + item}>
+                {item}
+              </NavLink>
             </li>
           ))}
         </ul>
