@@ -117,7 +117,7 @@ export default function Page() {
     <div className="">
       <SectionHeader>login</SectionHeader>
 
-      <div className="flex flex-col gap-2">
+      <div className="space-y-8">
         {/* normal login */}
 
         <div className="">
@@ -175,7 +175,7 @@ export default function Page() {
                 </Button>
 
                 <Button disabled={isLoading} type="submit">
-                  Submit
+                  Login
                 </Button>
               </div>
             </form>
