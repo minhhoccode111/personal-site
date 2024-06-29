@@ -4,21 +4,19 @@ const LoginFormSchema = z.object({
   // NOTE: data design like this to send to backend: { user: { email: string, password: string}, ...}
   user: z.object({
     email: z
-      .string({ required_error: "Email is required" })
-      .email("Email must be a valid email address")
-      .min(8, "Email must be at least 8 characters long")
-      .max(100, "Email must be at max 100 characters long"),
+      .string()
+      .email("Email is required")
+      .min(8, "Email min length is 8")
+      .max(100, "Email max length is 100"),
+
     password: z
-      .string({ required_error: "Password is required" })
-      .min(8, "Password must be at least 8 characters long")
-      .max(32, "Password must be at max 32 characters long")
-      .regex(
-        /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,32}$/,
-        {
-          message:
-            "Password must contain at least: 1 uppercase, 1 lowercase, 1 digit, 1 special character",
-        },
-      ),
+      .string()
+      .min(8, "Password min length is 8")
+      .max(32, "Password max length is 32")
+      .regex(/(?=.*\d)/, "Password need 1 digit")
+      .regex(/(?=.*[A-Z])/, "Password need 1 uppercase")
+      .regex(/(?=.*[a-z])/, "Password need 1 lowercase")
+      .regex(/(?=.*[@$!%*#?&])/, "Password need 1 special character"),
   }),
 });
 

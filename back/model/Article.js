@@ -36,6 +36,8 @@ const articleSchema = new mongoose.Schema(
       trim: true,
     },
 
+    // add article image?
+
     tagList: [
       {
         type: String,

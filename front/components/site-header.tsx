@@ -8,20 +8,7 @@ import ThemeToggler from "./theme-toggler";
 
 export default function SiteHeader() {
   // remember links
-  const links = useMemo(
-    () => [
-      "about",
-      "blog",
-      "contact",
-
-      // easy development
-      "blog/login",
-      "blog/signup",
-      "blog/logout",
-      // delete in production
-    ],
-    [],
-  );
+  const links = useMemo(() => ["about", "blog", "contact"], []);
 
   return (
     <header className="flex items-center justify-between p-2">
@@ -32,7 +19,7 @@ export default function SiteHeader() {
       </div>
 
       <nav className="">
-        <ul className="flex gap-2">
+        <ul className="flex gap-2 font-extralight">
           {links.map((item) => (
             <li key={item} className="">
               <NavLink className="" href={"/" + item}>

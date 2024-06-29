@@ -10,7 +10,8 @@ export default function Layout({
   return (
     <div className="">
       <RouteHeader>contact</RouteHeader>
-      {children};
+
+      {children}
     </div>
   );
 }

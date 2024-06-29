@@ -25,6 +25,8 @@ import {
 import { Input } from "@/components/ui/input";
 
 export default function Page() {
+  const { setAuthData } = useAuthStore();
+
   const form = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
     defaultValues: {
@@ -36,55 +38,74 @@ export default function Page() {
   });
 
   const [responseMessage, setResponseMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = async (data: z.infer<typeof LoginFormSchema>) => {
+  const handleLogin = async (values: z.infer<typeof LoginFormSchema>) => {
+    setIsLoading(true);
     try {
-      const res = await axios({
+      const { data } = await axios({
         url: constants.ApiUrl + "/auth/login",
         method: "post",
-        data,
+        data: values,
       });
 
-      console.log(res);
-    } catch (err: any) {
-      console.log(`error login: `, err);
+      // console.log(`response data belike: `, data);
 
-      const message = err.data?.errors.body;
+      setAuthData(data);
+
+      redirect("/blog");
+    } catch (err: any) {
+      // console.log(`error login: `, err);
+
+      const message =
+        err.response?.data?.errors?.body ||
+        "Cannot login right now please try again later";
+
       setResponseMessage(message);
-    } finally {
-      //
+
+      setIsLoading(false);
     }
   };
 
-  // handle login like normal, no need for validate
+  // handle login like normal, no need for validation
   const handleLoginGuest = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    setIsLoading(true);
     try {
       const randomNumber = Math.floor(
         Math.random() * constants.NumberGuestUsers,
       );
+
       const email = randomNumber + constants.GuestUsersEmailPrefix;
       const password = constants.GuestUsersPassword;
 
-      // console.log(`email belike: `, email);
-      // console.log(`password belike: `, password);
-
-      const res = await axios({
+      const { data } = await axios({
         url: constants.ApiUrl + "/auth/login",
         method: "post",
         data: {
           user: {
-            // NOTE: data structure like this
             email,
             password,
           },
         },
       });
-      console.log(res);
+
+      // console.log(`response data belike: `, data);
+
+      setAuthData(data);
+
+      redirect("/blog");
     } catch (err: any) {
-      console.log(`error login: `, err);
-    } finally {
-      //
+      // console.log(`error login: `, err);
+
+      const message =
+        err.response?.data?.errors?.body ||
+        "Cannot login right now please try again later";
+
+      setResponseMessage(message);
+
+      setIsLoading(false);
     }
   };
 
@@ -95,121 +116,92 @@ export default function Page() {
       <div className="flex flex-col gap-2">
         {/* Normal Login */}
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="user.email"
-              // same as using register
-              rules={{
-                required: "Email is required",
-                minLength: {
-                  value: 8,
-                  message: "Email must be at least 8 characters long",
-                },
-                maxLength: {
-                  value: 100,
-                  message: "Email must be at max 100 characters long",
-                },
-              }}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>email</FormLabel>
+        <div className="">
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(handleLogin)}
+              className="space-y-8"
+            >
+              <FormField
+                control={form.control}
+                name="user.email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>email</FormLabel>
 
-                  <FormControl>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder=""
-                      minLength={8}
-                      maxLength={100}
-                      {...field}
-                    />
-                  </FormControl>
+                    <FormControl>
+                      <Input type="email" {...field} />
+                    </FormControl>
 
-                  <FormDescription>input your email to login.</FormDescription>
+                    {/* <FormDescription>input your email to login.</FormDescription> */}
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="user.password"
-              // same as using register
-              rules={{
-                required: "Password is required",
-                minLength: {
-                  value: 8,
-                  message: "Password must be at least 8 characters long",
-                },
-                maxLength: {
-                  value: 32,
-                  message: "Password must be at max 32 characters long",
-                },
-              }}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>password</FormLabel>
+              <FormField
+                control={form.control}
+                name="user.password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>password</FormLabel>
 
-                  <FormControl>
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder=""
-                      minLength={8}
-                      maxLength={32}
-                      {...field}
-                    />
-                  </FormControl>
+                    <FormControl>
+                      <Input type="password" {...field} />
+                    </FormControl>
 
-                  <FormDescription>
+                    {/* <FormDescription>
                     input your password to login.
-                  </FormDescription>
+                  </FormDescription> */}
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <div className="flex gap-2 items-center justify-end">
-              <Button
-                type="button"
-                variant={"destructive"}
-                onClick={() => form.reset()}
-              >
-                Clear
-              </Button>
+              <div className="flex gap-2 items-center justify-end">
+                <Button
+                  type="button"
+                  variant={"destructive"}
+                  onClick={() => form.reset()}
+                >
+                  Clear
+                </Button>
 
-              <Button type="submit">Submit</Button>
-            </div>
-          </form>
-        </Form>
+                <Button type="submit">Submit</Button>
+              </div>
+            </form>
+          </Form>
+        </div>
 
         <div className="">
           <p className="">Or</p>
         </div>
 
         {/* Random Login */}
-        <form onSubmit={handleLoginGuest} className="">
-          <button type="submit" className="">
-            Login as guest
-          </button>
-        </form>
+        <div className="">
+          <form onSubmit={handleLoginGuest} className="">
+            <button type="submit" className="">
+              Login as guest
+            </button>
+          </form>
+        </div>
 
         <div className="">
           <p className="">Or</p>
         </div>
 
         {/* Google Auth */}
-        <a href="http://localhost:3000/api/auth/login/google" className="">
-          Login with Google
-        </a>
-      </div>
+        <div className="">
+          <a href="http://localhost:3000/api/auth/login/google" className="">
+            Login with Google
+          </a>
+        </div>
 
-      <div className="center">
-        <p className="font-bold text-yellow-500">{responseMessage}</p>
+        <div className="center">
+          <p className="font-bold text-danger-500">{responseMessage}</p>
+        </div>
       </div>
     </div>
   );
