@@ -1,6 +1,6 @@
 "use client";
 
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 import useAuthStore from "@/stores/auth";
@@ -8,6 +8,8 @@ import useAuthStore from "@/stores/auth";
 // extract the URL query then redirect to /blog
 export default function Page() {
   const { authData, setAuthData } = useAuthStore();
+
+  const router = useRouter();
 
   // run this reset authData first to logout
   useEffect(() => {
@@ -20,8 +22,8 @@ export default function Page() {
    * component (`SiteHeader`) while rendering a different component (`Page`).
    * */
   useEffect(() => {
-    redirect("/blog");
-  }, [authData]);
+    router.push("/blog");
+  }, [authData, router]);
 
   return null;
 }

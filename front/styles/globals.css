@@ -15,7 +15,7 @@
 
 @layer components {
   .center {
-    @apply grid place-items-center;
+    @apply flex items-center justify-center;
   }
   .active {
     @apply underline underline-offset-8 decoration-dark dark:decoration-light;

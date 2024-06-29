@@ -13,13 +13,13 @@ export default function SiteHeader() {
   return (
     <header className="flex items-center justify-between p-2">
       <div className="">
-        <h1 className="text-2xl font-extralight">
+        <h1 className="text-2xl">
           <Link href={"/about"}>mhc111</Link>
         </h1>
       </div>
 
       <nav className="">
-        <ul className="flex gap-2 font-extralight">
+        <ul className="flex gap-2">
           {links.map((item) => (
             <li key={item} className="">
               <NavLink className="" href={"/" + item}>

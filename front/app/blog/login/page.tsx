@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import axios from "axios";
@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
+  // FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -39,9 +39,12 @@ export default function Page() {
 
   const [responseMessage, setResponseMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
+  // TODO: optimize performance useCallback
   const handleLogin = async (values: z.infer<typeof LoginFormSchema>) => {
     setIsLoading(true);
+
     try {
       const { data } = await axios({
         url: constants.ApiUrl + "/auth/login",
@@ -53,7 +56,7 @@ export default function Page() {
 
       setAuthData(data);
 
-      redirect("/blog");
+      router.push("/blog");
     } catch (err: any) {
       // console.log(`error login: `, err);
 
@@ -61,9 +64,9 @@ export default function Page() {
         err.response?.data?.errors?.body ||
         "Cannot login right now please try again later";
 
-      setResponseMessage(message);
-
       setIsLoading(false);
+
+      setResponseMessage(message);
     }
   };
 
@@ -72,6 +75,7 @@ export default function Page() {
     e.preventDefault();
 
     setIsLoading(true);
+
     try {
       const randomNumber = Math.floor(
         Math.random() * constants.NumberGuestUsers,
@@ -95,7 +99,7 @@ export default function Page() {
 
       setAuthData(data);
 
-      redirect("/blog");
+      router.push("/blog");
     } catch (err: any) {
       // console.log(`error login: `, err);
 
@@ -103,9 +107,9 @@ export default function Page() {
         err.response?.data?.errors?.body ||
         "Cannot login right now please try again later";
 
-      setResponseMessage(message);
-
       setIsLoading(false);
+
+      setResponseMessage(message);
     }
   };
 
@@ -130,7 +134,7 @@ export default function Page() {
                     <FormLabel>email</FormLabel>
 
                     <FormControl>
-                      <Input type="email" {...field} />
+                      <Input disabled={isLoading} type="email" {...field} />
                     </FormControl>
 
                     {/* <FormDescription>input your email to login.</FormDescription> */}
@@ -148,7 +152,7 @@ export default function Page() {
                     <FormLabel>password</FormLabel>
 
                     <FormControl>
-                      <Input type="password" {...field} />
+                      <Input disabled={isLoading} type="password" {...field} />
                     </FormControl>
 
                     {/* <FormDescription>
@@ -162,6 +166,7 @@ export default function Page() {
 
               <div className="flex gap-2 items-center justify-end">
                 <Button
+                  disabled={isLoading}
                   type="button"
                   variant={"destructive"}
                   onClick={() => form.reset()}
@@ -169,7 +174,9 @@ export default function Page() {
                   Clear
                 </Button>
 
-                <Button type="submit">Submit</Button>
+                <Button disabled={isLoading} type="submit">
+                  Submit
+                </Button>
               </div>
             </form>
           </Form>
@@ -182,7 +189,7 @@ export default function Page() {
         {/* Random Login */}
         <div className="">
           <form onSubmit={handleLoginGuest} className="">
-            <button type="submit" className="">
+            <button disabled={isLoading} type="submit" className="">
               Login as guest
             </button>
           </form>
@@ -194,13 +201,20 @@ export default function Page() {
 
         {/* Google Auth */}
         <div className="">
-          <a href="http://localhost:3000/api/auth/login/google" className="">
+          <a
+            href={
+              isLoading ? "#" : "http://localhost:3000/api/auth/login/google"
+            }
+            className=""
+          >
             Login with Google
           </a>
         </div>
 
         <div className="center">
-          <p className="font-bold text-danger-500">{responseMessage}</p>
+          <p className="font-bold text-danger p-4">
+            {isLoading ? "loading..." : responseMessage}
+          </p>
         </div>
       </div>
     </div>

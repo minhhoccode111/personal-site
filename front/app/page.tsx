@@ -1,10 +1,10 @@
 "use client";
 
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 // no /index redirect to /about by default
 export default function Home() {
-  redirect("/about");
+  useRouter().push("/about");
 
   return null;
 }
