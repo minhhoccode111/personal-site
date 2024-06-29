@@ -24,7 +24,7 @@ export default function RootLayout({
 
       <body
         className={cn(
-          "min-h-screen flex flex-col justify-between font-sans antialiased text-black dark:text-white border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950",
+          "min-h-screen flex flex-col justify-between font-sans antialiased text-dark dark:text-light bg-light dark:bg-dark",
           fontSans.className,
         )}
       >

@@ -32,6 +32,4 @@ export default function Page() {
 
   setAuthData({ user });
   redirect("/about");
-
-  return null;
 }

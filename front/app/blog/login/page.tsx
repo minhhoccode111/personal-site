@@ -1,14 +1,15 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
 import axios from "axios";
-// import swr from 'swr'
+import { z } from "zod";
 
 import RouteHeader from "@/components/route-header";
 import * as constants from "@/shared/constants";
 import useAuthStore from "@/stores/auth";
-
-import { useForm } from "react-hook-form";
 
 export default function Page() {
   const {
@@ -25,6 +26,8 @@ export default function Page() {
       },
     },
   });
+
+  const [responseMessage, setResponseMessage] = useState("");
 
   const handleLogin = async (data: {
     user: { email: string; password: string };
@@ -77,8 +80,10 @@ export default function Page() {
   };
 
   return (
-    <>
-      <RouteHeader>Login</RouteHeader>
+    <div className="">
+      <header className="">
+        <h3 className="">Login</h3>
+      </header>
 
       <div className="flex flex-col gap-12">
         {/* Normal Login */}
@@ -157,6 +162,10 @@ export default function Page() {
           Login with Google
         </a>
       </div>
-    </>
+
+      <div className="center">
+        <p className="font-bold text-yellow-500">{responseMessage}</p>
+      </div>
+    </div>
   );
 }

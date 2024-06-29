@@ -1,13 +1,14 @@
 import RouteHeader from "@/components/route-header";
-import Link from "next/link";
 
 export default function Page() {
   return (
     <div className="">
-      <RouteHeader>Login with Google failed</RouteHeader>
+      <header className="">
+        <h3 className="">Signup</h3>
+      </header>
 
       <div className="">
-        <Link href={"/login"}>Click here to try login again</Link>
+        <form className=""></form>
       </div>
     </div>
   );

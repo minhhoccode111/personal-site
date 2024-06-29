@@ -10,7 +10,7 @@ export default function OutsideLink({
   className?: string;
 }) {
   return (
-    <a href={href} className={cn("text-blue-600", className)}>
+    <a href={href} className={cn("text-blue-500", className)}>
       {children}
     </a>
   );

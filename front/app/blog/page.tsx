@@ -1,9 +1,5 @@
-import RouteHeader from "@/components/route-header";
+"use client";
 
 export default function Page() {
-  return (
-    <div className="">
-      <RouteHeader>Blog</RouteHeader>
-    </div>
-  );
+  return <div className=""></div>;
 }

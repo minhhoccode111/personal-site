@@ -22,6 +22,13 @@ const config = {
       },
     },
     extend: {
+      colors: {
+        danger: "#ef4444",
+        warn: "#eab308",
+        dark: "#020617",
+        light: "#f8fafc",
+        link: "#3b82f6",
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
