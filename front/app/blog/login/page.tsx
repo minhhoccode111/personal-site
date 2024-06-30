@@ -11,12 +11,12 @@ import SectionHeader from "@/components/section-header";
 import * as constants from "@/shared/constants";
 import useAuthStore from "@/stores/auth";
 import { LoginFormSchema } from "@/shared/schema";
+import Loading from "@/components/loading";
 
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  // FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -26,6 +26,10 @@ import { Input } from "@/components/ui/input";
 
 export default function Page() {
   const { setAuthData } = useAuthStore();
+
+  const [responseMessage, setResponseMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
@@ -37,12 +41,8 @@ export default function Page() {
     },
   });
 
-  const [responseMessage, setResponseMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-
   // TODO: optimize performance useCallback
-  const handleLogin = async (values: z.infer<typeof LoginFormSchema>) => {
+  const handleLoginSubmit = async (values: z.infer<typeof LoginFormSchema>) => {
     setIsLoading(true);
 
     try {
@@ -71,7 +71,9 @@ export default function Page() {
   };
 
   // handle login like normal, no need for validation
-  const handleLoginGuest = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLoginGuestSubmit = async (
+    e: React.FormEvent<HTMLFormElement>,
+  ) => {
     e.preventDefault();
 
     setIsLoading(true);
@@ -117,15 +119,12 @@ export default function Page() {
     <div className="">
       <SectionHeader>login</SectionHeader>
 
-      <div className="space-y-8">
-        {/* normal login */}
-
+      {/* Section Body */}
+      <div className="">
+        {/* normal login form */}
         <div className="">
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(handleLogin)}
-              className="space-y-8"
-            >
+            <form onSubmit={form.handleSubmit(handleLoginSubmit)} className="">
               <FormField
                 control={form.control}
                 name="user.email"
@@ -136,8 +135,6 @@ export default function Page() {
                     <FormControl>
                       <Input disabled={isLoading} type="email" {...field} />
                     </FormControl>
-
-                    {/* <FormDescription>input your email to login.</FormDescription> */}
 
                     <FormMessage />
                   </FormItem>
@@ -155,16 +152,12 @@ export default function Page() {
                       <Input disabled={isLoading} type="password" {...field} />
                     </FormControl>
 
-                    {/* <FormDescription>
-                    input your password to login.
-                  </FormDescription> */}
-
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <div className="flex gap-2 items-center justify-end">
+              <div className="">
                 <Button
                   disabled={isLoading}
                   type="button"
@@ -188,7 +181,7 @@ export default function Page() {
 
         {/* Random Login */}
         <div className="">
-          <form onSubmit={handleLoginGuest} className="">
+          <form onSubmit={handleLoginGuestSubmit} className="">
             <button disabled={isLoading} type="submit" className="">
               Login as guest
             </button>
@@ -209,10 +202,8 @@ export default function Page() {
           </a>
         </div>
 
-        <div className="center">
-          <p className="font-bold text-danger p-4">
-            {isLoading ? "loading..." : responseMessage}
-          </p>
+        <div className="">
+          {isLoading ? <Loading /> : <p className="">{responseMessage}</p>}
         </div>
       </div>
     </div>

@@ -5,7 +5,7 @@ export default function SectionHeader({
 }>) {
   return (
     <header className={""}>
-      <h3 className="font-bold text-lg">{children}</h3>
+      <h3 className="text-lg">{children}</h3>
     </header>
   );
 }

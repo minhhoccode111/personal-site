@@ -5,7 +5,7 @@ const LoginFormSchema = z.object({
   user: z.object({
     email: z
       .string()
-      .email("Email is required")
+      .email("Must be a valid email")
       .min(8, "Email min length is 8")
       .max(100, "Email max length is 100"),
 

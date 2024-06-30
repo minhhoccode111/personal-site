@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  // FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,9 +23,14 @@ import {
 } from "@/components/ui/form";
 
 import { Input } from "@/components/ui/input";
+import Loading from "@/components/loading";
 
 export default function Page() {
   const { setAuthData } = useAuthStore();
+
+  const [responseMessage, setResponseMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof SignupFormSchema>>({
     resolver: zodResolver(SignupFormSchema),
@@ -40,10 +44,6 @@ export default function Page() {
       },
     },
   });
-
-  const [responseMessage, setResponseMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
   const handleSignup = async (values: z.infer<typeof SignupFormSchema>) => {
     setIsLoading(true);
@@ -76,15 +76,13 @@ export default function Page() {
     <div className="">
       <SectionHeader>signup</SectionHeader>
 
-      <div className="space-y-4">
+      {/* Section Body */}
+      <div className="">
         {/* normal signup */}
 
         <div className="">
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(handleSignup)}
-              className="space-y-4"
-            >
+            <form onSubmit={form.handleSubmit(handleSignup)} className="">
               <FormField
                 control={form.control}
                 name="user.username"
@@ -95,8 +93,6 @@ export default function Page() {
                     <FormControl>
                       <Input disabled={isLoading} type="text" {...field} />
                     </FormControl>
-
-                    {/* <FormDescription>input your username, must be unique</FormDescription> */}
 
                     <FormMessage />
                   </FormItem>
@@ -114,8 +110,6 @@ export default function Page() {
                       <Input disabled={isLoading} type="email" {...field} />
                     </FormControl>
 
-                    {/* <FormDescription>input your email, must be unique</FormDescription> */}
-
                     <FormMessage />
                   </FormItem>
                 )}
@@ -131,8 +125,6 @@ export default function Page() {
                     <FormControl>
                       <Input disabled={isLoading} type="password" {...field} />
                     </FormControl>
-
-                    {/* <FormDescription>input your password, must be strong</FormDescription> */}
 
                     <FormMessage />
                   </FormItem>
@@ -150,14 +142,12 @@ export default function Page() {
                       <Input disabled={isLoading} type="password" {...field} />
                     </FormControl>
 
-                    {/* <FormDescription>input your confirm password, must match password</FormDescription> */}
-
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <div className="flex gap-2 items-center justify-end">
+              <div className="">
                 <Button
                   disabled={isLoading}
                   type="button"
@@ -189,10 +179,8 @@ export default function Page() {
           </a>
         </div>
 
-        <div className="center">
-          <p className="font-bold text-danger p-4">
-            {isLoading ? "loading..." : responseMessage}
-          </p>
+        <div className="">
+          {isLoading ? <Loading /> : <p className="">{responseMessage}</p>}
         </div>
       </div>
     </div>

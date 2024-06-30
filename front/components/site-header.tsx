@@ -8,7 +8,7 @@ import ThemeToggler from "./theme-toggler";
 
 export default function SiteHeader() {
   // remember links
-  const links = useMemo(() => ["about", "blog", "contact"], []);
+  const links = useMemo(() => ["about", "work", "blog", "contact"], []);
 
   return (
     <header className="flex items-center justify-between p-2">
