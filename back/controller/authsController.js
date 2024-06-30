@@ -39,25 +39,18 @@ const userLogin = asyncHandler(async (req, res) => {
 // @return
 const googleCallback = (req, res) => {
   const clientURL = process.env.CLIENT_URL;
-  let finalURL = clientURL + "/login"; // prefix URL
 
   // debug(`client url belike: `, CLIENT_URL);
   // debug(`req.user belike: `, req.user);
   // debug(`req.authError belike: `, req.authError);
 
-  if (!req.user) {
-    finalURL += "/failure";
-    return res.redirect(finalURL);
-  }
+  if (!req.user) return res.redirect(clientURL + "/blog/login/failure");
 
-  const user = req.user; // extract logged in user
-
-  finalURL += "/success";
+  const user = req.user;
   const subURL = querystring.encode(user);
+  const finalURL = clientURL + `/blog/login/success?${subURL}`;
 
-  finalURL += "?" + subURL;
-
-  debug(`the finalURL belike: `, finalURL);
+  // debug(`the finalURL belike: `, finalURL);
 
   return res.redirect(finalURL);
 };

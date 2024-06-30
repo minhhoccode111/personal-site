@@ -38,7 +38,9 @@ export default function Page() {
         break;
       }
 
-      user[key] = value;
+      if (key === "isAuthor" || key === "isGoogleAuth")
+        user[key] = value === "true";
+      else user[key] = value;
     }
 
     setAuthData({ user });
