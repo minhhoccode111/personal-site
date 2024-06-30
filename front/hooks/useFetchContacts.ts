@@ -1,36 +1,25 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import * as constants from "@/shared/constants";
 import { UserResponse } from "@/shared/types";
 import axios from "axios";
 import useSWR from "swr";
-import useAuthStore from "@/stores/auth";
 
-// TODO: work with this
+const fetcher = (token?: string) => (url: string) =>
+  axios
+    .get(url, { headers: { Authorization: `Token ${token}` } })
+    .then((res) => res.data);
 
-const fetcher = async (url, token, query) => {
-  const res = await axios({
-    url,
-    method: "get",
-    headers: {
-      Authorization: `Token ${token}`,
-    },
-  });
-  return res.data;
-};
-
-export default function useFetchContacts() {
-  const { authData } = useAuthStore();
+export default function useFetchContacts(user?: UserResponse) {
   const [limit, setLimit] = useState(5);
   const [offset, setOffset] = useState(0);
-  const url = constants.ApiUrl + `/contacts`;
-  const query = `limit=${limit}&offset=${offset}`;
-  const result = useSWR([url, authData.user?.token, query], fetcher);
+
+  const url = constants.ApiUrl + `/contacts?limit=${limit}&offset=${offset}`;
+
+  const result = useSWR(user ? url : "", fetcher(user?.token), {
+    shouldRetryOnError: false,
+  });
 
   console.log(`data belike: `, result.data);
 
-  useEffect(() => {
-    //
-  }, []);
-
-  return result;
+  return { ...result, setLimit, setOffset };
 }

@@ -24,12 +24,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
+import { useToast } from "@/components/ui/use-toast";
+
 export default function Page() {
   const { setAuthData } = useAuthStore();
 
-  const [responseMessage, setResponseMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
@@ -56,6 +59,10 @@ export default function Page() {
 
       setAuthData(data);
 
+      toast({
+        description: "Login successfully.",
+      });
+
       router.replace("/blog");
     } catch (err: any) {
       // console.log(`error login: `, err);
@@ -66,7 +73,10 @@ export default function Page() {
 
       setIsLoading(false);
 
-      setResponseMessage(message);
+      toast({
+        title: "Error occurs",
+        description: message,
+      });
     }
   };
 
@@ -101,6 +111,10 @@ export default function Page() {
 
       setAuthData(data);
 
+      toast({
+        description: "Login successfully.",
+      });
+
       router.replace("/blog");
     } catch (err: any) {
       // console.log(`error login: `, err);
@@ -111,7 +125,10 @@ export default function Page() {
 
       setIsLoading(false);
 
-      setResponseMessage(message);
+      toast({
+        title: "Error occurs",
+        description: message,
+      });
     }
   };
 
@@ -202,9 +219,7 @@ export default function Page() {
           </a>
         </div>
 
-        <div className="">
-          {isLoading ? <Loading /> : <p className="">{responseMessage}</p>}
-        </div>
+        <div className="">{isLoading && <Loading />}</div>
       </div>
     </div>
   );

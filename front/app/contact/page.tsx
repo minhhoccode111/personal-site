@@ -24,14 +24,21 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Loading from "@/components/loading";
 import useFetchContacts from "@/hooks/useFetchContacts";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Page() {
   const { authData } = useAuthStore();
 
   const [responseMessage, setResponseMessage] = useState("");
-  const [isLoadingSendContact, setIsLoadingSendContact] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
-  const { isLoadingFetchContacts, data } = useFetchContacts(authData.user);
+  const { data, isLoading, error, setLimit, setOffset } = useFetchContacts(
+    authData.user,
+  );
+
+  const { toast } = useToast();
+
+  toast({ title: "Testing", description: "Testing description" });
 
   const form = useForm<z.infer<typeof ContactFormSchema>>({
     resolver: zodResolver(ContactFormSchema),
@@ -47,7 +54,7 @@ export default function Page() {
   const handleContactSubmit = async (
     contact: z.infer<typeof ContactFormSchema>,
   ) => {
-    setIsLoadingSendContact(true);
+    setIsSending(true);
 
     try {
       const res = await axios({
@@ -58,9 +65,11 @@ export default function Page() {
 
       console.log(`contact message belike: `, res.data);
 
-      setIsLoadingSendContact(false);
+      setIsSending(false);
 
-      setResponseMessage("Contact message sent. Thank you.");
+      setResponseMessage("Message sent");
+
+      form.reset();
     } catch (err: any) {
       // console.log(`error contact: `, err);
 
@@ -68,7 +77,7 @@ export default function Page() {
         err.response?.data?.errors?.body ||
         "Cannot send contact right now please try again later";
 
-      setIsLoadingSendContact(false);
+      setIsSending(false);
 
       setResponseMessage(message);
     }
@@ -97,11 +106,7 @@ export default function Page() {
                     <FormLabel>fullname</FormLabel>
 
                     <FormControl>
-                      <Input
-                        disabled={isLoadingSendContact}
-                        type="text"
-                        {...field}
-                      />
+                      <Input disabled={isSending} type="text" {...field} />
                     </FormControl>
 
                     <FormMessage />
@@ -117,11 +122,7 @@ export default function Page() {
                     <FormLabel>email</FormLabel>
 
                     <FormControl>
-                      <Input
-                        disabled={isLoadingSendContact}
-                        type="email"
-                        {...field}
-                      />
+                      <Input disabled={isSending} type="email" {...field} />
                     </FormControl>
 
                     <FormMessage />
@@ -137,10 +138,7 @@ export default function Page() {
                     <FormLabel>message</FormLabel>
 
                     <FormControl>
-                      <Textarea
-                        disabled={isLoadingSendContact}
-                        {...field}
-                      ></Textarea>
+                      <Textarea disabled={isSending} {...field}></Textarea>
                     </FormControl>
 
                     <FormMessage />
@@ -150,7 +148,7 @@ export default function Page() {
 
               <div className="">
                 <Button
-                  disabled={isLoadingSendContact}
+                  disabled={isSending}
                   type="button"
                   variant={"destructive"}
                   onClick={() => form.reset()}
@@ -158,7 +156,7 @@ export default function Page() {
                   Clear
                 </Button>
 
-                <Button disabled={isLoadingSendContact} type="submit">
+                <Button disabled={isSending} type="submit">
                   Send
                 </Button>
               </div>
@@ -167,11 +165,7 @@ export default function Page() {
         </div>
 
         <div className="">
-          {isLoadingSendContact ? (
-            <Loading />
-          ) : (
-            <p className="">{responseMessage}</p>
-          )}
+          {isSending ? <Loading /> : <p className="">{responseMessage}</p>}
         </div>
 
         {/* All Received Contact Messages */}
