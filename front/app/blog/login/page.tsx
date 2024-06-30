@@ -26,10 +26,14 @@ import { Input } from "@/components/ui/input";
 
 import { useToast } from "@/components/ui/use-toast";
 
+import { sleep } from "@/lib/sleep";
+const sleepTime = 3000;
+
 export default function Page() {
   const { setAuthData } = useAuthStore();
 
   const [isLoading, setIsLoading] = useState(false);
+
   const router = useRouter();
 
   const { toast } = useToast();
@@ -48,7 +52,13 @@ export default function Page() {
   const handleLoginSubmit = async (values: z.infer<typeof LoginFormSchema>) => {
     setIsLoading(true);
 
+    toast({
+      title: "Logging...",
+    });
+
     try {
+      await sleep(sleepTime);
+
       const { data } = await axios({
         url: constants.ApiUrl + "/auth/login",
         method: "post",
@@ -60,7 +70,7 @@ export default function Page() {
       setAuthData(data);
 
       toast({
-        description: "Login successfully.",
+        title: "Login successfully.",
       });
 
       router.replace("/blog");
@@ -69,12 +79,13 @@ export default function Page() {
 
       const message =
         err.response?.data?.errors?.body ||
-        "Cannot login right now please try again later";
+        "Cannot login right now please try again later.";
 
       setIsLoading(false);
 
       toast({
-        title: "Error occurs",
+        variant: "destructive",
+        title: "Error",
         description: message,
       });
     }
@@ -88,6 +99,10 @@ export default function Page() {
 
     setIsLoading(true);
 
+    toast({
+      title: "Logging...",
+    });
+
     try {
       const randomNumber = Math.floor(
         Math.random() * constants.NumberGuestUsers,
@@ -95,6 +110,8 @@ export default function Page() {
 
       const email = randomNumber + constants.GuestUsersEmailPrefix;
       const password = constants.GuestUsersPassword;
+
+      await sleep(sleepTime);
 
       const { data } = await axios({
         url: constants.ApiUrl + "/auth/login",
@@ -112,7 +129,7 @@ export default function Page() {
       setAuthData(data);
 
       toast({
-        description: "Login successfully.",
+        title: "Login successfully.",
       });
 
       router.replace("/blog");
@@ -126,7 +143,8 @@ export default function Page() {
       setIsLoading(false);
 
       toast({
-        title: "Error occurs",
+        variant: "destructive",
+        title: "Error",
         description: message,
       });
     }
@@ -179,7 +197,10 @@ export default function Page() {
                   disabled={isLoading}
                   type="button"
                   variant={"destructive"}
-                  onClick={() => form.reset()}
+                  onClick={() => {
+                    toast({ title: "Form fields clear." });
+                    form.reset();
+                  }}
                 >
                   Clear
                 </Button>

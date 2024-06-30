@@ -1,6 +1,20 @@
+"use client";
+
 import Link from "next/link";
 
+import { useToast } from "@/components/ui/use-toast";
+import { useEffect } from "react";
+
 export default function Page() {
+  const { toast } = useToast();
+
+  useEffect(() => {
+    toast({
+      title: "Login failed.",
+      variant: "destructive",
+    });
+  }, [toast]);
+
   return (
     <div className="">
       <header className="">

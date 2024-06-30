@@ -10,7 +10,12 @@ export default function OutsideLink({
   className?: string;
 }) {
   return (
-    <a href={href} className={cn("text-blue-500", className)}>
+    <a
+      href={href}
+      className={cn("text-blue-500", className)}
+      target="_blank"
+      // rel="norefferer"
+    >
       {children}
     </a>
   );

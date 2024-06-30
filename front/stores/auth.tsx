@@ -23,7 +23,7 @@ const useAuthStore = create<StateAuthStore & ActionAuthStore>((set) => ({
   // can't access localStorage before componentDidMount
   authData: {},
   setAuthData: (data) => {
-    console.log(`data being set with setAuthData belike: `, data);
+    // console.log(`data being set with setAuthData belike: `, data);
     localStorage.setItem(AuthStoreName, JSON.stringify(data));
     set(() => ({ authData: data }));
   },

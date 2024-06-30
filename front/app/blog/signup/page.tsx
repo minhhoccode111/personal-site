@@ -25,12 +25,18 @@ import {
 import { Input } from "@/components/ui/input";
 import Loading from "@/components/loading";
 
+import { useToast } from "@/components/ui/use-toast";
+
+import { sleep } from "@/lib/sleep";
+const sleepTime = 3000;
+
 export default function Page() {
   const { setAuthData } = useAuthStore();
 
-  const [responseMessage, setResponseMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof SignupFormSchema>>({
     resolver: zodResolver(SignupFormSchema),
@@ -48,16 +54,26 @@ export default function Page() {
   const handleSignup = async (values: z.infer<typeof SignupFormSchema>) => {
     setIsLoading(true);
 
+    toast({
+      title: "Signing up...",
+    });
+
     try {
+      await sleep(sleepTime);
+
       const { data } = await axios({
         url: constants.ApiUrl + "/users",
         method: "post",
         data: values,
       });
 
-      console.log(`response data belike: `, data);
+      // console.log(`response data belike: `, data);
 
       setAuthData(data);
+
+      toast({
+        title: "Signup successfully.",
+      });
 
       router.replace("/blog");
     } catch (err: any) {
@@ -65,11 +81,15 @@ export default function Page() {
 
       const message =
         err.response?.data?.errors?.body ||
-        "Cannot signup right now please try again";
+        "Cannot signup right now please try again.";
 
       setIsLoading(false);
 
-      setResponseMessage(message);
+      toast({
+        title: "Error",
+        description: message,
+        variant: "destructive",
+      });
     }
   };
   return (
@@ -152,7 +172,10 @@ export default function Page() {
                   disabled={isLoading}
                   type="button"
                   variant={"destructive"}
-                  onClick={() => form.reset()}
+                  onClick={() => {
+                    toast({ title: "Form fields clear." });
+                    form.reset();
+                  }}
                 >
                   Clear
                 </Button>
@@ -179,9 +202,7 @@ export default function Page() {
           </a>
         </div>
 
-        <div className="">
-          {isLoading ? <Loading /> : <p className="">{responseMessage}</p>}
-        </div>
+        <div className="">{isLoading && <Loading />}</div>
       </div>
     </div>
   );

@@ -13,6 +13,9 @@ import useAuthStore from "@/stores/auth";
 
 const fontSans = FontSans({ subsets: ["latin"], variable: "--font-sans" });
 
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/components/ui/use-toast";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -20,17 +23,21 @@ export default function RootLayout({
 }>) {
   const { setAuthData } = useAuthStore();
 
-  // have to init authData here and wrap inside a useEffect which run after componentDidMount
-  // which make localStorage accessible or else get a referenceError
+  const { toast } = useToast();
+
+  // NOTE: have to init authData here and wrap inside a useEffect which run after
+  // componentDidMount which make localStorage accessible or get a referenceError
   useEffect(() => {
     const data = localStorage.getItem(AuthStoreName);
-
     const authData = data ? JSON.parse(data) : {};
 
-    console.log(`init authData belike: `, authData);
-
-    setAuthData(authData);
-  }, [setAuthData]);
+    if (authData.user) {
+      toast({
+        title: "Login successfully.",
+      });
+      setAuthData(authData);
+    }
+  }, [setAuthData, toast]);
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -61,6 +68,9 @@ export default function RootLayout({
 
           {/* footer */}
           <SiteFooter />
+
+          {/* toaster to popup */}
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
