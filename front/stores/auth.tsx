@@ -18,20 +18,15 @@ type ActionAuthStore = {
   setAuthData: (data: AuthData) => void;
 };
 
-const useAuthStore = create<StateAuthStore & ActionAuthStore>((set) => {
-  const authData =
-    localStorage.getItem(AuthStoreName) === null
-      ? {}
-      : JSON.parse(localStorage.getItem(AuthStoreName) as string);
-
-  return {
-    authData,
-    setAuthData: (data) => {
-      // console.log(`the authData is: `, data); // TODO: turn off
-      localStorage.setItem(AuthStoreName, JSON.stringify(data));
-      set(() => ({ authData: data }));
-    },
-  };
-});
+// TODO: turn off console.log in production
+const useAuthStore = create<StateAuthStore & ActionAuthStore>((set) => ({
+  // can't access localStorage before componentDidMount
+  authData: {},
+  setAuthData: (data) => {
+    console.log(`data being set with setAuthData belike: `, data);
+    localStorage.setItem(AuthStoreName, JSON.stringify(data));
+    set(() => ({ authData: data }));
+  },
+}));
 
 export default useAuthStore;

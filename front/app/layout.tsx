@@ -7,6 +7,9 @@ import { cn } from "@/lib/utils";
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
 import ThemeProvider from "@/components/theme-provider";
+import { useEffect } from "react";
+import { AuthStoreName } from "@/shared/constants";
+import useAuthStore from "@/stores/auth";
 
 const fontSans = FontSans({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -15,6 +18,20 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { setAuthData } = useAuthStore();
+
+  // have to init authData here and wrap inside a useEffect which run after componentDidMount
+  // which make localStorage accessible or else get a referenceError
+  useEffect(() => {
+    const data = localStorage.getItem(AuthStoreName);
+
+    const authData = data ? JSON.parse(data) : {};
+
+    console.log(`init authData belike: `, authData);
+
+    setAuthData(authData);
+  }, [setAuthData]);
+
   return (
     <html lang="en" suppressHydrationWarning>
       {/* theme wrapper */}

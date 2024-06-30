@@ -10,7 +10,7 @@ export default function Home() {
   // trigger the redirect inside a useEffect hook so that it happens after the
   // component has mounted, rather than during the render
   useEffect(() => {
-    router.push("/about");
+    router.replace("/about");
   }, [router]);
 
   return null;

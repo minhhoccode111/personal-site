@@ -11,7 +11,8 @@ export default function Page() {
 
   const router = useRouter();
 
-  // run this reset authData first to logout
+  // have to wrap every setState inside an useEffect because localStorage is
+  // not available before componentDidMount
   useEffect(() => {
     setAuthData({});
   }, [setAuthData]);
@@ -22,7 +23,7 @@ export default function Page() {
    * component (`SiteHeader`) while rendering a different component (`Page`).
    * */
   useEffect(() => {
-    router.push("/blog");
+    router.replace("/blog");
   }, [authData, router]);
 
   return null;

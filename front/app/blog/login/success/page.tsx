@@ -14,36 +14,42 @@ export default function Page() {
   const router = useRouter();
   const [isNotValid, setIsNotValid] = useState(false);
 
-  const user: UserResponse = {
-    bio: "",
-    email: "",
-    image: "",
-    username: "",
-    isAuthor: false,
-    isGoogleAuth: false,
-    token: "",
-  };
+  // have to wrap this inside a useEffect because calling setAuthData will
+  // interact with localStorage which only available after componentDidMount
+  // or else we have a referenceError
+  useEffect(() => {
+    const user: UserResponse = {
+      bio: "",
+      email: "",
+      image: "",
+      username: "",
+      isAuthor: false,
+      isGoogleAuth: false,
+      token: "",
+    };
 
-  for (const key in user) {
-    const value = params.get(key);
+    for (const key in user) {
+      const value = params.get(key);
 
-    // immediately go to /login if any field is missing
-    if (!value) {
-      setIsNotValid(true);
+      // immediately go to /login if any field is missing
+      if (!value) {
+        setIsNotValid(true);
 
-      break;
+        break;
+      }
+
+      user[key] = value;
     }
 
-    user[key] = value;
-  }
-
-  setAuthData({ user });
+    setAuthData({ user });
+  }, [params, setAuthData]);
 
   // trigger the redirect inside a useEffect hook so that it happens after the
   // component has mounted, rather than during the render
   useEffect(() => {
-    if (isNotValid) router.push("/blog/login");
-    else router.push("/blog");
+    if (isNotValid) router.replace("/blog/login");
+    // use replace because we don't want user to hit back to this route
+    else router.replace("/blog");
   }, [router, isNotValid]);
 
   return null;

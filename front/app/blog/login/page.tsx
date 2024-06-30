@@ -56,7 +56,7 @@ export default function Page() {
 
       setAuthData(data);
 
-      router.push("/blog");
+      router.replace("/blog");
     } catch (err: any) {
       // console.log(`error login: `, err);
 
@@ -99,7 +99,7 @@ export default function Page() {
 
       setAuthData(data);
 
-      router.push("/blog");
+      router.replace("/blog");
     } catch (err: any) {
       // console.log(`error login: `, err);
 
