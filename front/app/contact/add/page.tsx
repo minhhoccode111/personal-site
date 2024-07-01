@@ -1,5 +1,7 @@
 "use client";
 
+import useAuthStore from "@/stores/auth";
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -27,9 +29,11 @@ const sleepTime = 3000;
 import * as constants from "@/shared/constants";
 import axios from "axios";
 import SectionHeader from "@/components/section-header";
-import { UserResponse } from "@/shared/types";
 
-export default function ContactForm({ user }: { user?: UserResponse }) {
+export default function Page() {
+  // pass this down in case of race condition
+  const { authData } = useAuthStore();
+
   const [isSending, setIsSending] = useState(false);
   const { toast } = useToast();
 
@@ -37,8 +41,8 @@ export default function ContactForm({ user }: { user?: UserResponse }) {
     resolver: zodResolver(ContactFormSchema),
     defaultValues: {
       contact: {
-        name: user?.username || "",
-        email: user?.email || "",
+        name: authData.user?.username || "",
+        email: authData.user?.email || "",
         body: "",
       },
     },
@@ -67,11 +71,12 @@ export default function ContactForm({ user }: { user?: UserResponse }) {
       setIsSending(false);
 
       toast({
-        title: "Contact messsage sent.",
         // TODO: add undo button to delete contact message
+        title: "Contact messsage sent.",
       });
 
-      form.reset();
+      // only reset the contact message body field
+      form.setValue("contact.body", "");
     } catch (err: any) {
       // console.log(`error contact: `, err);
 
@@ -91,6 +96,7 @@ export default function ContactForm({ user }: { user?: UserResponse }) {
 
   return (
     <div className="">
+      {/* Display Contact Form */}
       <SectionHeader>Leave a message and I will reach out to you</SectionHeader>
 
       <div className="">
@@ -164,5 +170,8 @@ export default function ContactForm({ user }: { user?: UserResponse }) {
 
       <div className="">{isSending && <Loading />}</div>
     </div>
+
+    /* TODO: Display all contact messages that current user sent to author */
+    /* <div className=""><SectionHeader>All Sent Contact Messages</SectionHeader></div> */
   );
 }

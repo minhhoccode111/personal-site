@@ -18,7 +18,7 @@ export default function Page() {
   // not available before componentDidMount
   useEffect(() => {
     toast({
-      title: "Logout successfully.",
+      title: "User logged out.",
     });
     setAuthData({});
   }, [setAuthData, toast]);

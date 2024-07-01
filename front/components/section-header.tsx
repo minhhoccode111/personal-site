@@ -7,7 +7,7 @@ export default function SectionHeader({
 }>) {
   return (
     <header className={"my-8 flex gap-4 items-center justify-between"}>
-      <h3 className="font-extrabold text-lg">{children}</h3>
+      <h3 className="text-lg">{children}</h3>
 
       {/* optional */}
       {nav}

@@ -1,17 +1,24 @@
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+
+type RouteHeaderType = {
+  children: string; // only string accepted
+  nav?: React.ReactNode;
+  isHeaderLink?: boolean;
+};
 
 export default function RouteHeader({
   children,
   nav,
-}: Readonly<{
-  children: string; // only string accepted
-  nav?: React.ReactNode;
-}>) {
+  isHeaderLink = true,
+}: Readonly<RouteHeaderType>) {
   return (
     <header className={"my-8 flex gap-4 items-center justify-between"}>
       <h2 className="font-extrabold text-xl">
-        <Link href={"/" + children}>{children}</Link>
+        {isHeaderLink ? (
+          <Link href={"/" + children}>{children}</Link>
+        ) : (
+          children
+        )}
       </h2>
 
       {/* optional */}
