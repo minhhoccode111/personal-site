@@ -1,6 +1,7 @@
 export {
   ApiUrl,
   AuthStoreName,
+  PaginationPace,
   NumberGuestUsers,
   GuestUsersPassword,
   GuestUsersEmailPrefix,

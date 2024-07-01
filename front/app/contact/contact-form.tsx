@@ -15,7 +15,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import ContactFormSchema from "@/shared/schema/contact.schema";
 
-import useAuthStore from "@/stores/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -28,9 +27,9 @@ const sleepTime = 3000;
 import * as constants from "@/shared/constants";
 import axios from "axios";
 import SectionHeader from "@/components/section-header";
+import { UserResponse } from "@/shared/types";
 
-export default function ContactForm() {
-  const { authData } = useAuthStore();
+export default function ContactForm({ user }: { user?: UserResponse }) {
   const [isSending, setIsSending] = useState(false);
   const { toast } = useToast();
 
@@ -38,8 +37,8 @@ export default function ContactForm() {
     resolver: zodResolver(ContactFormSchema),
     defaultValues: {
       contact: {
-        name: authData.user?.username || "",
-        email: authData.user?.email || "",
+        name: user?.username || "",
+        email: user?.email || "",
         body: "",
       },
     },
@@ -68,8 +67,8 @@ export default function ContactForm() {
       setIsSending(false);
 
       toast({
-        title: "Messsage sent.",
-        // TODO: add undo button to delete message
+        title: "Contact messsage sent.",
+        // TODO: add undo button to delete contact message
       });
 
       form.reset();

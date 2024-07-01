@@ -8,11 +8,8 @@ export default function RouteHeader({
   children: string; // only string accepted
   nav?: React.ReactNode;
 }>) {
-  // display flex if nav exist
-  const headerClasses = nav ? "flex gap-4 items-center justify-between" : "";
-
   return (
-    <header className={cn("my-8", headerClasses)}>
+    <header className={"my-8 flex gap-4 items-center justify-between"}>
       <h2 className="font-extrabold text-xl">
         <Link href={"/" + children}>{children}</Link>
       </h2>

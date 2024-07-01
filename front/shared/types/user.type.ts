@@ -1,5 +1,3 @@
-// NOTE: split to multiple files when things bloat
-
 export type UserResponse = {
   bio: string;
   email: string;
