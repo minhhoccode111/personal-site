@@ -51,7 +51,7 @@ const workSchema = new mongoose.Schema(
 );
 
 workSchema.plugin(uniqueValidator, {
-  message: "Error, expect {PATH} to be unique",
+  message: "Error, expected {PATH} to be unique",
 });
 
 workSchema.pre("save", function (next) {

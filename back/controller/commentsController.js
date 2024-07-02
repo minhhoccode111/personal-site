@@ -24,7 +24,7 @@ const addCommentsToArticle = asyncHandler(async (req, res) => {
 
   if (!author || !article) {
     return res.status(401).json({
-      errors: { body: "Article or Author Not Found" },
+      errors: [{ msg: "Article or Author Not Found" }],
     });
   }
 
@@ -50,8 +50,8 @@ const getCommentsFromArticle = asyncHandler(async (req, res) => {
   const { articleid } = req.params;
 
   const query = req.query;
-  const limit = isNaN(Number(query.limit)) ? 20 : Number(query.limit);
-  const offset = isNaN(Number(query.offset)) ? 0 : Number(query.offset);
+  const limit = Number(query.limit) || 20;
+  const offset = Number(query.offset) || 0;
 
   const [comments, commentsCount] = await Promise.all([
     Comment.find({
@@ -89,18 +89,18 @@ const deleteComment = asyncHandler(async (req, res) => {
       if (err) {
         return res
           .status(422)
-          .json({ errors: { body: "Unable to delete comment" } });
+          .json({ errors: [{ msg: "Unable to delete comment" }] });
       }
 
       if (result.deletedCount === 0) {
         return res.status(401).json({
-          errors: { body: "Comment Not Found" },
+          errors: [{ msg: "Comment Not Found" }],
         });
       }
 
       return res
         .status(200)
-        .json({ messages: { body: "Comment successfully deleted" } });
+        .json({ messages: [{ msg: "Comment successfully deleted" }] });
     },
   );
 });

@@ -5,8 +5,8 @@ const debug = require("../constants/debug");
 
 const getWorks = asyncHandler(async (req, res) => {
   const query = req.query;
-  const limit = isNaN(Number(query.limit)) ? 20 : Number(query.limit);
-  const offset = isNaN(Number(query.offset)) ? 0 : Number(query.offset);
+  const limit = Number(query.limit) || 20;
+  const offset = Number(query.offset) || 0;
 
   const [works, worksCount] = await Promise.all([
     Work.find({}).limit(limit).skip(offset).sort({ createdAt: -1 }).exec(),
@@ -31,19 +31,36 @@ const createWork = asyncHandler(async (req, res) => {
     difficulty,
   });
 
-  newWork.save(function (err) {
-    if (err) {
-      debug(`error created new work: `, err);
+  try {
+    await newWork.save();
 
-      return res
-        .status(422)
-        .json({ errors: { body: "Unable to create work" } });
+    res.status(201).json({ work: newWork.toWorkResponse() });
+  } catch (err) {
+    if (
+      err.name === "ValidationError" &&
+      err.errors &&
+      err.errors.title &&
+      err.errors.title.kind === "unique"
+    ) {
+      return res.status(409).json({
+        errors: [
+          {
+            msg: "Work already exists",
+          },
+        ],
+      });
     }
 
-    return res.json({
-      work: newWork.toWorkResponse(),
+    // debug(`error create user belike: `, err);
+
+    return res.status(422).json({
+      errors: [
+        {
+          msg: "Unable to create work",
+        },
+      ],
     });
-  });
+  }
 });
 
 const updateWork = asyncHandler(async (req, res) => {
@@ -53,7 +70,7 @@ const updateWork = asyncHandler(async (req, res) => {
   const updateWork = await Work.findOne({ slug }).exec();
 
   if (!updateWork) {
-    return res.status(404).json({ errors: { body: "Work Not Found" } });
+    return res.status(404).json({ errors: [{ msg: "Work Not Found" }] });
   }
 
   if (work.title) {
@@ -76,19 +93,36 @@ const updateWork = asyncHandler(async (req, res) => {
     updateWork.difficulty = work.difficulty;
   }
 
-  updateWork.save(function (err) {
-    if (err) {
-      debug(`error update work: `, err);
+  try {
+    await updateWork.save();
 
-      return res
-        .status(422)
-        .json({ errors: { body: "Unable to update work" } });
+    res.status(200).json({ work: updateWork.toWorkResponse() });
+  } catch (err) {
+    if (
+      err.name === "ValidationError" &&
+      err.errors &&
+      err.errors.title &&
+      err.errors.title.kind === "unique"
+    ) {
+      return res.status(409).json({
+        errors: [
+          {
+            msg: "Work already exists",
+          },
+        ],
+      });
     }
 
-    return res.json({
-      work: updateWork.toWorkResponse(),
+    // debug(`error create user belike: `, err);
+
+    return res.status(422).json({
+      errors: [
+        {
+          msg: "Unable to update work",
+        },
+      ],
     });
-  });
+  }
 });
 
 const deleteWork = asyncHandler(async (req, res) => {
@@ -98,16 +132,16 @@ const deleteWork = asyncHandler(async (req, res) => {
     if (err) {
       return res
         .status(422)
-        .json({ errors: { body: "Unable to delete that work" } });
+        .json({ errors: [{ msg: "Unable to delete that work" }] });
     }
 
     if (result.deletedCount === 0) {
-      return res.status(404).json({ errors: { body: "Work Not Found" } });
+      return res.status(404).json({ errors: [{ msg: "Work Not Found" }] });
     }
 
     return res
       .status(200)
-      .json({ messages: { body: "Work delete successfully" } });
+      .json({ messages: [{ msg: "Work delete successfully" }] });
   });
 });
 

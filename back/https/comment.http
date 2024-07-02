@@ -1,6 +1,6 @@
 # addCommentsToArticle,
-POST {{url}}/articles/6678140ec7708a924cb2e562/comments
-Authorization: {{token0}}
+POST {{url}}/articles/6684024862643a82fb7bb8a1/comments
+Authorization: {{token1}}
 Content-Type: application/json
 {
   "comment": {
@@ -8,11 +8,11 @@ Content-Type: application/json
   }
 }
 
-6678140ec7708a924cb2e562
+6684024862643a82fb7bb8a1
 
 # getCommentsFromArticle,
-GET {{url}}/articles/6678140ec7708a924cb2e562/comments
+GET {{url}}/articles/6684024862643a82fb7bb8a1/comments
 
 # deleteComment,
-DELETE {{url}}/articles/6678140ec7708a924cb2e562/comments/667836141809e970d47c4da5
-Authorization: {{token0}}
+DELETE {{url}}/articles/6684024862643a82fb7bb8a1/comments/668405e05f278ba68c186d49
+Authorization: {{token1}}

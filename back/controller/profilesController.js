@@ -3,17 +3,17 @@ const asyncHandler = require("express-async-handler");
 const User = require("../model/User");
 
 // @desc get a user's profile
-// @route GET /api/profiles/:username
+// @route GET /api/profiles/:userid
 // @access Public
 // @return User
 const getProfile = asyncHandler(async (req, res) => {
-  const { username } = req.params;
+  const { userid } = req.params;
 
-  const user = await User.findOne({ username }).exec();
+  const user = await User.findById(userid).exec();
 
   if (!user) {
     return res.status(404).json({
-      errors: { body: "User Not Found" },
+      errors: [{ msg: "User Not Found" }],
     });
   }
 

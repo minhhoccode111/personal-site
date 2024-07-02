@@ -14,7 +14,7 @@ const comments = [];
 
 // use env var
 const PASSWORD = "Bruh0!0!";
-const SALT = isNaN(Number(process.env.SALT)) ? 13 : Number(process.env.SALT);
+const SALT = Number(process.env.SALT) || 13;
 
 // manually created, not reliable
 function escapeHtml(str) {

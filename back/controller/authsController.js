@@ -20,14 +20,14 @@ const userLogin = asyncHandler(async (req, res) => {
   if (!loginUser)
     return res
       .status(401)
-      .json({ errors: { body: "Unauthorized: Wrong email" } });
+      .json({ errors: [{ msg: "Unauthorized: Wrong email" }] });
 
   const match = await bcrypt.compare(user.password, loginUser.password);
 
   if (!match)
     return res
       .status(401)
-      .json({ errors: { body: "Unauthorized: Wrong password" } });
+      .json({ errors: [{ msg: "Unauthorized: Wrong password" }] });
 
   res.status(200).json({ user: loginUser.toUserResponse() });
 });
@@ -38,17 +38,17 @@ const userLogin = asyncHandler(async (req, res) => {
 // @required
 // @return
 const googleCallback = (req, res) => {
-  const clientURL = process.env.CLIENT_URL;
+  const clientRedirectURL = process.env.CLIENT_REDIRECT_URL;
 
   // debug(`client url belike: `, CLIENT_URL);
   // debug(`req.user belike: `, req.user);
   // debug(`req.authError belike: `, req.authError);
 
-  if (!req.user) return res.redirect(clientURL + "/blog/login/failure");
+  if (!req.user) return res.redirect(clientRedirectURL + "/failure");
 
   const user = req.user;
   const subURL = querystring.encode(user);
-  const finalURL = clientURL + `/blog/login/success?${subURL}`;
+  const finalURL = clientRedirectURL + `/success?${subURL}`;
 
   // debug(`the finalURL belike: `, finalURL);
 

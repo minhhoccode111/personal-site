@@ -5,18 +5,18 @@ const verifyJWTAuthor = (req, res, next) => {
 
   // NOTE: start with "Token " instead of "Bearer "?
   if (!authHeader?.startsWith("Token ")) {
-    return res.status(401).json({ errors: { body: "Unauthorized" } });
+    return res.status(401).json({ errors: [{ msg: "Unauthorized" }] });
   }
 
   const token = authHeader.split(" ")[1];
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
     if (err) {
-      return res.status(403).json({ errors: { body: "Forbidden" } });
+      return res.status(403).json({ errors: [{ msg: "Forbidden" }] });
     }
 
     if (!decoded.user.isAuthor) {
-      return res.status(403).json({ errors: { body: "Forbidden" } });
+      return res.status(403).json({ errors: [{ msg: "Forbidden" }] });
     }
 
     // NOTE: not retrieve database to increase perf

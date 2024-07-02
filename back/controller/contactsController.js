@@ -4,8 +4,8 @@ const Contact = require("../model/Contact");
 const getContacts = asyncHandler(async (req, res) => {
   // check if i am a real author
   const query = req.query;
-  const limit = isNaN(Number(query.limit)) ? 20 : Number(query.limit);
-  const offset = isNaN(Number(query.offset)) ? 0 : Number(query.offset);
+  const limit = Number(query.limit) || 20;
+  const offset = Number(query.offset) || 0;
 
   const [contacts, contactsCount] = await Promise.all([
     Contact.find().limit(limit).skip(offset).sort({ createdAt: 1 }).exec(),
@@ -41,7 +41,7 @@ const updateContact = asyncHandler(async (req, res) => {
   const contact = await Contact.findById(contactid).exec();
 
   if (!contact) {
-    return res.status(404).json({ errors: { body: "Contact Not Found" } });
+    return res.status(404).json({ errors: [{ msg: "Contact Not Found" }] });
   }
 
   contact.markAsRead = markAsRead;
@@ -59,16 +59,16 @@ const deleteContact = asyncHandler(async (req, res) => {
     if (err) {
       return res
         .status(422)
-        .json({ errors: { body: "Unable to delete that contact" } });
+        .json({ errors: [{ msg: "Unable to delete that contact" }] });
     }
 
     if (result.deletedCount === 0) {
-      return res.status(404).json({ errors: { body: "Contact Not Found" } });
+      return res.status(404).json({ errors: [{ msg: "Contact Not Found" }] });
     }
 
     return res
       .status(200)
-      .json({ messages: { body: "Contact Delete Successfully" } });
+      .json({ messages: [{ msg: "Contact Delete Successfully" }] });
   });
 });
 

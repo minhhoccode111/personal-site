@@ -15,7 +15,7 @@ Content-Type: application/json
 }
 
 # update contact
-PUT {{url}}/contacts/66783f932fac328833f10449
+PUT {{url}}/contacts/6683fe3231277187ae108bfe
 Authorization: {{token0}}
 Content-Type: application/json
 {
@@ -25,5 +25,5 @@ Content-Type: application/json
 }
 
 # delete a contact
-DELETE {{url}}/contacts/66783f932fac328833f10449
+DELETE {{url}}/contacts/6683fe3231277187ae108bfe
 Authorization: {{token0}}

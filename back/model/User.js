@@ -7,10 +7,8 @@ const debug = require("../constants/debug");
 const userSchema = new mongoose.Schema(
   {
     username: {
-      index: true,
       type: String,
       required: true,
-      unique: true,
       maxLength: 100,
       trim: true,
     },
@@ -92,6 +90,7 @@ userSchema.methods.generateAccessToken = function () {
 // @required
 userSchema.methods.toUserResponse = function () {
   return {
+    id: this._id,
     bio: this.bio,
     email: this.email,
     image: this.image,
@@ -106,8 +105,10 @@ userSchema.methods.toUserResponse = function () {
 // @required
 userSchema.methods.toProfileJSON = function () {
   return {
+    id: this._id,
     bio: this.bio,
     image: this.image,
+    email: this.email,
     username: this.username,
     isAuthor: this.isAuthor,
   };

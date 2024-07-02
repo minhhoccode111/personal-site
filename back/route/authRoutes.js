@@ -50,83 +50,80 @@ passport.use(
       const email = profile._json?.email;
       const image = profile._json?.image;
 
-      // find credential match that Google profile and user with that email
-      const [credential, user] = await Promise.all([
-        Credential.findOne({
-          provider: profile.provider,
-          profileid: profileIdString,
-        }).exec(),
+      try {
+        // find credential match that Google profile and user with that email
+        const [credential, user] = await Promise.all([
+          Credential.findOne({
+            provider: profile.provider,
+            profileid: profileIdString,
+          }).exec(),
 
-        User.findOne({ email }).exec(),
-      ]);
+          User.findOne({ email }).exec(),
+        ]);
 
-      // if used Google auth before
-      if (credential && user) {
-        // else mark them success login
-        return done(null, user.toUserResponse());
+        // if used Google auth before
+        if (credential && user) {
+          // else mark them success login
+          return done(null, user.toUserResponse());
+        }
+
+        // if email logged in before but first use Google Auth
+        // NOTE: Google Auth should have higher prioritize than email + password
+        // and the Google Auth will by-pass password of existed password
+        if (!credential && user) {
+          // make Google auth connect with that user
+          user.isGoogleAuth = true;
+
+          const newCredential = new Credential({
+            userid: user._id, // old user
+            provider: profile.provider,
+            profileid: profileIdString,
+          });
+
+          await Promise.all([user.save(), newCredential.save()]);
+          return done(null, user.toUserResponse());
+        }
+
+        // if email not logged in before and first use Google auth
+        if (!credential && !user) {
+          // create both Google auth and user
+          const SALT = Number(process.env.SALT) || 13;
+
+          // auto-generate a password
+          const newUserPassword = await bcrypt.hash(
+            profileIdString + Math.random(), // no need to keep track of this
+            SALT,
+          );
+
+          // create new user with that Google profile
+          const newUser = new User({
+            email,
+            image,
+            username,
+            isGoogleAuth: true,
+            password: newUserPassword,
+          });
+
+          // create new credential with that new user with that Google profile
+          const newCredential = new Credential({
+            userid: newUser._id,
+            provider: profile.provider,
+            profileid: profileIdString,
+          });
+
+          await Promise.all([newUser.save(), newCredential.save()]);
+
+          // mark them success login
+          return done(null, newUser.toUserResponse());
+        }
+
+        // else
+        return done(null, false);
+      } catch (err) {
+        debug(`Error during Google Auth`, err);
+
+        return done(err);
       }
-
-      // if email logged in before but first use Google Auth
-      if (!credential && user) {
-        // make Google auth connect with that user
-        user.isGoogleAuth = true;
-
-        const newCredential = new Credential({
-          userid: user._id, // old user
-          provider: profile.provider,
-          profileid: profileIdString,
-        });
-
-        await Promise.all([user.save(), newCredential.save()]);
-        return done(null, user.toUserResponse());
-      }
-
-      // if email not logged in before and first use Google auth
-      if (!credential && !user) {
-        // create both Google auth and user
-        const SALT = isNaN(Number(process.env.SALT))
-          ? 13
-          : Number(process.env.SALT);
-
-        // auto-generate a password
-        const newUserPassword = await bcrypt.hash(profileIdString, SALT);
-
-        // create new user with that Google profile
-        const newUser = new User({
-          email,
-          image,
-          username,
-          isGoogleAuth: true,
-          password: newUserPassword,
-        });
-
-        newUser.save((err) => {
-          // if err occurs, most likely a username or email conflict
-          if (err) {
-            // TODO: add auto handle for user
-            return done(err);
-          }
-        });
-
-        // create new credential with that new user with that Google profile
-        const newCredential = new Credential({
-          userid: newUser._id,
-          provider: profile.provider,
-          profileid: profileIdString,
-        });
-
-        newCredential.save((err) => {
-          if (err) {
-            return done(err);
-          }
-        });
-
-        // mark them success login
-        return done(null, newUser.toUserResponse());
-      }
-
-      // else
-      return done(null, false);
     },
   ),
 );

@@ -5,8 +5,8 @@ const debug = require("../constants/debug");
 
 const getSkills = asyncHandler(async (req, res) => {
   const query = req.query;
-  const limit = isNaN(Number(query.limit)) ? 20 : Number(query.limit);
-  const offset = isNaN(Number(query.offset)) ? 0 : Number(query.offset);
+  const limit = Number(query.limit) || 20;
+  const offset = Number(query.offset) || 0;
 
   const [skills, skillsCount] = await Promise.all([
     Skill.find({}).limit(limit).skip(offset).sort({ createdAt: -1 }).exec(),
@@ -29,19 +29,36 @@ const createSkill = asyncHandler(async (req, res) => {
     level,
   });
 
-  newSkill.save(function (err) {
-    if (err) {
-      debug(`error created new skill: `, err);
+  try {
+    await newSkill.save();
 
-      return res
-        .status(422)
-        .json({ errors: { body: "Unable to create skill" } });
+    res.status(201).json({ skill: newSkill.toSkillResponse() });
+  } catch (err) {
+    if (
+      err.name === "ValidationError" &&
+      err.errors &&
+      err.errors.title &&
+      err.errors.title.kind === "unique"
+    ) {
+      return res.status(409).json({
+        errors: [
+          {
+            msg: "Skill already exists",
+          },
+        ],
+      });
     }
 
-    return res.json({
-      skill: newSkill.toSkillResponse(),
+    // debug(`error create user belike: `, err);
+
+    return res.status(422).json({
+      errors: [
+        {
+          msg: "Unable to create skill",
+        },
+      ],
     });
-  });
+  }
 });
 
 const updateSkill = asyncHandler(async (req, res) => {
@@ -51,7 +68,7 @@ const updateSkill = asyncHandler(async (req, res) => {
   const updateSkill = await Skill.findOne({ slug }).exec();
 
   if (!updateSkill) {
-    return res.status(404).json({ errors: { body: "Skill Not Found" } });
+    return res.status(404).json({ errors: [{ msg: "Skill Not Found" }] });
   }
 
   if (skill.title) {
@@ -66,19 +83,36 @@ const updateSkill = asyncHandler(async (req, res) => {
     updateSkill.level = skill.level;
   }
 
-  updateSkill.save(function (err) {
-    if (err) {
-      debug(`error update skill: `, err);
+  try {
+    await updateSkill.save();
 
-      return res
-        .status(422)
-        .json({ errors: { body: "Unable to update skill" } });
+    res.status(200).json({ skill: updateSkill.toSkillResponse() });
+  } catch (err) {
+    if (
+      err.name === "ValidationError" &&
+      err.errors &&
+      err.errors.title &&
+      err.errors.title.kind === "unique"
+    ) {
+      return res.status(409).json({
+        errors: [
+          {
+            msg: "Skill already exists",
+          },
+        ],
+      });
     }
 
-    return res.json({
-      skill: updateSkill.toSkillResponse(),
+    // debug(`error create user belike: `, err);
+
+    return res.status(422).json({
+      errors: [
+        {
+          msg: "Unable to update skill",
+        },
+      ],
     });
-  });
+  }
 });
 
 const deleteSkill = asyncHandler(async (req, res) => {
@@ -88,16 +122,16 @@ const deleteSkill = asyncHandler(async (req, res) => {
     if (err) {
       return res
         .status(422)
-        .json({ errors: { body: "Unable to delete that skill" } });
+        .json({ errors: [{ msg: "Unable to delete that skill" }] });
     }
 
     if (result.deletedCount === 0) {
-      return res.status(404).json({ errors: { body: "Skill Not Found" } });
+      return res.status(404).json({ errors: [{ msg: "Skill Not Found" }] });
     }
 
     return res
       .status(200)
-      .json({ messages: { body: "Skill delete successfully" } });
+      .json({ messages: [{ msg: "Skill delete successfully" }] });
   });
 });
 

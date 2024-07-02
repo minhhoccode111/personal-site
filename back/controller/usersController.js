@@ -14,7 +14,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   debug(`user sign up belike: `, user);
 
-  const SALT = isNaN(Number(process.env.SALT)) ? 13 : Number(process.env.SALT);
+  const SALT = Number(process.env.SALT) || 13;
   const hashedPwd = await bcrypt.hash(user.password, SALT);
 
   const userObject = {
@@ -25,17 +25,36 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const createdUser = new User(userObject);
 
-  createdUser.save(function (err) {
-    if (err) {
-      return res.status(422).json({
-        errors: {
-          body: "Unable to register a user",
-        },
+  try {
+    await createdUser.save();
+
+    res.status(201).json({ user: createdUser.toUserResponse() });
+  } catch (err) {
+    if (
+      err.name === "ValidationError" &&
+      err.errors &&
+      err.errors.email &&
+      err.errors.email.kind === "unique"
+    ) {
+      return res.status(409).json({
+        errors: [
+          {
+            msg: "Email already exists",
+          },
+        ],
       });
     }
 
-    res.status(201).json({ user: createdUser.toUserResponse() });
-  });
+    // debug(`error create user belike: `, err);
+
+    return res.status(422).json({
+      errors: [
+        {
+          msg: "Unable to register user",
+        },
+      ],
+    });
+  }
 });
 
 // @desc get currently logged-in user
@@ -48,7 +67,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email }).exec();
 
   if (!user)
-    return res.status(404).json({ errors: { body: "User Not Found" } });
+    return res.status(404).json({ errors: [{ msg: "User Not Found" }] });
 
   res.status(200).json({ user: user.toUserResponse() });
 });
@@ -66,14 +85,14 @@ const userLogin = asyncHandler(async (req, res) => {
   debug(loginUser);
 
   if (!loginUser)
-    return res.status(404).json({ errors: { body: "User Not Found" } });
+    return res.status(404).json({ errors: [{ msg: "User Not Found" }] });
 
   const match = await bcrypt.compare(user.password, loginUser.password);
 
   if (!match)
     return res
       .status(401)
-      .json({ errors: { body: "Unauthorized: Wrong password" } });
+      .json({ errors: [{ msg: "Unauthorized: Wrong password" }] });
 
   res.status(200).json({ user: loginUser.toUserResponse() });
 });
@@ -90,17 +109,22 @@ const updateUser = asyncHandler(async (req, res) => {
 
   const target = await User.findOne({ email }).exec();
 
+  debug(`target belike: `, target);
+
   if (target.isGoogleAuth && user.email) {
     return res.status(422).json({
-      errors: {
-        body: "Google Auth users are now allowed to update email",
-      },
+      errors: [
+        {
+          msg: "Google Auth users are now allowed to update email",
+        },
+      ],
     });
   }
 
+  // Google Auth user can update their password to login with email + password
   if (user.password) {
     const processSalt = process.env.SALT;
-    const SALT = isNaN(Number(processSalt)) ? 13 : Number(processSalt);
+    const SALT = Number(processSalt) || 13;
     const newPassword = await bcrypt.hash(user.password, SALT);
     target.password = newPassword;
   }
@@ -127,17 +151,36 @@ const updateUser = asyncHandler(async (req, res) => {
   }
 
   // then save again, check for uniqueness of email
-  target.save(function (err) {
-    if (err) {
-      return res.status(422).json({
-        errors: {
-          body: "Unable to update user",
-        },
+  try {
+    await target.save();
+
+    res.status(200).json({ user: target.toUserResponse() });
+  } catch (err) {
+    if (
+      err.name === "ValidationError" &&
+      err.errors &&
+      err.errors.email &&
+      err.errors.email.kind === "unique"
+    ) {
+      return res.status(409).json({
+        errors: [
+          {
+            msg: "Email already exists",
+          },
+        ],
       });
     }
 
-    res.status(200).json({ user: target.toUserResponse() });
-  });
+    // debug(`error create user belike: `, err);
+
+    return res.status(422).json({
+      errors: [
+        {
+          msg: "Unable to update user",
+        },
+      ],
+    });
+  }
 });
 
 module.exports = {

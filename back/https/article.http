@@ -4,7 +4,7 @@ Authorization: {{token0}}
 Content-Type: application/json
 {
   "article": {
-    "title": "short",
+    "title": "asd",
     "description": "this is a description",
     "body": "this is a body",
     "tagList": ["some", "random", "tags"]
@@ -33,7 +33,7 @@ Authorization: {{token0}}
 Content-Type: application/json
 {
   "article": {
-    "title": "short",
+    "title": "asd",
     "description": "short updated",
     "body": "short updated",
     "tagList": ["bruh"]
@@ -53,9 +53,9 @@ GET {{url}}/articles?limit=5
 Authorization: {{token0}}
 
 # tag
-GET {{url}}/articles?tag=addo
+GET {{url}}/articles?tag=ciminatio
 Authorization: {{token0}}
 
 # favoriter
-GET {{url}}/articles?favorited=minhhoccode111
+GET {{url}}/articles?favorited-userid=6683fefece1724ef4ae49c18
 Authorization: {{token0}}

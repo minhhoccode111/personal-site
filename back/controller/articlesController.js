@@ -4,6 +4,8 @@ const Article = require("../model/Article");
 const User = require("../model/User");
 const Favorite = require("../model/Favorite");
 
+const mongoose = require("mongoose");
+
 const debug = require("../constants/debug");
 
 // @desc current user create a article
@@ -18,7 +20,7 @@ const createArticle = asyncHandler(async (req, res) => {
 
   if (!author) {
     return res.status(401).json({
-      errors: { body: "User Not Found" },
+      errors: [{ msg: "User Not Found" }],
     });
   }
 
@@ -34,17 +36,33 @@ const createArticle = asyncHandler(async (req, res) => {
 
   debug(`created article belike: `, article);
 
-  article.save(async function (err) {
-    if (err) {
-      return res.status(422).json({
-        errors: {
-          body: "Unable to create that article",
-        },
+  try {
+    await article.save();
+    res.status(201).json({ article: await article.toArticleResponse(author) });
+  } catch (err) {
+    if (
+      err.name === "MongoServerError" &&
+      err.code === 11000 &&
+      err.keyPattern &&
+      err.keyPattern.slug
+    ) {
+      return res.status(409).json({
+        errors: [
+          {
+            msg: "Article slug already exists",
+          },
+        ],
       });
     }
-
-    res.status(200).json({ article: await article.toArticleResponse(author) });
-  });
+    debug(`error create article belike: `, err);
+    return res.status(422).json({
+      errors: [
+        {
+          msg: "Unable to create that article",
+        },
+      ],
+    });
+  }
 });
 
 // @desc current user delete an article
@@ -60,18 +78,18 @@ const deleteArticle = asyncHandler(async (req, res) => {
     if (err) {
       return res
         .status(422)
-        .json({ errors: { body: "Unable to delete article" } });
+        .json({ errors: [{ msg: "Unable to delete article" }] });
     }
 
     if (result.deletedCount === 0) {
       return res.status(401).json({
-        errors: { body: "Article Not Found" },
+        errors: [{ msg: "Article Not Found" }],
       });
     }
 
     return res
       .status(200)
-      .json({ messages: { body: "Article successfully deleted" } });
+      .json({ messages: [{ msg: "Article successfully deleted" }] });
   });
 });
 
@@ -91,13 +109,13 @@ const favoriteArticle = asyncHandler(async (req, res) => {
 
   if (!loginUser) {
     return res.status(401).json({
-      errors: { body: "User Not Found" },
+      errors: [{ msg: "User Not Found" }],
     });
   }
 
   if (!article) {
     return res.status(401).json({
-      errors: { body: "Article Not Found" },
+      errors: [{ msg: "Article Not Found" }],
     });
   }
 
@@ -123,7 +141,7 @@ const unfavoriteArticle = asyncHandler(async (req, res) => {
 
   if (!loginUser) {
     return res.status(401).json({
-      errors: { body: "User Not Found" },
+      errors: [{ msg: "User Not Found" }],
     });
   }
 
@@ -131,7 +149,7 @@ const unfavoriteArticle = asyncHandler(async (req, res) => {
 
   if (!article) {
     return res.status(401).json({
-      errors: { body: "Article Not Found" },
+      errors: [{ msg: "Article Not Found" }],
     });
   }
 
@@ -154,7 +172,7 @@ const getArticleWithSlug = asyncHandler(async (req, res) => {
 
   if (!article) {
     return res.status(404).json({
-      errors: { body: "Article Not Found" },
+      errors: [{ msg: "Article Not Found" }],
     });
   }
 
@@ -181,7 +199,7 @@ const updateArticle = asyncHandler(async (req, res) => {
 
   if (!target) {
     return res.status(401).json({
-      errors: { body: "Article Not Found" },
+      errors: [{ msg: "Article Not Found" }],
     });
   }
 
@@ -201,19 +219,33 @@ const updateArticle = asyncHandler(async (req, res) => {
     target.tagList = article.tagList;
   }
 
-  target.save(async function (err) {
-    if (err) {
-      return res.status(422).json({
-        errors: {
-          body: "Unable to update that article",
-        },
+  try {
+    await target.save();
+    res.status(200).json({ article: await target.toArticleResponse(author) });
+  } catch (err) {
+    if (
+      err.name === "MongoServerError" &&
+      err.code === 11000 &&
+      err.keyPattern &&
+      err.keyPattern.slug
+    ) {
+      return res.status(409).json({
+        errors: [
+          {
+            msg: "Article slug already exists",
+          },
+        ],
       });
     }
-
-    return res
-      .status(200)
-      .json({ article: await target.toArticleResponse(author) });
-  });
+    debug(`error create article belike: `, err);
+    return res.status(422).json({
+      errors: [
+        {
+          msg: "Unable to create that article",
+        },
+      ],
+    });
+  }
 });
 
 // @desc current user get all articles
@@ -222,30 +254,26 @@ const updateArticle = asyncHandler(async (req, res) => {
 // @return Articles
 const listArticles = asyncHandler(async (req, res) => {
   const query = req.query;
-  const limit = isNaN(Number(query.limit)) ? 20 : Number(query.limit);
-  const offset = isNaN(Number(query.offset)) ? 0 : Number(query.offset);
+  const limit = Number(query.limit) || 20;
+  const offset = Number(query.offset) || 0;
   const finalQuery = {};
 
   if (query.tag) {
     finalQuery.tagList = { $in: [query.tag] };
   }
 
-  if (query.favorited) {
-    const favoriter = await User.findOne({
-      username: query.favorited,
+  // list a user's all favorited articles
+  // e.g: ?favorited-userid=6683fefece1724ef4ae49c18
+  const favoritedUserid = query["favorited-userid"];
+  const isValid = mongoose.isValidObjectId(favoritedUserid);
+  if (isValid) {
+    const favoritedArticles = await Favorite.find({
+      userid: favoritedUserid,
     }).exec();
 
-    if (favoriter) {
-      const favoritedArticles = await Favorite.find({
-        userid: favoriter._id,
-      }).exec();
+    const favoritedArticlesArr = favoritedArticles.map((ref) => ref.articleid);
 
-      const favoritedArticlesArr = favoritedArticles.map(
-        (ref) => ref.articleid,
-      );
-
-      finalQuery._id = { $in: favoritedArticlesArr };
-    }
+    finalQuery._id = { $in: favoritedArticlesArr };
   }
 
   const [filteredArticles, articlesCount] = await Promise.all([

@@ -16,7 +16,7 @@ const verifyJWTOptional = (req, res, next) => {
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
     if (err) {
-      return res.status(403).json({ errors: { body: "Forbidden" } });
+      return res.status(403).json({ errors: [{ msg: "Forbidden" }] });
     }
     req.loggedin = true;
     req.userId = decoded.user.id;

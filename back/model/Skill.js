@@ -37,7 +37,7 @@ const skillSchema = new mongoose.Schema(
 );
 
 skillSchema.plugin(uniqueValidator, {
-  message: "Error, expect {PATH} to be unique",
+  message: "Error, expected {PATH} to be unique",
 });
 
 skillSchema.pre("save", function (next) {
