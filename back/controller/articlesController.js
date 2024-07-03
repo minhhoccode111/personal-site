@@ -7,6 +7,7 @@ const Favorite = require("../model/Favorite");
 const mongoose = require("mongoose");
 
 const debug = require("../constants/debug");
+const httpStatus = require("../constants/httpStatus");
 
 // @desc current user create a article
 // @route POST /api/articles
@@ -19,7 +20,7 @@ const createArticle = asyncHandler(async (req, res) => {
   const author = await User.findById(userid).exec();
 
   if (!author) {
-    return res.status(401).json({
+    return res.status(httpStatus.UNAUTHORIZED).json({
       errors: [{ msg: "User Not Found" }],
     });
   }
@@ -38,7 +39,9 @@ const createArticle = asyncHandler(async (req, res) => {
 
   try {
     await article.save();
-    res.status(201).json({ article: await article.toArticleResponse(author) });
+    res
+      .status(httpStatus.CREATED)
+      .json({ article: await article.toArticleResponse(author) });
   } catch (err) {
     if (
       err.name === "MongoServerError" &&
@@ -46,7 +49,7 @@ const createArticle = asyncHandler(async (req, res) => {
       err.keyPattern &&
       err.keyPattern.slug
     ) {
-      return res.status(409).json({
+      return res.status(httpStatus.CONFLICT).json({
         errors: [
           {
             msg: "Article slug already exists",
@@ -55,7 +58,7 @@ const createArticle = asyncHandler(async (req, res) => {
       });
     }
     debug(`error create article belike: `, err);
-    return res.status(422).json({
+    return res.status(httpStatus.UNPROCESSABLE_ENTITY).json({
       errors: [
         {
           msg: "Unable to create that article",
@@ -77,18 +80,18 @@ const deleteArticle = asyncHandler(async (req, res) => {
   Article.deleteOne({ slug, author: authorid }, function (err, result) {
     if (err) {
       return res
-        .status(422)
+        .status(httpStatus.UNPROCESSABLE_ENTITY)
         .json({ errors: [{ msg: "Unable to delete article" }] });
     }
 
     if (result.deletedCount === 0) {
-      return res.status(401).json({
+      return res.status(httpStatus.UNAUTHORIZED).json({
         errors: [{ msg: "Article Not Found" }],
       });
     }
 
     return res
-      .status(200)
+      .status(httpStatus.OKAY)
       .json({ messages: [{ msg: "Article successfully deleted" }] });
   });
 });
@@ -108,13 +111,13 @@ const favoriteArticle = asyncHandler(async (req, res) => {
   ]);
 
   if (!loginUser) {
-    return res.status(401).json({
+    return res.status(httpStatus.UNAUTHORIZED).json({
       errors: [{ msg: "User Not Found" }],
     });
   }
 
   if (!article) {
-    return res.status(401).json({
+    return res.status(httpStatus.UNAUTHORIZED).json({
       errors: [{ msg: "Article Not Found" }],
     });
   }
@@ -124,7 +127,7 @@ const favoriteArticle = asyncHandler(async (req, res) => {
   await loginUser.favorite(article._id);
 
   return res
-    .status(200)
+    .status(httpStatus.OKAY)
     .json({ article: await article.toArticleResponse(loginUser) });
 });
 
@@ -140,7 +143,7 @@ const unfavoriteArticle = asyncHandler(async (req, res) => {
   const loginUser = await User.findById(id).exec();
 
   if (!loginUser) {
-    return res.status(401).json({
+    return res.status(httpStatus.UNAUTHORIZED).json({
       errors: [{ msg: "User Not Found" }],
     });
   }
@@ -148,7 +151,7 @@ const unfavoriteArticle = asyncHandler(async (req, res) => {
   const article = await Article.findOne({ slug }).exec();
 
   if (!article) {
-    return res.status(401).json({
+    return res.status(httpStatus.UNAUTHORIZED).json({
       errors: [{ msg: "Article Not Found" }],
     });
   }
@@ -157,7 +160,7 @@ const unfavoriteArticle = asyncHandler(async (req, res) => {
   // when deleting and counting at the same time
   await loginUser.unfavorite(article._id);
   return res
-    .status(200)
+    .status(httpStatus.OKAY)
     .json({ article: await article.toArticleResponse(loginUser) });
 });
 
@@ -171,12 +174,14 @@ const getArticleWithSlug = asyncHandler(async (req, res) => {
   const article = await Article.findOne({ slug }).exec();
 
   if (!article) {
-    return res.status(404).json({
+    return res.status(httpStatus.NOT_FOUND).json({
       errors: [{ msg: "Article Not Found" }],
     });
   }
 
-  return res.status(200).json({ article: await article.toArticleResponse() });
+  return res
+    .status(httpStatus.OKAY)
+    .json({ article: await article.toArticleResponse() });
 });
 
 // @desc current user update a article
@@ -198,7 +203,7 @@ const updateArticle = asyncHandler(async (req, res) => {
   ]);
 
   if (!target) {
-    return res.status(401).json({
+    return res.status(httpStatus.UNAUTHORIZED).json({
       errors: [{ msg: "Article Not Found" }],
     });
   }
@@ -221,7 +226,9 @@ const updateArticle = asyncHandler(async (req, res) => {
 
   try {
     await target.save();
-    res.status(200).json({ article: await target.toArticleResponse(author) });
+    res
+      .status(httpStatus.OKAY)
+      .json({ article: await target.toArticleResponse(author) });
   } catch (err) {
     if (
       err.name === "MongoServerError" &&
@@ -229,7 +236,7 @@ const updateArticle = asyncHandler(async (req, res) => {
       err.keyPattern &&
       err.keyPattern.slug
     ) {
-      return res.status(409).json({
+      return res.status(httpStatus.CONFLICT).json({
         errors: [
           {
             msg: "Article slug already exists",
@@ -238,7 +245,7 @@ const updateArticle = asyncHandler(async (req, res) => {
       });
     }
     debug(`error create article belike: `, err);
-    return res.status(422).json({
+    return res.status(httpStatus.UNPROCESSABLE_ENTITY).json({
       errors: [
         {
           msg: "Unable to create that article",
@@ -289,7 +296,7 @@ const listArticles = asyncHandler(async (req, res) => {
   if (req.loggedin) {
     const loginUser = await User.findById(req.userId).exec();
 
-    return res.status(200).json({
+    return res.status(httpStatus.OKAY).json({
       articles: await Promise.all(
         filteredArticles.map(async (article) => {
           return await article.toArticleResponse(loginUser);
@@ -299,7 +306,7 @@ const listArticles = asyncHandler(async (req, res) => {
       articlesCount,
     });
   } else {
-    return res.status(200).json({
+    return res.status(httpStatus.OKAY).json({
       articles: await Promise.all(
         filteredArticles.map(async (article) => {
           return await article.toArticleResponse();

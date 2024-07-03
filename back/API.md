@@ -1,54 +1,58 @@
 # API Design
 
-## Invalid Request Input Fields
+### Invalid Request Input Fields
 
 ```js
 return res.status(400).json({ errors: errors.array() });
 ```
 
-## Can't save document to database (conflict)
+### Can't save document to database (conflict)
 
 ```js
-res.status(422).json({ errors: { body: "Unable to register a user" } });
+res.status(422).json({ errors: [{ msg: "Unable to register a user" }] });
 ```
 
-## Authenticate and Authorization
+### Authenticate and Authorization
 
 ```js
-return res.status(401).json({ errors: { body: "Unauthorized" } });
+return res.status(401).json({ errors: [{ msg: "Unauthorized" }] });
 return res
   .status(401)
-  .json({ errors: { body: "Unauthorized: Wrong password" } });
-return res.status(403).json({ errors: { body: "Forbidden" } });
+  .json({ errors: [{ msg: "Unauthorized: Wrong password" }] });
+return res.status(403).json({ errors: [{ msg: "Forbidden" }] });
 ```
 
-## Not Found
+### Not Found
 
 ```js
-return res.status(404).json({ errors: { body: "[something] Not Found" } });
+return res.status(404).json({ errors: [{ msg: "[something] Not Found" }] });
 ```
 
-## Test routes
+### Conflict
 
-### `GET /`, `GET /index`, `GET /index.html`
+```js
+return res
+  .status(409)
+  .json({ errors: [{ msg: "[something] already exists" }] });
+```
+
+### Test routes
+
+#### `GET /`, `GET /index`, `GET /index.html`
+
+Response `index.html`
+
+#### `GET /test`
 
 Response
 
 ```js
-res.sendFile(path.join(__dirname, "..", "view", "index.html"));
+res.status(200).json({ errors: [{ msg: "successful" }] });
 ```
 
-### `GET /test`
+### User routes
 
-Response
-
-```js
-res.status(200).json({ errors: { body: "successful" } });
-```
-
-## User routes
-
-### `POST /api/users`
+#### `POST /api/users`
 
 Expect
 
@@ -68,7 +72,7 @@ Response
 res.status(201).json({ user: createdUser.toUserResponse() });
 ```
 
-### `POST /api/users/login`
+#### `POST /api/users/login`
 
 Expect
 
@@ -87,7 +91,7 @@ Response
 res.status(200).json({ user: loginUser.toUserResponse() });
 ```
 
-### `PUT /api/user` (auth)
+#### `PUT /api/user` (auth)
 
 Expect
 
@@ -109,7 +113,7 @@ Response
 res.status(200).json({ user: target.toUserResponse() });
 ```
 
-### `GET /user` (auth)
+#### `GET /user` (auth)
 
 Response
 
@@ -117,9 +121,9 @@ Response
 res.status(200).json({ user: user.toUserResponse() });
 ```
 
-## Tags route
+### Tags route
 
-### `GET /tags`
+#### `GET /tags`
 
 Response
 
@@ -127,9 +131,9 @@ Response
 res.status(200).json({ tags });
 ```
 
-## Profile route
+### Profile route
 
-### `GET /profiles/:username` (auth optional)
+#### `GET /profiles/:userid` (auth optional)
 
 Response
 
@@ -137,9 +141,9 @@ Response
 res.status(200).json({ profile: user.toProfileJSON() });
 ```
 
-## Article routes
+### Article routes
 
-### `POST /articles` (auth, authz)
+#### `POST /articles` (auth, authz)
 
 Expect
 
@@ -157,20 +161,20 @@ req.body = {
 Response
 
 ```js
-res.status(200).json({ article: await article.toArticleResponse(author) });
+res.status(201).json({ article: await article.toArticleResponse(author) });
 ```
 
-### `DELETE /articles/:slug` (auth, authz)
+#### `DELETE /articles/:slug` (auth, authz)
 
 Response
 
 ```js
 return res
   .status(200)
-  .json({ messages: { body: "Article successfully deleted" } });
+  .json({ messages: { msg: "Article successfully deleted" } });
 ```
 
-### `POST /articles/:slug/favorite` (auth)
+#### `POST /articles/:slug/favorite` (auth)
 
 Response
 
@@ -180,7 +184,7 @@ res
   .json({ article: await updatedArticle.toArticleResponse(loginUser) });
 ```
 
-### `DELETE /articles/:slug/favorite` (auth)
+#### `DELETE /articles/:slug/favorite` (auth)
 
 Response
 
@@ -190,7 +194,7 @@ res
   .json({ article: await updatedArticle.toArticleResponse(loginUser) });
 ```
 
-### `GET /articles/:slug`
+#### `GET /articles/:slug`
 
 Response
 
@@ -198,7 +202,7 @@ Response
 return res.status(200).json({ article: await article.toArticleResponse() });
 ```
 
-### `PUT /articles/:slug` (auth, authz)
+#### `PUT /articles/:slug` (auth, authz)
 
 Expect
 
@@ -221,7 +225,7 @@ return res
   .json({ article: await target.toArticleResponse(author) });
 ```
 
-### `GET /articles` (auth optional)
+#### `GET /articles` (auth optional)
 
 Expect
 
@@ -252,9 +256,9 @@ res.status(200).json({
 });
 ```
 
-## Comment routes
+### Comment routes
 
-### `POST /articles/:slug/comments` (auth)
+#### `POST /articles/:slug/comments` (auth)
 
 Expect
 
@@ -272,7 +276,7 @@ Response
 res.status(200).json({ comment: await newComment.toCommentResponse(author) });
 ```
 
-### `GET /articles/:slug/comments`
+#### `GET /articles/:slug/comments`
 
 Response
 
@@ -284,12 +288,12 @@ res.status(200).json({
 });
 ```
 
-### `DELETE /articles/:slug/comments/:id` (auth)
+#### `DELETE /articles/:slug/comments/:id` (auth)
 
 Response
 
 ```js
 return res
   .status(200)
-  .json({ messages: { body: "Comment successfully deleted" } });
+  .json({ messages: { msg: "Comment successfully deleted" } });
 ```

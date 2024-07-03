@@ -1,4 +1,5 @@
 const allowedOrigins = require("./allowedOrigins");
+const httpStatus = require("../constants/httpStatus");
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -9,7 +10,7 @@ const corsOptions = {
     }
   },
   credentials: true,
-  optionsSuccessStatus: 200,
+  optionsSuccessStatus: httpStatus.OKAY,
   // allow methods
 };
 

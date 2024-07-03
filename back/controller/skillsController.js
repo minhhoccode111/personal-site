@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 
 const Skill = require("../model/Skill");
 const debug = require("../constants/debug");
+const httpStatus = require("../constants/httpStatus");
 
 const getSkills = asyncHandler(async (req, res) => {
   const query = req.query;
@@ -32,7 +33,7 @@ const createSkill = asyncHandler(async (req, res) => {
   try {
     await newSkill.save();
 
-    res.status(201).json({ skill: newSkill.toSkillResponse() });
+    res.status(httpStatus.CREATED).json({ skill: newSkill.toSkillResponse() });
   } catch (err) {
     if (
       err.name === "ValidationError" &&
@@ -40,7 +41,7 @@ const createSkill = asyncHandler(async (req, res) => {
       err.errors.title &&
       err.errors.title.kind === "unique"
     ) {
-      return res.status(409).json({
+      return res.status(httpStatus.CONFLICT).json({
         errors: [
           {
             msg: "Skill already exists",
@@ -51,7 +52,7 @@ const createSkill = asyncHandler(async (req, res) => {
 
     // debug(`error create user belike: `, err);
 
-    return res.status(422).json({
+    return res.status(httpStatus.UNPROCESSABLE_ENTITY).json({
       errors: [
         {
           msg: "Unable to create skill",
@@ -68,7 +69,9 @@ const updateSkill = asyncHandler(async (req, res) => {
   const updateSkill = await Skill.findOne({ slug }).exec();
 
   if (!updateSkill) {
-    return res.status(404).json({ errors: [{ msg: "Skill Not Found" }] });
+    return res
+      .status(httpStatus.NOT_FOUND)
+      .json({ errors: [{ msg: "Skill Not Found" }] });
   }
 
   if (skill.title) {
@@ -86,7 +89,7 @@ const updateSkill = asyncHandler(async (req, res) => {
   try {
     await updateSkill.save();
 
-    res.status(200).json({ skill: updateSkill.toSkillResponse() });
+    res.status(httpStatus.OKAY).json({ skill: updateSkill.toSkillResponse() });
   } catch (err) {
     if (
       err.name === "ValidationError" &&
@@ -94,7 +97,7 @@ const updateSkill = asyncHandler(async (req, res) => {
       err.errors.title &&
       err.errors.title.kind === "unique"
     ) {
-      return res.status(409).json({
+      return res.status(httpStatus.CONFLICT).json({
         errors: [
           {
             msg: "Skill already exists",
@@ -105,7 +108,7 @@ const updateSkill = asyncHandler(async (req, res) => {
 
     // debug(`error create user belike: `, err);
 
-    return res.status(422).json({
+    return res.status(httpStatus.UNPROCESSABLE_ENTITY).json({
       errors: [
         {
           msg: "Unable to update skill",
@@ -121,16 +124,18 @@ const deleteSkill = asyncHandler(async (req, res) => {
   Skill.deleteOne({ slug }, function (err, result) {
     if (err) {
       return res
-        .status(422)
+        .status(httpStatus.UNPROCESSABLE_ENTITY)
         .json({ errors: [{ msg: "Unable to delete that skill" }] });
     }
 
     if (result.deletedCount === 0) {
-      return res.status(404).json({ errors: [{ msg: "Skill Not Found" }] });
+      return res
+        .status(httpStatus.NOT_FOUND)
+        .json({ errors: [{ msg: "Skill Not Found" }] });
     }
 
     return res
-      .status(200)
+      .status(httpStatus.OKAY)
       .json({ messages: [{ msg: "Skill delete successfully" }] });
   });
 });

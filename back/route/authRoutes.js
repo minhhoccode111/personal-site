@@ -19,7 +19,8 @@ require("dotenv").config({ path: "google.env" });
 
 const ID = process.env.GOOGLE_CLIENT_ID;
 const SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
+const CLIENT_REDIRECT_URL =
+  process.env.CLIENT_REDIRECT_URL || "http://localhost:5173/user/login";
 
 // debug(`ID: `, ID);
 // debug(`SECRET: `, SECRET);
@@ -150,7 +151,7 @@ passport.deserializeUser((obj, done) => {
 router.get(
   "/login/google/callback",
   passport.authenticate("google", {
-    failureRedirect: CLIENT_URL + "/blog/login/failure",
+    failureRedirect: CLIENT_REDIRECT_URL + "/failure",
   }),
   // handle both success and failure in this middleware
   // if success: req.user truthy if failure: !req.user falsy

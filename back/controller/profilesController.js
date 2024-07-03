@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 
 const User = require("../model/User");
+const httpStatus = require("../constants/httpStatus");
 
 // @desc get a user's profile
 // @route GET /api/profiles/:userid
@@ -12,12 +13,12 @@ const getProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(userid).exec();
 
   if (!user) {
-    return res.status(404).json({
+    return res.status(httpStatus.NOT_FOUND).json({
       errors: [{ msg: "User Not Found" }],
     });
   }
 
-  return res.status(200).json({ profile: user.toProfileJSON() });
+  return res.status(httpStatus.OKAY).json({ profile: user.toProfileJSON() });
 });
 
 module.exports = {

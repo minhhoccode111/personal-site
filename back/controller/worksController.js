@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 
 const Work = require("../model/Work");
 const debug = require("../constants/debug");
+const httpStatus = require("../constants/httpStatus");
 
 const getWorks = asyncHandler(async (req, res) => {
   const query = req.query;
@@ -34,7 +35,7 @@ const createWork = asyncHandler(async (req, res) => {
   try {
     await newWork.save();
 
-    res.status(201).json({ work: newWork.toWorkResponse() });
+    res.status(httpStatus.CREATED).json({ work: newWork.toWorkResponse() });
   } catch (err) {
     if (
       err.name === "ValidationError" &&
@@ -42,7 +43,7 @@ const createWork = asyncHandler(async (req, res) => {
       err.errors.title &&
       err.errors.title.kind === "unique"
     ) {
-      return res.status(409).json({
+      return res.status(httpStatus.CONFLICT).json({
         errors: [
           {
             msg: "Work already exists",
@@ -53,7 +54,7 @@ const createWork = asyncHandler(async (req, res) => {
 
     // debug(`error create user belike: `, err);
 
-    return res.status(422).json({
+    return res.status(httpStatus.UNPROCESSABLE_ENTITY).json({
       errors: [
         {
           msg: "Unable to create work",
@@ -70,7 +71,9 @@ const updateWork = asyncHandler(async (req, res) => {
   const updateWork = await Work.findOne({ slug }).exec();
 
   if (!updateWork) {
-    return res.status(404).json({ errors: [{ msg: "Work Not Found" }] });
+    return res
+      .status(httpStatus.NOT_FOUND)
+      .json({ errors: [{ msg: "Work Not Found" }] });
   }
 
   if (work.title) {
@@ -96,7 +99,7 @@ const updateWork = asyncHandler(async (req, res) => {
   try {
     await updateWork.save();
 
-    res.status(200).json({ work: updateWork.toWorkResponse() });
+    res.status(httpStatus.OKAY).json({ work: updateWork.toWorkResponse() });
   } catch (err) {
     if (
       err.name === "ValidationError" &&
@@ -104,7 +107,7 @@ const updateWork = asyncHandler(async (req, res) => {
       err.errors.title &&
       err.errors.title.kind === "unique"
     ) {
-      return res.status(409).json({
+      return res.status(httpStatus.CONFLICT).json({
         errors: [
           {
             msg: "Work already exists",
@@ -115,7 +118,7 @@ const updateWork = asyncHandler(async (req, res) => {
 
     // debug(`error create user belike: `, err);
 
-    return res.status(422).json({
+    return res.status(httpStatus.UNPROCESSABLE_ENTITY).json({
       errors: [
         {
           msg: "Unable to update work",
@@ -131,16 +134,18 @@ const deleteWork = asyncHandler(async (req, res) => {
   Work.deleteOne({ slug }, function (err, result) {
     if (err) {
       return res
-        .status(422)
+        .status(httpStatus.UNPROCESSABLE_ENTITY)
         .json({ errors: [{ msg: "Unable to delete that work" }] });
     }
 
     if (result.deletedCount === 0) {
-      return res.status(404).json({ errors: [{ msg: "Work Not Found" }] });
+      return res
+        .status(httpStatus.NOT_FOUND)
+        .json({ errors: [{ msg: "Work Not Found" }] });
     }
 
     return res
-      .status(200)
+      .status(httpStatus.OKAY)
       .json({ messages: [{ msg: "Work delete successfully" }] });
   });
 });

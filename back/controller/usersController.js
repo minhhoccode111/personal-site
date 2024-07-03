@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 
 const User = require("../model/User");
 const debug = require("../constants/debug");
+const httpStatus = require("../constants/httpStatus");
 
 // @desc registration for a user
 // @route POST /api/users
@@ -28,7 +29,7 @@ const registerUser = asyncHandler(async (req, res) => {
   try {
     await createdUser.save();
 
-    res.status(201).json({ user: createdUser.toUserResponse() });
+    res.status(httpStatus.CREATED).json({ user: createdUser.toUserResponse() });
   } catch (err) {
     if (
       err.name === "ValidationError" &&
@@ -36,7 +37,7 @@ const registerUser = asyncHandler(async (req, res) => {
       err.errors.email &&
       err.errors.email.kind === "unique"
     ) {
-      return res.status(409).json({
+      return res.status(httpStatus.CONFLICT).json({
         errors: [
           {
             msg: "Email already exists",
@@ -47,7 +48,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     // debug(`error create user belike: `, err);
 
-    return res.status(422).json({
+    return res.status(httpStatus.UNPROCESSABLE_ENTITY).json({
       errors: [
         {
           msg: "Unable to register user",
@@ -67,9 +68,11 @@ const getCurrentUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email }).exec();
 
   if (!user)
-    return res.status(404).json({ errors: [{ msg: "User Not Found" }] });
+    return res
+      .status(httpStatus.NOT_FOUND)
+      .json({ errors: [{ msg: "User Not Found" }] });
 
-  res.status(200).json({ user: user.toUserResponse() });
+  res.status(httpStatus.OKAY).json({ user: user.toUserResponse() });
 });
 
 // @desc login for a user
@@ -85,16 +88,18 @@ const userLogin = asyncHandler(async (req, res) => {
   debug(loginUser);
 
   if (!loginUser)
-    return res.status(404).json({ errors: [{ msg: "User Not Found" }] });
+    return res
+      .status(httpStatus.NOT_FOUND)
+      .json({ errors: [{ msg: "User Not Found" }] });
 
   const match = await bcrypt.compare(user.password, loginUser.password);
 
   if (!match)
     return res
-      .status(401)
+      .status(httpStatus.UNAUTHORIZED)
       .json({ errors: [{ msg: "Unauthorized: Wrong password" }] });
 
-  res.status(200).json({ user: loginUser.toUserResponse() });
+  res.status(httpStatus.OKAY).json({ user: loginUser.toUserResponse() });
 });
 
 // @desc update currently logged-in user
@@ -112,7 +117,7 @@ const updateUser = asyncHandler(async (req, res) => {
   debug(`target belike: `, target);
 
   if (target.isGoogleAuth && user.email) {
-    return res.status(422).json({
+    return res.status(httpStatus.UNPROCESSABLE_ENTITY).json({
       errors: [
         {
           msg: "Google Auth users are now allowed to update email",
@@ -154,7 +159,7 @@ const updateUser = asyncHandler(async (req, res) => {
   try {
     await target.save();
 
-    res.status(200).json({ user: target.toUserResponse() });
+    res.status(httpStatus.OKAY).json({ user: target.toUserResponse() });
   } catch (err) {
     if (
       err.name === "ValidationError" &&
@@ -162,7 +167,7 @@ const updateUser = asyncHandler(async (req, res) => {
       err.errors.email &&
       err.errors.email.kind === "unique"
     ) {
-      return res.status(409).json({
+      return res.status(httpStatus.CONFLICT).json({
         errors: [
           {
             msg: "Email already exists",
@@ -173,7 +178,7 @@ const updateUser = asyncHandler(async (req, res) => {
 
     // debug(`error create user belike: `, err);
 
-    return res.status(422).json({
+    return res.status(httpStatus.UNPROCESSABLE_ENTITY).json({
       errors: [
         {
           msg: "Unable to update user",

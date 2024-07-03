@@ -5,6 +5,8 @@ const User = require("../model/User");
 const Article = require("../model/Article");
 const Comment = require("../model/Comment");
 
+const httpStatus = require("../constants/httpStatus");
+
 // @desc current user add a comment to article
 // @route POST /api/articles/:slug/comment
 // @access Private
@@ -23,7 +25,7 @@ const addCommentsToArticle = asyncHandler(async (req, res) => {
   ]);
 
   if (!author || !article) {
-    return res.status(401).json({
+    return res.status(httpStatus.UNAUTHORIZED).json({
       errors: [{ msg: "Article or Author Not Found" }],
     });
   }
@@ -39,7 +41,7 @@ const addCommentsToArticle = asyncHandler(async (req, res) => {
     await newComment.toCommentResponse(author),
   ]);
 
-  res.status(200).json({ comment: commentResponse });
+  res.status(httpStatus.OKAY).json({ comment: commentResponse });
 });
 
 // @desc current user get all comments of an article
@@ -65,7 +67,7 @@ const getCommentsFromArticle = asyncHandler(async (req, res) => {
     Comment.countDocuments({ articleid }).exec(),
   ]);
 
-  res.status(200).json({
+  res.status(httpStatus.OKAY).json({
     comments: await Promise.all(
       comments.map(async (comment) => await comment.toCommentResponse()),
     ),
@@ -88,18 +90,18 @@ const deleteComment = asyncHandler(async (req, res) => {
     function (err, result) {
       if (err) {
         return res
-          .status(422)
+          .status(httpStatus.UNPROCESSABLE_ENTITY)
           .json({ errors: [{ msg: "Unable to delete comment" }] });
       }
 
       if (result.deletedCount === 0) {
-        return res.status(401).json({
+        return res.status(httpStatus.UNAUTHORIZED).json({
           errors: [{ msg: "Comment Not Found" }],
         });
       }
 
       return res
-        .status(200)
+        .status(httpStatus.OKAY)
         .json({ messages: [{ msg: "Comment successfully deleted" }] });
     },
   );

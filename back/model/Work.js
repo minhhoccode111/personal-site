@@ -17,6 +17,13 @@ const workSchema = new mongoose.Schema(
       unique: true,
     },
 
+    description: {
+      type: String,
+      required: true,
+      maxLength: 3000,
+      trim: true,
+    },
+
     image: {
       type: String,
       maxLength: 3000,
@@ -68,8 +75,9 @@ workSchema.methods.toWorkResponse = function () {
     title: this.title,
     image: this.image,
     github: this.github,
-    difficulty: this.difficulty,
     createdAt: this.createdAt,
+    difficulty: this.difficulty,
+    description: this.description,
   };
 };
 

@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const httpStatus = require("../constants/httpStatus");
 
 // const Work = require("../model/Work");
 const debug = require("../constants/debug");
@@ -12,7 +13,7 @@ router.get(
   asyncHandler(async (_, res) => {
     debug("successful!");
     // await Work.deleteMany();
-    res.status(200).json({ messages: { body: "successful" } });
+    res.status(httpStatus.OKAY).json({ messages: { body: "successful" } });
   }),
 );
 

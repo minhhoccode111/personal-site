@@ -1,6 +1,7 @@
 # Personal Site Back
 
 The **Personal Site Back** project is an expansion from the **Blog API** project, originally assigned in **The Odin Project** [course](https://www.theodinproject.com/lessons/nodejs-blog-api).
+This is the second I built Blog API, the first one legacy code is in `old-back` dir
 <br>
 <br>
 
@@ -68,5 +69,6 @@ npm run start
 - Trust the client's JWT and not retrieve database for better performance
 - Use `:articleid` instead of `:slug` in comment routes to immediately delete a comment using `:articleid` without retrieve the article with `:slug` to get the article'id for better performance but harder to test
 - Login with Google Auth can ignore password, but not vice versa
+- Error responses will have structure `json({errors: [{msg: ...}, {msg: ...}]})` to match with `express-validator` input error responses
 
 ## To-do

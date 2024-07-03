@@ -3,71 +3,35 @@
 ## User
 
 - username
-  - unique
-  - lowercase
 - email
-  - unique
-  - lowercase
-  - index
 - password
 - bio
 - image
 - isAuthor
 - isGoogleAuth
-- generateAccessToken() return
-  - accessToken
-- toUserResponse() return
-  - bio
-  - email
-  - image
-  - username
-  - isAuthor
-  - generateAccessToken()
-- toProfileJSON() return
-  - bio
-  - image
-  - username
-  - isAuthor
-- isFavorite(articleid) return
-  - !!favorited
+- generateAccessToken()
+- toUserResponse()
+- toProfileJSON()
+- isFavorite(articleid)
 - favorite(articleid)
 - unfavorite(articleid)
 
 ## Article
 
 - slug
-  - unique
-  - lowercase
-  - index
 - title
 - description
 - body
 - tagList
 - author
-- toArticleResponse(user) return
-  - slug
-  - body
-  - title
-  - tagList
-  - createdAt
-  - updatedAt
-  - description
-  - !!favorited
-  - favoritesCount
-  - author.toProfileJSON()
+- toArticleResponse(user)
 
 ## Comment
 
 - body
 - authorid
 - articleid
-- toCommentResponse() return
-  - id
-  - body
-  - articleid
-  - createdAt
-  - updatedAt
-  - author.toProfileJSON()
+- toCommentResponse()
 
 ## Favorite
 
@@ -76,18 +40,27 @@
 
 ## Contact
 
--
--
--
+- name
+- email
+- body
+- markAsRead
+- toContactResponse()
 
 ## Skill
 
--
--
--
+- slug
+- title
+- image
+- level
+- toSkillResponse()
 
 ## Work
 
--
--
--
+- slug
+- title
+- description
+- image
+- demo
+- github
+- difficulty
+- toWorkResponse()

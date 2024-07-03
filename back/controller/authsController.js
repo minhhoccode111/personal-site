@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 
 const User = require("../model/User");
 const debug = require("../constants/debug");
+const httpStatus = require("../constants/httpStatus");
 
 // @desc login for a user
 // @route POST /api/users/login
@@ -19,17 +20,17 @@ const userLogin = asyncHandler(async (req, res) => {
 
   if (!loginUser)
     return res
-      .status(401)
+      .status(httpStatus.UNAUTHORIZED)
       .json({ errors: [{ msg: "Unauthorized: Wrong email" }] });
 
   const match = await bcrypt.compare(user.password, loginUser.password);
 
   if (!match)
     return res
-      .status(401)
+      .status(httpStatus.UNAUTHORIZED)
       .json({ errors: [{ msg: "Unauthorized: Wrong password" }] });
 
-  res.status(200).json({ user: loginUser.toUserResponse() });
+  res.status(httpStatus.OKAY).json({ user: loginUser.toUserResponse() });
 });
 
 // @desc

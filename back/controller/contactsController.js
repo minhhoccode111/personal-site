@@ -1,5 +1,8 @@
 const asyncHandler = require("express-async-handler");
+
 const Contact = require("../model/Contact");
+
+const httpStatus = require("../constants/httpStatus");
 
 const getContacts = asyncHandler(async (req, res) => {
   // check if i am a real author
@@ -12,7 +15,7 @@ const getContacts = asyncHandler(async (req, res) => {
     Contact.countDocuments({}).exec(),
   ]);
 
-  return res.status(200).json({
+  return res.status(httpStatus.OKAY).json({
     contacts: contacts.map((contact) => contact.toContactResponse()),
     contactsCount,
   });
@@ -41,7 +44,9 @@ const updateContact = asyncHandler(async (req, res) => {
   const contact = await Contact.findById(contactid).exec();
 
   if (!contact) {
-    return res.status(404).json({ errors: [{ msg: "Contact Not Found" }] });
+    return res
+      .status(httpStatus.NOT_FOUND)
+      .json({ errors: [{ msg: "Contact Not Found" }] });
   }
 
   contact.markAsRead = markAsRead;
@@ -58,16 +63,18 @@ const deleteContact = asyncHandler(async (req, res) => {
   Contact.deleteOne({ _id: contactid }, function (err, result) {
     if (err) {
       return res
-        .status(422)
+        .status(httpStatus.UNPROCESSABLE_ENTITY)
         .json({ errors: [{ msg: "Unable to delete that contact" }] });
     }
 
     if (result.deletedCount === 0) {
-      return res.status(404).json({ errors: [{ msg: "Contact Not Found" }] });
+      return res
+        .status(httpStatus.NOT_FOUND)
+        .json({ errors: [{ msg: "Contact Not Found" }] });
     }
 
     return res
-      .status(200)
+      .status(httpStatus.OKAY)
       .json({ messages: [{ msg: "Contact Delete Successfully" }] });
   });
 });
