@@ -9,13 +9,13 @@ type UseVerifyAuthType = {
   failureRedirect?: string;
 };
 
-import { FailureRedirect } from "@/shared/constants";
+import { LogoutRedirect } from "@/shared/constants";
 
 export default function useVerifyAuth({
   user,
   isAuth = true,
   isAuthz = false,
-  failureRedirect = FailureRedirect,
+  failureRedirect = LogoutRedirect,
 }: UseVerifyAuthType) {
   const router = useRouter();
 

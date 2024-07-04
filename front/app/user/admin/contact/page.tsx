@@ -1,5 +1,5 @@
 "use client";
-import useAuthStore from "@/stores/auth";
+import useUserStore from "@/stores/auth";
 
 import Loading from "@/components/loading";
 import SectionHeader from "@/components/section-header";
@@ -21,12 +21,12 @@ const PACE = constants.PaginationPace;
 export default function Page() {
   // const { toast } = useToast();
 
-  const { authData } = useAuthStore();
+  const { userData } = useUserStore();
 
   const [limit, setLimit] = useState<number>(PACE);
   const [offset, setOffset] = useState<number>(0);
 
-  const { data, error } = useFetchContacts(limit, offset, authData.user);
+  const { data, error } = useFetchContacts(limit, offset, userData);
 
   if (error) {
     return (

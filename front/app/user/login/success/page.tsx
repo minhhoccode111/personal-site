@@ -2,7 +2,7 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 
-import useAuthStore from "@/stores/auth";
+import useUserStore from "@/stores/auth";
 
 import { UserResponse } from "@/shared/types";
 import { useEffect, useState } from "react";
@@ -11,7 +11,7 @@ import { SuccessRedirect, FailureRedirect } from "@/shared/constants";
 
 // extract the URL query then redirect to /about
 export default function Page() {
-  const setAuthData = useAuthStore((state) => state.setAuthData);
+  const setAuthData = useUserStore((state) => state.setUserData);
   const params = useSearchParams();
   const router = useRouter();
   const [isNotValid, setIsNotValid] = useState(false);

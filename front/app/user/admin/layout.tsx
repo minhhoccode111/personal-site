@@ -3,7 +3,7 @@
 import NavBar from "@/components/nav-bar";
 import { useMemo } from "react";
 import useVerifyAuth from "@/hooks/useVerifyAuth";
-import useAuthStore from "@/stores/auth";
+import useUserStore from "@/stores/auth";
 import SectionHeader from "@/components/section-header";
 
 export default function Layout({
@@ -11,7 +11,7 @@ export default function Layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { authData } = useAuthStore();
+  const { userData: authData } = useUserStore();
 
   // redirect to /user if not authz
   const _ = useVerifyAuth({

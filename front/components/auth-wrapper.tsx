@@ -1,7 +1,7 @@
 "use client";
 
 import { UserResponse } from "@/shared/types";
-import useAuthStore from "@/stores/auth";
+import useUserStore from "@/stores/auth";
 import { useRouter } from "next/navigation";
 
 type AuthWrapperType = {

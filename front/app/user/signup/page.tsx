@@ -9,7 +9,7 @@ import { z } from "zod";
 
 import SectionHeader from "@/components/section-header";
 import * as constants from "@/shared/constants";
-import useAuthStore from "@/stores/auth";
+import useUserStore from "@/stores/auth";
 import { SignupFormSchema } from "@/shared/schema";
 
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { sleep } from "@/lib/sleep";
 
 export default function Page() {
-  const { setAuthData } = useAuthStore();
+  const { setUserData: setAuthData } = useUserStore();
 
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();

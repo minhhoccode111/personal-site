@@ -7,37 +7,18 @@ import { cn } from "@/lib/utils";
 import SiteFooter from "@/components/site-footer";
 import SiteHeader from "@/components/site-header";
 import ThemeProvider from "@/components/theme-provider";
-import { useEffect } from "react";
-import { AuthStoreName } from "@/shared/constants";
-import useAuthStore from "@/stores/auth";
 
 const fontSans = FontSans({ subsets: ["latin"], variable: "--font-sans" });
 
 import { Toaster } from "@/components/ui/toaster";
-import { useToast } from "@/components/ui/use-toast";
+import { useFetchUser } from "@/hooks";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { setAuthData } = useAuthStore();
-
-  const { toast } = useToast();
-
-  // NOTE: have to init authData here and wrap inside a useEffect which run after
-  // componentDidMount which make localStorage accessible or get a referenceError
-  useEffect(() => {
-    const data = localStorage.getItem(AuthStoreName);
-    const authData = data ? JSON.parse(data) : {};
-
-    if (authData.user) {
-      toast({
-        title: "Login successfully.",
-      });
-      setAuthData(authData);
-    }
-  }, [setAuthData, toast]);
+  const _ = useFetchUser();
 
   return (
     <html lang="en" suppressHydrationWarning>

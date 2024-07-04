@@ -2,31 +2,29 @@
 
 import { create } from "zustand";
 
-import { AuthStoreName } from "@/shared/constants";
+import { UserAuthStoreName } from "@/shared/constants";
 
 import { UserResponse } from "@/shared/types";
 
-type AuthData = {
-  user?: UserResponse;
+type StateUserAuthStore = {
+  userData: UserResponse | undefined;
 };
 
-type StateAuthStore = {
-  authData: AuthData;
-};
-
-type ActionAuthStore = {
-  setAuthData: (data: AuthData) => void;
+type ActionUserAuthStore = {
+  setUserData: (data: UserResponse | undefined) => void;
 };
 
 // TODO: turn off console.log in production
-const useAuthStore = create<StateAuthStore & ActionAuthStore>((set) => ({
-  // can't access localStorage before componentDidMount
-  authData: {},
-  setAuthData: (data) => {
-    // console.log(`data being set with setAuthData belike: `, data);
-    localStorage.setItem(AuthStoreName, JSON.stringify(data));
-    set(() => ({ authData: data }));
-  },
-}));
+const useUserStore = create<StateUserAuthStore & ActionUserAuthStore>(
+  (set) => ({
+    // can't access localStorage before componentDidMount
+    userData: undefined,
+    setUserData: (data) => {
+      console.log(`token being saved belike: `, data?.token);
+      localStorage.setItem(UserAuthStoreName, data?.token || "");
+      set(() => ({ userData: data }));
+    },
+  }),
+);
 
-export default useAuthStore;
+export default useUserStore;

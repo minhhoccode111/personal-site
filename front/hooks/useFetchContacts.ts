@@ -19,7 +19,7 @@ export default function useFetchContacts(
     shouldRetryOnError: false,
   });
 
-  console.log(`data belike: `, result.data);
+  console.log(`contact data belike: `, result.data);
 
   return result;
 }

@@ -8,7 +8,7 @@ export const PaginationPace = Number(pace) || 5;
 
 // auth store name
 const auth = process.env.NEXT_PUBLIC_AUTH_STORE_NAME;
-export const AuthStoreName = auth ? auth : "mhc111-auth-store-name";
+export const UserAuthStoreName = auth ? auth : "mhc111-auth-store-name";
 
 // number of guest users
 const num = process.env.NEXT_PUBLIC_NUMBER_GUEST_USERS;
@@ -27,3 +27,6 @@ export const SuccessRedirect = "/user";
 
 // failure redirect
 export const FailureRedirect = "/user/login";
+
+// logout redirect
+export const LogoutRedirect = "/user/logout";

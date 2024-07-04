@@ -2,7 +2,7 @@
 
 import RouteHeader from "@/components/route-header";
 
-import useAuthStore from "@/stores/auth";
+import useUserStore from "@/stores/auth";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -33,7 +33,7 @@ import SectionHeader from "@/components/section-header";
 
 const Page = function Page() {
   // pass this down in case of race condition
-  const { authData } = useAuthStore();
+  const { userData } = useUserStore();
 
   const [isSending, setIsSending] = useState(false);
   const { toast } = useToast();
@@ -42,8 +42,8 @@ const Page = function Page() {
     resolver: zodResolver(ContactFormSchema),
     defaultValues: {
       contact: {
-        name: authData.user?.username || "",
-        email: authData.user?.email || "",
+        name: userData?.username || "",
+        email: userData?.email || "",
         body: "",
       },
     },

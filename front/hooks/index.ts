@@ -1,3 +1,5 @@
 import useFecthContacts from "./useFetchContacts";
+import useFetchUser from "./useFetchUser";
+import useVerifyAuth from "./useVerifyAuth";
 
-export { useFecthContacts };
+export { useFecthContacts, useFetchUser, useVerifyAuth };

@@ -9,7 +9,7 @@ import { z } from "zod";
 
 import SectionHeader from "@/components/section-header";
 import * as constants from "@/shared/constants";
-import useAuthStore from "@/stores/auth";
+import useUserStore from "@/stores/auth";
 import { LoginFormSchema } from "@/shared/schema";
 import Loading from "@/components/loading";
 
@@ -29,7 +29,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { sleep } from "@/lib/sleep";
 
 export default function Page() {
-  const { setAuthData } = useAuthStore();
+  const { setUserData } = useUserStore();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -66,7 +66,7 @@ export default function Page() {
 
       // console.log(`response data belike: `, data);
 
-      setAuthData(data);
+      setUserData(data?.user);
 
       toast({
         title: "Login successfully.",
@@ -125,7 +125,7 @@ export default function Page() {
 
       // console.log(`response data belike: `, data);
 
-      setAuthData(data);
+      setUserData(data?.user);
 
       toast({
         title: "Login successfully.",

@@ -3,20 +3,19 @@
 import NavBar from "@/components/nav-bar";
 import RouteHeader from "@/components/route-header";
 import { useMemo } from "react";
-import useAuthStore from "@/stores/auth";
+import useUserStore from "@/stores/auth";
 
 // NOTE: need route layout to check and display links base on auth and authz
-
 export default function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { authData } = useAuthStore();
+  const { userData } = useUserStore();
 
   const links = useMemo(() => {
     // no auth links
-    if (!authData.user) {
+    if (!userData) {
       return [
         { href: "/signup", text: "signup" },
         { href: "/login", text: "login" },
@@ -30,12 +29,12 @@ export default function Layout({
     ];
 
     // authz links
-    if (authData.user?.isAuthor) {
+    if (userData?.isAuthor) {
       authLinks.push({ href: "/admin", text: "admin" });
     }
 
     return authLinks;
-  }, [authData]);
+  }, [userData]);
 
   return (
     <div className="">
