@@ -13,7 +13,8 @@ export default function SiteHeader() {
       { href: "about", text: "about" },
       { href: "work", text: "work" },
       { href: "blog", text: "blog" },
-      { href: "contact/add", text: "contact" },
+      { href: "contact", text: "contact" },
+      { href: "user", text: "user" },
     ],
     [],
   );
@@ -21,9 +22,7 @@ export default function SiteHeader() {
   return (
     <header className="flex items-center justify-between p-2">
       <div className="">
-        <h1 className="text-2xl">
-          <Link href={"/about"}>mhc111</Link>
-        </h1>
+        <h1 className="text-2xl">mhc111</h1>
       </div>
 
       <NavBar prefixHref="/" links={links} />

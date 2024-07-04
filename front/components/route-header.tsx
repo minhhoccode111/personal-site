@@ -9,7 +9,7 @@ type RouteHeaderType = {
 export default function RouteHeader({
   children,
   nav,
-  isHeaderLink = true,
+  isHeaderLink = false,
 }: Readonly<RouteHeaderType>) {
   return (
     <header className={"my-8 flex gap-4 items-center justify-between"}>

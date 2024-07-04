@@ -7,6 +7,8 @@ import useAuthStore from "@/stores/auth";
 import { UserResponse } from "@/shared/types";
 import { useEffect, useState } from "react";
 
+import { SuccessRedirect, FailureRedirect } from "@/shared/constants";
+
 // extract the URL query then redirect to /about
 export default function Page() {
   const setAuthData = useAuthStore((state) => state.setAuthData);
@@ -49,9 +51,9 @@ export default function Page() {
   // trigger the redirect inside a useEffect hook so that it happens after the
   // component has mounted, rather than during the render
   useEffect(() => {
-    if (isNotValid) router.replace("/blog/login");
+    if (isNotValid) router.replace(FailureRedirect);
     // use replace because we don't want user to hit back to this route
-    else router.replace("/blog");
+    else router.replace(SuccessRedirect);
   }, [router, isNotValid]);
 
   return null;

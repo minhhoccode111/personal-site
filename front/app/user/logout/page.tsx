@@ -5,6 +5,7 @@ import { useEffect } from "react";
 
 import useAuthStore from "@/stores/auth";
 import { useToast } from "@/components/ui/use-toast";
+import { FailureRedirect } from "@/shared/constants";
 
 // extract the URL query then redirect to /blog
 export default function Page() {
@@ -29,7 +30,7 @@ export default function Page() {
    * component (`SiteHeader`) while rendering a different component (`Page`).
    * */
   useEffect(() => {
-    router.replace("/blog");
+    router.replace(FailureRedirect);
   }, [authData, router]);
 
   return null;

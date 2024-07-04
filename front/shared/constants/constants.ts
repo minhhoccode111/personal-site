@@ -21,3 +21,9 @@ export const GuestUsersEmailPrefix = email ? email : "asd@gmail.com";
 // guest users password
 const pass = process.env.NEXT_PUBLIC_GUEST_USERS_PASSWORD;
 export const GuestUsersPassword = pass ? pass : "Bruh0!0!";
+
+// success redirect
+export const SuccessRedirect = "/user";
+
+// failure redirect
+export const FailureRedirect = "/user/login";

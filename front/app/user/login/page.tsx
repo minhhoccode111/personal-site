@@ -10,7 +10,8 @@ import { z } from "zod";
 import SectionHeader from "@/components/section-header";
 import * as constants from "@/shared/constants";
 import useAuthStore from "@/stores/auth";
-import { SignupFormSchema } from "@/shared/schema";
+import { LoginFormSchema } from "@/shared/schema";
+import Loading from "@/components/loading";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,48 +22,44 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
 import { Input } from "@/components/ui/input";
-import Loading from "@/components/loading";
 
 import { useToast } from "@/components/ui/use-toast";
 
 import { sleep } from "@/lib/sleep";
-const sleepTime = 3000;
 
 export default function Page() {
   const { setAuthData } = useAuthStore();
 
   const [isLoading, setIsLoading] = useState(false);
+
   const router = useRouter();
 
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof SignupFormSchema>>({
-    resolver: zodResolver(SignupFormSchema),
-
+  const form = useForm<z.infer<typeof LoginFormSchema>>({
+    resolver: zodResolver(LoginFormSchema),
     defaultValues: {
       user: {
         email: "",
-        username: "",
         password: "",
-        confirmPassword: "",
       },
     },
   });
 
-  const handleSignup = async (values: z.infer<typeof SignupFormSchema>) => {
+  // TODO: optimize performance useCallback
+  const handleLoginSubmit = async (values: z.infer<typeof LoginFormSchema>) => {
     setIsLoading(true);
 
     toast({
-      title: "Signing up...",
+      title: "Logging...",
     });
 
     try {
-      await sleep(sleepTime);
+      await sleep();
 
       const { data } = await axios({
-        url: constants.ApiUrl + "/users",
+        url: constants.ApiUrl + "/auth/login",
         method: "post",
         data: values,
       });
@@ -72,53 +69,96 @@ export default function Page() {
       setAuthData(data);
 
       toast({
-        title: "Signup successfully.",
+        title: "Login successfully.",
       });
 
-      router.replace("/blog");
+      router.replace(constants.SuccessRedirect);
     } catch (err: any) {
-      console.log(`error signup: `, err);
+      // console.log(`error login: `, err);
 
       const message =
         err.response?.data?.errors?.body ||
-        "Cannot signup right now please try again.";
+        "Cannot login right now please try again later.";
 
       setIsLoading(false);
 
       toast({
+        variant: "destructive",
         title: "Error",
         description: message,
-        variant: "destructive",
       });
     }
   };
+
+  // handle login like normal, no need for validation
+  const handleLoginGuestSubmit = async (
+    e: React.FormEvent<HTMLFormElement>,
+  ) => {
+    e.preventDefault();
+
+    setIsLoading(true);
+
+    toast({
+      title: "Logging...",
+    });
+
+    try {
+      const randomNumber = Math.floor(
+        Math.random() * constants.NumberGuestUsers,
+      );
+
+      const email = randomNumber + constants.GuestUsersEmailPrefix;
+      const password = constants.GuestUsersPassword;
+
+      await sleep();
+
+      const { data } = await axios({
+        url: constants.ApiUrl + "/auth/login",
+        method: "post",
+        data: {
+          user: {
+            email,
+            password,
+          },
+        },
+      });
+
+      // console.log(`response data belike: `, data);
+
+      setAuthData(data);
+
+      toast({
+        title: "Login successfully.",
+      });
+
+      router.replace(constants.SuccessRedirect);
+    } catch (err: any) {
+      // console.log(`error login: `, err);
+
+      const message =
+        err.response?.data?.errors?.body ||
+        "Cannot login right now please try again later";
+
+      setIsLoading(false);
+
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: message,
+      });
+    }
+  };
+
   return (
     <div className="">
-      <SectionHeader>signup</SectionHeader>
+      <SectionHeader>login</SectionHeader>
 
       {/* Section Body */}
       <div className="">
-        {/* normal signup */}
-
+        {/* normal login form */}
         <div className="">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSignup)} className="">
-              <FormField
-                control={form.control}
-                name="user.username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>username</FormLabel>
-
-                    <FormControl>
-                      <Input disabled={isLoading} type="text" {...field} />
-                    </FormControl>
-
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
+            <form onSubmit={form.handleSubmit(handleLoginSubmit)} className="">
               <FormField
                 control={form.control}
                 name="user.email"
@@ -151,22 +191,6 @@ export default function Page() {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="user.confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>confirm password</FormLabel>
-
-                    <FormControl>
-                      <Input disabled={isLoading} type="password" {...field} />
-                    </FormControl>
-
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <div className="">
                 <Button
                   disabled={isLoading}
@@ -181,11 +205,24 @@ export default function Page() {
                 </Button>
 
                 <Button disabled={isLoading} type="submit">
-                  Sign Up
+                  Login
                 </Button>
               </div>
             </form>
           </Form>
+        </div>
+
+        <div className="">
+          <p className="">Or</p>
+        </div>
+
+        {/* Random Login */}
+        <div className="">
+          <form onSubmit={handleLoginGuestSubmit} className="">
+            <button disabled={isLoading} type="submit" className="">
+              Login as guest
+            </button>
+          </form>
         </div>
 
         <div className="">
@@ -198,7 +235,7 @@ export default function Page() {
             href={isLoading ? "#" : constants.ApiUrl + "/auth/login/google"}
             className=""
           >
-            Signup with Google
+            Login with Google
           </a>
         </div>
 

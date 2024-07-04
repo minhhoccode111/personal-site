@@ -14,7 +14,7 @@ import * as constants from "@/shared/constants";
 // import { useToast } from "@/components/ui/use-toast";
 
 import PaginationData from "@/components/pagination-data";
-import ContactMessage from "@/app/contact/contact-message";
+import ContactMessage from "@/app/user/admin/contact/contact-message";
 
 const PACE = constants.PaginationPace;
 
