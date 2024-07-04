@@ -1,0 +1,62 @@
+# routing and apis usage (prefix `http://localhost:3000/api`)
+
+- `/`
+  - `/about`
+    - `GET /skills?limit=100`
+    - `GET /arciles?limit=2`
+    - `GET /works?limit=2`
+  - `/work`
+    - `GET /works?limit=5`
+  - `/blog`
+    - `/`
+      - `GET /articles?limit=5`
+      - `POST /articles/:slug/favorite`
+      - `DELETE /articles/:slug/favorite`
+    - `/:slug`
+      - `GET /articles/:slug`
+      - `POST /articles/:slug/favorite`
+      - `DELETE /articles/:slug/favorite`
+      - `GET /articles/:articleid/comments`
+      - `POST /articles/:articleid/comments`
+      - `DELETE /articles/:articleid/comments/:commentid`
+  - `/contact`
+    - `POST /contacts`
+  - `/user`
+    - auth:
+      - `/(profile)`
+        - `GET /user`
+        - `GET /articles?favorited-userid=6684024862643a82fb7bb8a1`
+      - `/edit`
+        - `PUT /user`
+      - `/logout`
+      - authz:
+        - `/admin`
+          - `/skill`
+            - `GET /skills?limit=100`
+            - `POST /skills`
+            - `PUT /skills/:slug`
+            - `DELETE /skills/:slug`
+          - `/work`
+            - `GET /works?limit=5`
+            - `POST /works`
+            - `PUT /works/:slug`
+            - `DELETE /works/:slug`
+          - `/blog`
+            - `GET /articles?limit=5`
+            - `DELETE /articles`
+            - `/add`
+              - `POST /articles`
+            - `/:slug`
+              - `/`
+                - `GET /articles/:slug`
+              - `/edit`
+                - `PUT /articles`
+          - `/contact`
+            - `GET /contacts?limit=5&offset=0`
+            - `PUT /contacts/:contactid`
+            - `DELETE /contacts/:contactid`
+    - no auth:
+      - `/login`
+        - `POST /auth/login`
+      - `/signup`
+        - `POST /users`
